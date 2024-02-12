@@ -1,0 +1,14 @@
+ { t H   g t @ C   ́ASIL Open Font License 1.1    K p    Ă  ܂  B
+SIL Open Font License 1.1  ̓  {   ͈ȉ URL Ŋm F ł  ܂  B
+https://ja.osdn.net/projects/opensource/wiki/SIL_Open_Font_License_1.1
+
+ t H   g f [ ^ Ɋ܂܂  A u   m v V   [ Y ̕    O   t ̒  쌠   Adobe      L   Ă  ܂  B
+ iC j Copyright 2017 Adobe Systems Incorporated
+ iC j Copyright 2014-2020 Adobe
+
+ T C g  ̖Ɛӎ    Ȃǂɂ  Ă   m F ̏ A C   X g [     Ă    p         B
+
+   ӎ 
+
+ { t H   g ́A u   m v V   [ Y ɉ  H        A Ǝ  ̉         悹    ̂ƂȂ ܂  B
+ f   炵   t H   g    J   Ă         Adobe l ɐS  肨  \   グ ܂  B
