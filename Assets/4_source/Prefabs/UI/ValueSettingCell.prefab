@@ -265,8 +265,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: maus
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: c222c7d51465a7c4a860a31daa82f2d7, type: 2}
-  m_sharedMaterial: {fileID: -1927039923509736800, guid: c222c7d51465a7c4a860a31daa82f2d7,
+  m_fontAsset: {fileID: 11400000, guid: bf6a866a672cf814dba800f4e19183df, type: 2}
+  m_sharedMaterial: {fileID: -1059723476289524751, guid: bf6a866a672cf814dba800f4e19183df,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -402,8 +402,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: c222c7d51465a7c4a860a31daa82f2d7, type: 2}
-  m_sharedMaterial: {fileID: -1927039923509736800, guid: c222c7d51465a7c4a860a31daa82f2d7,
+  m_fontAsset: {fileID: 11400000, guid: bf6a866a672cf814dba800f4e19183df, type: 2}
+  m_sharedMaterial: {fileID: -1059723476289524751, guid: bf6a866a672cf814dba800f4e19183df,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -712,7 +712,7 @@ MonoBehaviour:
   m_CaretWidth: 1
   m_ReadOnly: 0
   m_RichText: 1
-  m_GlobalFontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_GlobalFontAsset: {fileID: 11400000, guid: bf6a866a672cf814dba800f4e19183df, type: 2}
   m_OnFocusSelectAll: 1
   m_ResetOnDeActivation: 1
   m_RestoreOriginalTextOnEscape: 1
@@ -1167,8 +1167,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u200B"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: c222c7d51465a7c4a860a31daa82f2d7, type: 2}
-  m_sharedMaterial: {fileID: -1927039923509736800, guid: c222c7d51465a7c4a860a31daa82f2d7,
+  m_fontAsset: {fileID: 11400000, guid: bf6a866a672cf814dba800f4e19183df, type: 2}
+  m_sharedMaterial: {fileID: -1059723476289524751, guid: bf6a866a672cf814dba800f4e19183df,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
