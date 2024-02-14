@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
+/// <summary>
+/// オーディオを管理
+/// </summary>
 public class AudioManager : MonoBehaviour
 {
     private const string MASTER_VOLUME_NAME = "Master";
@@ -41,7 +44,11 @@ public class AudioManager : MonoBehaviour
         SetBGMAudioClip(_mainAudioClip);
     }
     
-    // オーディオミキサーに設定する音量
+    /// <summary>
+    /// オーディオミキサーに設定する音量
+    /// </summary>
+    /// <param name="volume"> 音量 </param>
+    /// <returns></returns>
     private float GetSoundVolume(float volume)
     {
         return -80 + volume * 10;
@@ -56,7 +63,9 @@ public class AudioManager : MonoBehaviour
         return _volumes;
     }
 
-    // 音量の初期値設定
+    /// <summary>
+    /// 音量の初期値設定
+    /// </summary>
     private void SetInitVolume()
     {
         _volumes = SaveManager.GetSoundVolume();

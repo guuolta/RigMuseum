@@ -2,41 +2,73 @@ using System;
 using UniRx;
 using UnityEngine.UI;
 
+/// <summary>
+/// スライダーのベース
+/// </summary>
 public class SliderBase : UIPartBase
 {
     private Slider _slider;
+    /// <summary>
+    /// スライダー
+    /// </summary>
+    public Slider Slider
+    {
+        get
+        {
+            if(_slider == null)
+            {
+                _slider = GetComponent<Slider>();
+            }
+
+            return _slider;
+        }
+    }
     private Image _handle;
+    /// <summary>
+    /// スライダーのハンドル
+    /// </summary>
+    public Image Handle
+    {
+        get
+        {
+            if(_handle == null)
+            {
+                _handle = GetComponent<Image>();
+            }
+
+            return _handle;
+        }
+    }
     private IObservable<float> _sliderValueAsObservable;
     /// <summary>
     /// スライダーの値
     /// </summary>
-    public IObservable<float> SliderValueAsObservable => _sliderValueAsObservable;
-
-    private void Awake()
+    public IObservable<float> SliderValueAsObservable
     {
-        _slider = GetComponent<Slider>();
-        _handle = _slider.handleRect.GetComponent<Image>();
-        SetEventSliderChange();
+        get
+        {
+            if( _sliderValueAsObservable == null)
+            {
+                _sliderValueAsObservable = Slider.OnValueChangedAsObservable();
+            }
+
+            return _sliderValueAsObservable;
+        }
+    }
+
+    public override void SetEvent()
+    {
         SetEventPointer(_handle);
     }
 
-    public float GetMinValue()
+    public void SetSlider(float minValue, float maxValue)
     {
-        return _slider.minValue;
-    }
-
-    public float GetMaxValue()
-    {
-        return _slider.maxValue;
-    }
-
-    private void SetEventSliderChange()
-    {
-        _sliderValueAsObservable = _slider.OnValueChangedAsObservable();
+        Slider.minValue = minValue;
+        Slider.maxValue = maxValue;
     }
 
     public void SetValue(float value)
     {
-        _slider.value = value;
+        Slider.value = value;
     }
 }

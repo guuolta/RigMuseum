@@ -4,7 +4,11 @@ using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIPartBase : MonoBehaviour
+
+/// <summary>
+/// UIパーツのベース
+/// </summary>
+public class UIPartBase : UIBase
 {
     [Header("UIパーツのアニメーション時間")]
     [SerializeField]

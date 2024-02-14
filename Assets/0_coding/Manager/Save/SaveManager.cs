@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
+/// <summary>
+/// セーブ管理
+/// </summary>
 public static class SaveManager
 {
     private const string SENSITIVITY_KEY = "Sensitivity";

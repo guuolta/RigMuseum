@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 
-public class ButtonBase : MonoBehaviour,
+public class ButtonBase : UIBase,
     IPointerClickHandler,
     IPointerDownHandler,
     IPointerUpHandler,
@@ -65,7 +65,7 @@ public class ButtonBase : MonoBehaviour,
     /// <param name="eventData"></param>
     public virtual void OnPointerDown(PointerEventData eventData)
     {
-        transform.DOScale(0.8f, _animationTime).SetEase(Ease.OutCubic);
+        Transform.DOScale(0.8f, _animationTime).SetEase(Ease.OutCubic);
         ButtonCanvasGroup.DOFade(0.8f, _animationTime).SetEase(Ease.OutCubic);
     }
 
@@ -75,7 +75,7 @@ public class ButtonBase : MonoBehaviour,
     /// <param name="eventData"></param>
     public virtual void OnPointerUp(PointerEventData eventData)
     {
-        transform.DOScale(1f, _animationTime).SetEase(Ease.OutCubic);
+        Transform.DOScale(1f, _animationTime).SetEase(Ease.OutCubic);
         ButtonCanvasGroup.DOFade(1f, _animationTime).SetEase(Ease.OutCubic);
     }
 
@@ -85,7 +85,7 @@ public class ButtonBase : MonoBehaviour,
     /// <param name="eventData"></param>
     public virtual void OnPointerEnter(PointerEventData eventData)
     {
-        transform.DOScale(1.2f, _animationTime).SetEase(Ease.OutCubic);
+        Transform.DOScale(1.2f, _animationTime).SetEase(Ease.OutCubic);
     }
 
     /// <summary>
@@ -94,7 +94,7 @@ public class ButtonBase : MonoBehaviour,
     /// <param name="eventData"></param>
     public virtual void OnPointerExit(PointerEventData eventData)
     {
-        transform.DOScale(1f, _animationTime).SetEase(Ease.OutCubic);
+        Transform.DOScale(1f, _animationTime).SetEase(Ease.OutCubic);
     }
 
     /// <summary>

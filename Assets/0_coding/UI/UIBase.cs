@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// UI系のベース
+/// </summary>
 public class UIBase : MonoBehaviour
 {
     private void Awake()
