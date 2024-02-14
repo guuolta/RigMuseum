@@ -97,11 +97,11 @@ public class PausePanelManager : UIBase
                 break;
             case PausePanelType.Mouse:
                 await ClosePanelAsync(PausePanelType.PauseMenu);
-                await OpenPanelAsync(PausePanelType.Mouse);
+                await _mouseSettingPanelPresenter.OpenPanelAsync();
                 break;
             case PausePanelType.Credit:
                 await ClosePanelAsync(PausePanelType.PauseMenu);
-                await OpenPanelAsync(PausePanelType.Credit);
+                await _creditPanelPresenter.OpenPanelAsync();
                 break;
             default:
                 break;
