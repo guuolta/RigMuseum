@@ -4,7 +4,7 @@ using UnityEngine.Audio;
 /// <summary>
 /// オーディオを管理
 /// </summary>
-public class AudioManager : SingletonObejectBase<AudioManager>
+public class AudioManager : SingletonObjectBase<AudioManager>
 {
     private const string MASTER_VOLUME_NAME = "Master";
     private const string BGM_VOLUME_NAME = "BGM";

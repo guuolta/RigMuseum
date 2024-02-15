@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// プレイヤーの動き
 /// </summary>
-public class PlayerOperater : SingletonObejectBase<PlayerOperater>
+public class PlayerOperater : SingletonObjectBase<PlayerOperater>
 {
     private bool _isReverseVertical = false;
     private bool _isReverseHorizontal = false;
