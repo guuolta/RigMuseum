@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -6,13 +5,11 @@ using UnityEngine.Audio;
 /// <summary>
 /// オーディオを管理
 /// </summary>
-public class AudioManager : MonoBehaviour
+public class AudioManager : SingletonObjectBase<AudioManager>
 {
     private const string MASTER_VOLUME_NAME = "Master";
     private const string BGM_VOLUME_NAME = "BGM";
     private const string SE_VOLUME_NAME = "SE";
-
-    public static AudioManager Instance;
 
     private float[] _volumes = new float[3];
     [Header("オーディオミキサー")]
@@ -21,29 +18,74 @@ public class AudioManager : MonoBehaviour
     [Header("BGMのオーディオソース")]
     [SerializeField]
     private AudioSource _bgmAudioSource;
+    [Header("SEのオーディオソース")]
+    [SerializeField]
+    private GameObject _seAudioSource;
+    private List<AudioSource> _seAudioSourceList = new List<AudioSource>();
     [Header("通常BGM")]
     [SerializeField]
     private AudioClip _mainAudioClip;
+    [Header("よく使うSE")]
+    [SerializeField]
+    private List<SE> _seList = new List<SE>();
+    private Dictionary<SEType, AudioClip> _seDictionary = new Dictionary<SEType, AudioClip>();
 
-    private void Awake()
+    public override void Init()
     {
-        if(Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(this);
-        }
-
+        base.Init();
+        GetSEDictionary();
         SetInitVolume();
+        PlayBGMAudioClip(_mainAudioClip);
     }
 
-    private void Start()
+    /// <summary>
+    /// BGM設定
+    /// </summary>
+    /// <param name="clip">曲</param>
+    public void PlayBGMAudioClip(AudioClip clip)
     {
-        SetBGMAudioClip(_mainAudioClip);
+        _bgmAudioSource.clip = clip;
+        _bgmAudioSource.Play();
     }
-    
+
+    public void PlayOneShotSE(AudioClip clip)
+    {
+        foreach(AudioSource se in _seAudioSourceList)
+        {
+            if(!se.isPlaying)
+            {
+                se.PlayOneShot(clip);
+                return;
+            }
+        }
+
+        var seSource = Instantiate(_seAudioSource).GetComponent<AudioSource>();
+        _seAudioSourceList.Add(seSource);
+    }
+
+    public void PlayOneShotSE(SEType type)
+    {
+        foreach (AudioSource se in _seAudioSourceList)
+        {
+            if (!se.isPlaying)
+            {
+                se.PlayOneShot(_seDictionary[type]);
+                return;
+            }
+        }
+
+        var seSource = Instantiate(_seAudioSource).GetComponent<AudioSource>();
+        _seAudioSourceList.Add(seSource);
+    }
+
+    private void GetSEDictionary()
+    {
+        foreach(var se in _seList)
+        {
+            _seDictionary.Add(se.SEType, se.Clip);
+        }
+    }
+
     /// <summary>
     /// オーディオミキサーに設定する音量
     /// </summary>
@@ -76,15 +118,6 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// オーディオクリップ設定
-    /// </summary>
-    /// <param name="clip">曲</param>
-    public void SetBGMAudioClip(AudioClip clip)
-    {
-        _bgmAudioSource.clip = clip;
-    }
-
-    /// <summary>
     /// マスターボリュームを設定
     /// </summary>
     /// <param name="volume">音量</param>
@@ -104,7 +137,6 @@ public class AudioManager : MonoBehaviour
         _volumes[(int)AudioType.BGM] = volume;
     }
 
-
     /// <summary>
     /// SEボリュームを設定
     /// </summary>
@@ -114,6 +146,22 @@ public class AudioManager : MonoBehaviour
         _audioMixer.SetFloat(SE_VOLUME_NAME, GetSoundVolume(volume));
         _volumes[(int)AudioType.SE] = volume;
     }
+
+
+    /// <summary>
+    /// すべてのボリュームをセーブ
+    /// </summary>
+    public void SaveVolume()
+    {
+        SaveManager.SetSoundVolume(_volumes);
+    }
+}
+
+[System.Serializable]
+public class SE
+{
+    public SEType SEType;
+    public AudioClip Clip;
 }
 
 /// <summary>
@@ -121,7 +169,16 @@ public class AudioManager : MonoBehaviour
 /// </summary>
 public enum AudioType
 {
-    Master,
-    BGM,
-    SE
+    Master = 0,
+    BGM = 1,
+    SE = 2
+}
+
+/// <summary>
+/// SEの種類
+/// </summary>
+public enum SEType
+{
+    Posi,
+    Nega
 }
