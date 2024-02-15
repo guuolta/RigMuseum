@@ -54,6 +54,7 @@ public class PausePanelManager : UIBase
                 {
                     await ClosePanelAsync(PausePanelType.All);
                     AudioManager.Instance.SaveVolume();
+                    PlayerManager.Instance.SaveSetting();
                 }
             }).AddTo(this);
     }

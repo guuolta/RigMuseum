@@ -66,6 +66,7 @@ public class AudioManager : SingletonObjectBase<AudioManager>
     public void SetBGMAudioClip(AudioClip clip)
     {
         _bgmAudioSource.clip = clip;
+        _bgmAudioSource.Play();
     }
 
     /// <summary>
