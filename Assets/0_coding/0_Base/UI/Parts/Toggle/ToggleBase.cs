@@ -1,4 +1,3 @@
-using DG.Tweening;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
@@ -62,5 +61,10 @@ public class ToggleBase : UIPartBase
                     _mask.gameObject.SetActive(true);
                 }
             }).AddTo(this);
+    }
+
+    public void SetValue(bool value)
+    {
+        _isToggle.Value = value;
     }
 }

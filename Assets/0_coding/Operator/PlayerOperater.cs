@@ -5,19 +5,8 @@ using UnityEngine;
 /// <summary>
 /// プレイヤーの動き
 /// </summary>
-public class PlayerOperater : SingletonObjectBase<PlayerOperater>
+public class PlayerOperater : ObjectBase
 {
-    private bool _isReverseVertical = false;
-    private bool _isReverseHorizontal = false;
-    [Header("プレイヤー")]
-    [SerializeField]
-    private Player _player;
-    [Header("カメラが移動するスピード")]
-    [SerializeField]
-    private float _moveSpeed;
-    [Header("カメラが回転するスピード")]
-    [SerializeField]
-    private float _rotateSpeed;
     [Header("カメラの回転上限")]
     [Range(0f, 180f)]
     [SerializeField]
@@ -40,73 +29,31 @@ public class PlayerOperater : SingletonObjectBase<PlayerOperater>
     private CompositeDisposable _keyEventDisposes = new CompositeDisposable();
     private CompositeDisposable _mouseEventDisposes = new CompositeDisposable();
 
-    public override void Init()
-    {
-        base.Init();
-        _transform = _player.Transform;
-        _rb = _player.Rigidbody;
-    }
-
     public override void SetEvent()
     {
-        SetEventPlayerOperation();
         SetEventOptionKey();
     }
 
-    private void OnDestroy()
+    public override void Destroy()
     {
         DisposeEventPlayerOperation();
     }
 
     /// <summary>
-    /// プレイヤーの操作設定
+    /// 初期設定
     /// </summary>
-    private void SetEventPlayerOperation()
+    /// <param name="transform"> プレイヤーのトランスフォーム </param>
+    /// <param name="rb"> プレイヤーのリギッドボディ </param>
+    public void SetInit(Transform transform, Rigidbody rb)
     {
-        GameStateManager.MuseumStatus
-            .Select(value => value == MuseumState.Play)
-            .DistinctUntilChanged()
-            .Subscribe(value =>
-            {
-                if(value)
-                {
-                    SetEventKey();
-                    SetMouseEvent();
-                }
-                else
-                {
-                    DisposeEventPlayerOperation();
-                }
-            }).AddTo(this);
+        _transform = transform;
+        _rb = rb;
     }
 
-    /// <summary>
-    /// イベント削除
-    /// </summary>
-    private CompositeDisposable DisposeEvent(CompositeDisposable disposable)
-    {
-        disposable.Dispose();
-        return new CompositeDisposable();
-    }
-
-    /// <summary>
-    /// キー、マウス操作削除
-    /// </summary>
-    private void DisposeEventPlayerOperation()
-    {
-        _keyEventDisposes = DisposeEvent(_keyEventDisposes);
-        _mouseEventDisposes = DisposeEvent(_mouseEventDisposes);
-
-        if(_rb != null)
-        {
-            _rb.velocity = Vector3.zero;
-        }
-    }
-    
     /// <summary>
     /// キー操作設定
     /// </summary>
-    private void SetEventKey()
+    public void SetEventKey(float speed)
     {
         /*前方向*/
         float frontDir = 0;
@@ -164,7 +111,7 @@ public class PlayerOperater : SingletonObjectBase<PlayerOperater>
                     + rightDir * DeleateMoveValueY(_transform.right) 
                     + upDir * new Vector3(0f, 1f, 0f)
                     + downDir * new Vector3(0f, -1f, 0f) )
-                    * _moveSpeed;
+                    * speed;
             }).AddTo(_keyEventDisposes);
 
         /*初期化処理*/
@@ -181,7 +128,7 @@ public class PlayerOperater : SingletonObjectBase<PlayerOperater>
     /// <summary>
     /// マウス操作設定
     /// </summary>
-    private void SetMouseEvent()
+    public void SetEventMouse(bool isReverseVertical, bool isReverseHorizontal, float speed)
     {
         /*横方向の視点移動*/
         Observable.EveryUpdate()
@@ -190,7 +137,7 @@ public class PlayerOperater : SingletonObjectBase<PlayerOperater>
             .Subscribe(direction =>
             {
                 Vector3 rot = _transform.localEulerAngles;
-                rot.y = _isReverseHorizontal ? (rot.y - _rotateSpeed * direction) : (rot.y + _rotateSpeed * direction);
+                rot.y = isReverseHorizontal ? (rot.y - speed * direction) : (rot.y + speed * direction);
                 _transform.localEulerAngles = rot;
             }).AddTo(_mouseEventDisposes);
 
@@ -204,7 +151,7 @@ public class PlayerOperater : SingletonObjectBase<PlayerOperater>
                 rot.x = rot.x > 180f ? (rot.x - 360f)
                     : rot.x < -180f ? (rot.x + 360f)
                     : rot.x;
-                rot.x = _isReverseVertical ? (rot.x + _rotateSpeed * direction) : (rot.x - _rotateSpeed * direction);
+                rot.x = isReverseVertical ? (rot.x + speed * direction) : (rot.x - speed * direction);
                 rot.x = Mathf.Clamp(rot.x, _downLimitRotation, _upLimitRotation);
                 _transform.localEulerAngles = rot;
             }).AddTo(_mouseEventDisposes);
@@ -223,37 +170,33 @@ public class PlayerOperater : SingletonObjectBase<PlayerOperater>
             }).AddTo(this);
     }
 
+    /// <summary>
+    /// キー、マウス操作削除
+    /// </summary>
+    public void DisposeEventPlayerOperation()
+    {
+        _keyEventDisposes = DisposeEvent(_keyEventDisposes);
+        _mouseEventDisposes = DisposeEvent(_mouseEventDisposes);
+
+        if (_rb != null)
+        {
+            _rb.velocity = Vector3.zero;
+        }
+    }
+
+    /// <summary>
+    /// イベント削除
+    /// </summary>
+    private CompositeDisposable DisposeEvent(CompositeDisposable disposable)
+    {
+        disposable.Dispose();
+        return new CompositeDisposable();
+    }
+
     /*縦方向の移動削除*/
     private Vector3 DeleateMoveValueY(Vector3 value)
     {
         value.y = 0;
         return value;
-    }
-
-    /// <summary>
-    /// マウス感度設定
-    /// </summary>
-    /// <param name="value">感度</param>
-    public void SetSensitivity(float value)
-    {
-        _rotateSpeed = value * 0.5f;
-    }
-
-    /// <summary>
-    /// マウスの縦操作反転かどうか
-    /// </summary>
-    /// <param name="IsReverse">反転させるか</param>
-    public void SetIsReveseVertical(bool IsReverse)
-    {
-        _isReverseVertical = IsReverse;
-    }
-
-    /// <summary>
-    /// マウスの横操作反転かどうか
-    /// </summary>
-    /// <param name="IsReverse">反転させるか</param>
-    public void SetIsReverseHorizontal(bool IsReverse)
-    {
-        _isReverseHorizontal = IsReverse;
     }
 }

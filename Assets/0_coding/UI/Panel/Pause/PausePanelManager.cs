@@ -16,7 +16,7 @@ public class PausePanelManager : UIBase
     private SoundPanelPresenter _soundSettingPanelPresenter;
     [Header("マウス設定パネル")]
     [SerializeField]
-    private MousePanelPresenter _mouseSettingPanelPresenter;
+    private PlayerSettingPanelPresenter _mouseSettingPanelPresenter;
     [Header("クレジットパネル")]
     [SerializeField]
     private CreditPanelPresenter _creditPanelPresenter;

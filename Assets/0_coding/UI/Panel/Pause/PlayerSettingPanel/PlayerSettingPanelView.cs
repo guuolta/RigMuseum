@@ -1,9 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class MousePanelView : PanelViewBase
+public class PlayerSettingPanelView : PanelViewBase
 {
+    [Header("プレイヤーのスピード設定UI")]
+    [SerializeField]
+    private ValueUIPart _moveSpeedUI;
+
+    /// <summary>
+    /// プレイヤーのスピード設定UI
+    /// </summary>
+    public ValueUIPart MoveSpeedUI => _moveSpeedUI;
+
     [Header("感度設定UI")]
     [SerializeField]
     private ValueUIPart _sensitivityUI;
@@ -19,7 +26,7 @@ public class MousePanelView : PanelViewBase
     /// <summary>
     /// 上下反転トグル
     /// </summary>
-    public ToggleBase VirticulToggle => _isVirticulToggle;
+    public ToggleBase VerticulToggle => _isVirticulToggle;
 
     [Header("左右反転トグル")]
     [SerializeField]

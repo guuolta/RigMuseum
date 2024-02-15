@@ -25,10 +25,6 @@ public class AudioManager : SingletonObjectBase<AudioManager>
     {
         base.Init();
         SetInitVolume();
-    }
-
-    public override void SetEvent()
-    {
         SetBGMAudioClip(_mainAudioClip);
     }
     
