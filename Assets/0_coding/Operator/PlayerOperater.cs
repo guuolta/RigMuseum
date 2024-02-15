@@ -1,17 +1,17 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using UniRx;
-using UniRx.Triggers;
+using UnityEngine;
 
 /// <summary>
 /// プレイヤーの動き
 /// </summary>
-public class PlayerOperater : MonoBehaviour
+public class PlayerOperater : SingletonObejectBase<PlayerOperater>
 {
     private bool _isReverseVertical = false;
     private bool _isReverseHorizontal = false;
+    [Header("プレイヤー")]
+    [SerializeField]
+    private Player _player;
     [Header("カメラが移動するスピード")]
     [SerializeField]
     private float _moveSpeed;
@@ -26,9 +26,6 @@ public class PlayerOperater : MonoBehaviour
     [Range(-180f, 0f)]
     [SerializeField]
     private float _downLimitRotation = -90;
-    [Header("カメラ")]
-    [SerializeField]
-    private Camera _camera;
     [Header("上昇移動のキー")]
     [SerializeField]
     private KeyCode _upMoveKey = KeyCode.Space;
@@ -43,20 +40,17 @@ public class PlayerOperater : MonoBehaviour
     private CompositeDisposable _keyEventDisposes = new CompositeDisposable();
     private CompositeDisposable _mouseEventDisposes = new CompositeDisposable();
 
-    private void Awake()
+    public override void Init()
     {
-        _transform = _camera.transform;
-        _rb = _camera.gameObject.GetComponent<Rigidbody>();
-
-        if(_rb == null)
-        {
-            Debug.Log("Rigidbodyを設定してください");
-        }
+        base.Init();
+        _transform = _player.Transform;
+        _rb = _player.Rigidbody;
     }
 
-    private void Start()
+    public override void SetEvent()
     {
         SetEventPlayerOperation();
+        SetEventOptionKey();
     }
 
     private void OnDestroy()
@@ -69,14 +63,14 @@ public class PlayerOperater : MonoBehaviour
     /// </summary>
     private void SetEventPlayerOperation()
     {
-        GameStateManager.Instance.MuseumStatus
+        GameStateManager.MuseumStatus
             .Select(value => value == MuseumState.Play)
+            .DistinctUntilChanged()
             .Subscribe(value =>
             {
                 if(value)
                 {
                     SetEventKey();
-                    SetEventOptionKey();
                     SetMouseEvent();
                 }
                 else
@@ -176,7 +170,6 @@ public class PlayerOperater : MonoBehaviour
         /*初期化処理*/
         Observable.EveryUpdate()
             .Where(_ => !Input.anyKey)
-            .DistinctUntilChanged()
             .Subscribe(_ =>
             {
                 _rb.velocity = Vector3.zero;
@@ -226,8 +219,8 @@ public class PlayerOperater : MonoBehaviour
             .Where(_ => Input.GetKeyDown(_optionKey))
             .Subscribe(_ =>
             {
-                GameStateManager.Instance.SetMuseumState(MuseumState.Pause);
-            }).AddTo(_keyEventDisposes);
+                GameStateManager.TogglePauseState();
+            }).AddTo(this);
     }
 
     /*縦方向の移動削除*/
@@ -243,7 +236,7 @@ public class PlayerOperater : MonoBehaviour
     /// <param name="value">感度</param>
     public void SetSensitivity(float value)
     {
-        _rotateSpeed = value;
+        _rotateSpeed = value * 0.5f;
     }
 
     /// <summary>

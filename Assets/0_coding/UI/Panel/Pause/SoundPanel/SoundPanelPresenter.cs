@@ -5,11 +5,6 @@ using UnityEngine;
 
 public class SoundPanelPresenter : PanelPresenterBase<SoundPanelView>
 {
-    public override void Init()
-    {
-        base.Init();
-    }
-
     public override void SetEvent()
     {
         SetValue();
@@ -18,7 +13,7 @@ public class SoundPanelPresenter : PanelPresenterBase<SoundPanelView>
 
     private void SetValue()
     {
-        float[] volumes = AudioManager.Instance.GetSoundVolumes();
+        float[] volumes = SaveManager.GetSoundVolume();
 
         View.MasterValueUIPart.SetValue(volumes[(int)AudioType.Master]);
         View.BGMValueUIPart.SetValue(volumes[(int)AudioType.BGM]);

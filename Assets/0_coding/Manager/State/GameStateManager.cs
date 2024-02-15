@@ -1,42 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
 using UniRx;
-using UnityEngine;
 
 /// <summary>
 /// ステートを管理
 /// </summary>
-public class GameStateManager : MonoBehaviour
+public static class GameStateManager
 {
-    public static GameStateManager Instance;
-
-    private MuseumStateReactiveProperty _museumStatus = new MuseumStateReactiveProperty(MuseumState.Play);
+    private static MuseumStateReactiveProperty _museumStatus = new MuseumStateReactiveProperty(MuseumState.Play);
     /// <summary>
     /// ステート
     /// </summary>
-    public IReadOnlyReactiveProperty<MuseumState> MuseumStatus { get { return _museumStatus; } }
+    public static IReadOnlyReactiveProperty<MuseumState> MuseumStatus { get { return _museumStatus; } }
 
-    private void Awake()
-    {
-        if(Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(this);
-        }
-    }
 
-    private void Start()
-    {
-        SetMuseumState(MuseumState.Play);
-    }
 
     /// <summary>
     /// ポーズ状態を反転する
     /// </summary>
-    public void TogglePauseState()
+    public static void TogglePauseState()
     {
         _museumStatus.Value = _museumStatus.Value == MuseumState.Pause ? MuseumState.Play : MuseumState.Pause;
     }
@@ -45,7 +25,7 @@ public class GameStateManager : MonoBehaviour
     /// ステートを設定
     /// </summary>
     /// <param name="state"> ステート </param>
-    public void SetMuseumState(MuseumState state)
+    public static void SetMuseumState(MuseumState state)
     {
         _museumStatus.Value = state;
     }

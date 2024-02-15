@@ -1,9 +1,5 @@
 using Cysharp.Threading.Tasks;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UniRx;
-using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -44,7 +40,8 @@ public class PausePanelManager : UIBase
     /// </summary>
     private void SetEventPanel()
     {
-        GameStateManager.Instance.MuseumStatus
+        GameStateManager.MuseumStatus
+            .Skip(1)
             .Select(value => value == MuseumState.Pause)
             .DistinctUntilChanged()
             .Subscribe(async value =>
@@ -56,6 +53,7 @@ public class PausePanelManager : UIBase
                 else
                 {
                     await ClosePanelAsync(PausePanelType.All);
+                    AudioManager.Instance.SaveVolume();
                 }
             }).AddTo(this);
     }
@@ -68,7 +66,7 @@ public class PausePanelManager : UIBase
         {
             if(_isOpenMenuPanel)
             {
-                GameStateManager.Instance.TogglePauseState();
+                GameStateManager.TogglePauseState();
             }
             else
             {
@@ -146,6 +144,9 @@ public class PausePanelManager : UIBase
     }
 }
 
+/// <summary>
+/// ポーズパネルの種類
+/// </summary>
 public enum PausePanelType
 {
     PauseMenu,

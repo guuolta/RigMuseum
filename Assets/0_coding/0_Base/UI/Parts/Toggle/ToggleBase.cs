@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class ToggleBase : UIPartBase
 {
-    private BoolReactiveProperty _isToggle;
+    private BoolReactiveProperty _isToggle = new BoolReactiveProperty(false);
     /// <summary>
     /// トグルのOn、Off
     /// </summary>
@@ -30,12 +30,6 @@ public class ToggleBase : UIPartBase
     [Header("トグルのマスク画像")]
     [SerializeField]
     private Image _mask;
-
-    public override void Init()
-    {
-        base.Init();
-        _isToggle.Value = false;
-    }
 
     public override void SetEvent()
     {

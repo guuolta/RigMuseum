@@ -10,6 +10,9 @@ public class ValueInputFieldBase : UIPartBase
     private float _minValue;
     private float _maxValue;
     private TMP_InputField _inputField;
+    /// <summary>
+    /// インプットフィールド
+    /// </summary>
     public TMP_InputField InputField
     { 
         get 
@@ -22,6 +25,9 @@ public class ValueInputFieldBase : UIPartBase
         } 
     }
     private Image _image;
+    /// <summary>
+    /// インプットフィールドの画像
+    /// </summary>
     public Image Image
     {
         get
@@ -58,7 +64,9 @@ public class ValueInputFieldBase : UIPartBase
         _maxValue = maxValue;
     }
     
-    //インプットフィールドの値を設定
+    /// <summary>
+    /// インプットフィールドの値を設定
+    /// </summary>
     private void SetEventInputValue()
     {
         OnChangeEvent = (value) =>
@@ -78,7 +86,10 @@ public class ValueInputFieldBase : UIPartBase
     }
 
 
-    //インプットフィールドの値を設定
+    /// <summary>
+    /// インプットフィールドの値を設定
+    /// </summary>
+    /// <param name="value"> 値 </param>
     public void SetValue(float value)
     {
         InputField.text = value.ToString();

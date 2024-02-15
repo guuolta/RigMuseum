@@ -22,6 +22,9 @@ public class ValueUIPart : UIBase
     [SerializeField]
     private ValueInputFieldBase _inputField;
     private ReactiveProperty<float> _value = new ReactiveProperty<float>();
+    /// <summary>
+    /// 値
+    /// </summary>
     public ReactiveProperty<float> Value => _value;
     private List<IDisposable> _disposables = new List<IDisposable>();
 
@@ -41,9 +44,13 @@ public class ValueUIPart : UIBase
         _disposables.Clear();
     }
 
+    /// <summary>
+    /// スライダーとインプットフィールドの値のイベント
+    /// </summary>
     private void SetEventChangeValue()
     {
         _slider.SliderValueAsObservable
+            .Skip(1)
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
@@ -52,6 +59,7 @@ public class ValueUIPart : UIBase
             }).AddTo(_disposables);
 
         _inputField.InputValueAsObservable
+            .Skip(1)
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
@@ -60,9 +68,14 @@ public class ValueUIPart : UIBase
             }).AddTo(_disposables);
     }
 
+    /// <summary>
+    /// 値を設定する
+    /// </summary>
+    /// <param name="value"> 値 </param>
     public void SetValue(float value)
     {
         _slider.SetValue(value);
         _inputField.SetValue(value);
+        _value.Value = value;
     }
 }

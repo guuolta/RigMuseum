@@ -1,18 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
 /// <summary>
 /// オーディオを管理
 /// </summary>
-public class AudioManager : MonoBehaviour
+public class AudioManager : SingletonObejectBase<AudioManager>
 {
     private const string MASTER_VOLUME_NAME = "Master";
     private const string BGM_VOLUME_NAME = "BGM";
     private const string SE_VOLUME_NAME = "SE";
-
-    public static AudioManager Instance;
 
     private float[] _volumes = new float[3];
     [Header("オーディオミキサー")]
@@ -25,21 +21,13 @@ public class AudioManager : MonoBehaviour
     [SerializeField]
     private AudioClip _mainAudioClip;
 
-    private void Awake()
+    public override void Init()
     {
-        if(Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(this);
-        }
-
+        base.Init();
         SetInitVolume();
     }
 
-    private void Start()
+    public override void SetEvent()
     {
         SetBGMAudioClip(_mainAudioClip);
     }
@@ -104,7 +92,6 @@ public class AudioManager : MonoBehaviour
         _volumes[(int)AudioType.BGM] = volume;
     }
 
-
     /// <summary>
     /// SEボリュームを設定
     /// </summary>
@@ -114,6 +101,15 @@ public class AudioManager : MonoBehaviour
         _audioMixer.SetFloat(SE_VOLUME_NAME, GetSoundVolume(volume));
         _volumes[(int)AudioType.SE] = volume;
     }
+
+
+    /// <summary>
+    /// すべてのボリュームをセーブ
+    /// </summary>
+    public void SaveVolume()
+    {
+        SaveManager.SetSoundVolume(_volumes);
+    }
 }
 
 /// <summary>
@@ -121,7 +117,7 @@ public class AudioManager : MonoBehaviour
 /// </summary>
 public enum AudioType
 {
-    Master,
-    BGM,
-    SE
+    Master = 0,
+    BGM = 1,
+    SE = 2
 }

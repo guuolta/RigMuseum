@@ -3,18 +3,19 @@ using UnityEngine;
 /// <summary>
 /// ゲームの設定
 /// </summary>
-public class GameSeter : MonoBehaviour
+public class GameSeter : ObjectBase
 {
     [Header("fpsの量")]
     [SerializeField]
     private int _fps = 60;
 
-    private void Awake()
+    public override void Init()
     {
         Application.targetFrameRate = _fps;
+        GameStateManager.SetMuseumState(MuseumState.Play);
     }
 
-    private void OnDestroy()
+    public override void Destroy()
     {
         SaveManager.Save();
     }

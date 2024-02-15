@@ -51,13 +51,25 @@ public static class SaveManager
     public static float[] GetSoundVolume()
     {
         float[] soundVolumes = new float[3];
-        soundVolumes[(int) AudioType.Master] = PlayerPrefs.GetFloat(MASTER_VOLUME_KEY, 8f);
+        soundVolumes[(int)AudioType.Master] = PlayerPrefs.GetFloat(MASTER_VOLUME_KEY, 8f);
         soundVolumes[(int)AudioType.BGM] = PlayerPrefs.GetFloat(BGM_VOLUME_KEY, 8f);
         soundVolumes[(int)AudioType.SE] = PlayerPrefs.GetFloat(SE_VOLUME_KEY, 8f);
+        Debug.Log(soundVolumes[(int)AudioType.Master]);
 
         return soundVolumes;
     }
 
+    /// <summary>
+    /// セーブデータに音量をセット
+    /// </summary>
+    /// <param name="volumes"> 音量 </param>
+    public static void SetSoundVolume(float[] volumes)
+    {
+        PlayerPrefs.SetFloat(MASTER_VOLUME_KEY, volumes[(int)AudioType.Master]);
+        PlayerPrefs.SetFloat(BGM_VOLUME_KEY, volumes[(int)AudioType.BGM]);
+        PlayerPrefs.SetFloat(SE_VOLUME_KEY, volumes[(int)AudioType.SE]);
+
+    }
 
     /// <summary>
     /// セーブデータにマウス感度設定
@@ -84,34 +96,12 @@ public static class SaveManager
     }
 
     /// <summary>
-    /// セーブデータにマスター音量設定
-    /// </summary>
-    public static void SetSaveMasterVolume(float volume)
-    {
-        PlayerPrefs.SetFloat(MASTER_VOLUME_KEY, volume);
-    }
-
-    /// <summary>
-    /// セーブデータにBGM音量設定
-    /// </summary>
-    public static void SetSaveBGMVolume(float volume)
-    {
-        PlayerPrefs.SetFloat(BGM_VOLUME_KEY, volume);
-    }
-
-    /// <summary>
-    /// セーブデータにSE音量設定
-    /// </summary>
-    public static void SetSaveSEVolume(float volume)
-    {
-        PlayerPrefs.SetFloat(SE_VOLUME_KEY, volume);
-    }
-
-    /// <summary>
     /// セーブ
     /// </summary>
     public static void Save()
     {
+        Debug.Log(GetSoundVolume()[0]);
         PlayerPrefs.Save();
+        Debug.Log("セーブ完了");
     }
 }
