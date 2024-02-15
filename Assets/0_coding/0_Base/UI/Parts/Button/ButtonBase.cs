@@ -56,6 +56,7 @@ public class ButtonBase : UIBase,
     /// <param name="eventData"></param>
     public virtual void OnPointerClick(PointerEventData eventData)
     {
+        AudioManager.Instance.PlayOneShotSE(SEType.Posi);
         onClickCallback?.Invoke();
     }
 
