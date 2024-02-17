@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -19,20 +20,31 @@ public class ButtonBase : UIBase,
     [Header("ボタンのアニメーションの時間")]
     [SerializeField]
     private float _animationTime = 0.1f;
-    private CanvasGroup _buttonCanvasGroup;
-    public CanvasGroup ButtonCanvasGroup => _buttonCanvasGroup;
-
-    private void Awake()
+    public float AnimationTime => _animationTime;
+    private CanvasGroup _canvasGroup;
+    public CanvasGroup CanvasGroup
     {
-        _buttonCanvasGroup = GetComponent<CanvasGroup>();
-        if (ButtonCanvasGroup == null)
+        get
         {
-            _buttonCanvasGroup = gameObject.AddComponent<CanvasGroup>();
+            if(_canvasGroup == null)
+            {
+                _canvasGroup = GetComponent<CanvasGroup>();
+                if (_canvasGroup == null)
+                {
+                    _canvasGroup = gameObject.AddComponent<CanvasGroup>();
+                }
+            }
+
+            return _canvasGroup;
         }
+    }
+
+    public override void Init()
+    {
         ChangeInteractive(true);
     }
 
-    public virtual void Start()
+    public override void SetEvent()
     {
         SetEventButton();
     }
@@ -66,8 +78,8 @@ public class ButtonBase : UIBase,
     /// <param name="eventData"></param>
     public virtual void OnPointerDown(PointerEventData eventData)
     {
-        Transform.DOScale(0.8f, _animationTime).SetEase(Ease.OutCubic);
-        ButtonCanvasGroup.DOFade(0.8f, _animationTime).SetEase(Ease.OutCubic);
+        Transform.DOScale(0.8f, _animationTime).SetEase(Ease.InSine);
+        CanvasGroup.DOFade(0.8f, _animationTime).SetEase(Ease.InSine);
     }
 
     /// <summary>
@@ -76,8 +88,8 @@ public class ButtonBase : UIBase,
     /// <param name="eventData"></param>
     public virtual void OnPointerUp(PointerEventData eventData)
     {
-        Transform.DOScale(1f, _animationTime).SetEase(Ease.OutCubic);
-        ButtonCanvasGroup.DOFade(1f, _animationTime).SetEase(Ease.OutCubic);
+        Transform.DOScale(1f, _animationTime).SetEase(Ease.OutSine);
+        CanvasGroup.DOFade(1f, _animationTime).SetEase(Ease.OutSine);
     }
 
     /// <summary>
@@ -86,16 +98,21 @@ public class ButtonBase : UIBase,
     /// <param name="eventData"></param>
     public virtual void OnPointerEnter(PointerEventData eventData)
     {
-        Transform.DOScale(1.2f, _animationTime).SetEase(Ease.OutCubic);
+        if(Input.GetMouseButton(0))
+        {
+            return;
+        }
+        Transform.DOScale(1.2f, _animationTime).SetEase(Ease.InSine);
     }
 
     /// <summary>
     /// ボタンからカーソルが離れた時の処理
     /// </summary>
     /// <param name="eventData"></param>
-    public virtual void OnPointerExit(PointerEventData eventData)
+    public virtual async void OnPointerExit(PointerEventData eventData)
     {
-        Transform.DOScale(1f, _animationTime).SetEase(Ease.OutCubic);
+        await UniTask.WaitUntil(() => !Input.GetMouseButton(0));
+        Transform.DOScale(1f, _animationTime).SetEase(Ease.OutSine);
     }
 
     /// <summary>
@@ -104,20 +121,20 @@ public class ButtonBase : UIBase,
     /// <param name="interactable">押せるか</param>
     public void ChangeInteractive(bool isInteractive)
     {
-        if (_buttonCanvasGroup == null)
+        if (_canvasGroup == null)
         {
             return;
         }
 
-        _buttonCanvasGroup.interactable = isInteractive;
-        _buttonCanvasGroup.blocksRaycasts = isInteractive;
+        _canvasGroup.interactable = isInteractive;
+        _canvasGroup.blocksRaycasts = isInteractive;
         if (isInteractive)
         {
-            _buttonCanvasGroup.alpha = 1f;
+            _canvasGroup.alpha = 1f;
         }
         else
         {
-            _buttonCanvasGroup.alpha = 0.8f;
+            _canvasGroup.alpha = 0.8f;
         }
     }
 }

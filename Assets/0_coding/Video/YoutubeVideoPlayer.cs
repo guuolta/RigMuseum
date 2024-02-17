@@ -6,12 +6,11 @@ using YoutubePlayer;
 using System.Threading.Tasks;
 using UniRx;
 using Unity.VisualScripting;
+using Cysharp.Threading.Tasks;
 
 public class YoutubeVideoPlayer : ObjectBase
 {
-    [Header("YoutubeのURL(e.g. https://www.youtube.com/watch?v=VIDEO_ID)")]
-    [SerializeField]
-    private List<string> _youtubeURLs = new List<string>();
+    private bool _isPrepareVideo = true;
     private VideoPlayer _videoPlayer;
     public VideoPlayer VideoPlayer
     {
@@ -53,18 +52,22 @@ public class YoutubeVideoPlayer : ObjectBase
         }
     }
 
-    public override async void SetEvent()
+    public override void SetEvent()
     {
-        await YoutubePlayer.PrepareVideoAsync(_youtubeURLs[0]);
         SetEventPlayVideo();
     }
 
+    /// <summary>
+    /// ビデオの再生設定
+    /// </summary>
     private void SetEventPlayVideo()
     {
         GameStateManager.MuseumStatus
-            .Subscribe(value =>
+            .Subscribe(async value =>
             {
-                switch(value)
+                await UniTask.WaitUntil(() => !_isPrepareVideo);
+
+                switch (value)
                 {
                     case MuseumState.Play:
                         AudioSource.mute = true;
@@ -79,5 +82,19 @@ public class YoutubeVideoPlayer : ObjectBase
                         break;
                 }
             }).AddTo(this);
+    }
+
+    public async UniTask SetInitVideo(string youtubeURL)
+    {
+        _isPrepareVideo = true;
+        await YoutubePlayer.PrepareVideoAsync(youtubeURL);
+        _isPrepareVideo = false;
+    }
+
+    public async UniTask PlayVideo(string youtubeURL)
+    {
+        _isPrepareVideo = true;
+        await YoutubePlayer.PlayVideoAsync(youtubeURL);
+        _isPrepareVideo = false;
     }
 }

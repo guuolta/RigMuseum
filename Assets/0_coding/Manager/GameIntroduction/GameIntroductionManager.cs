@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Triggers;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,9 +8,15 @@ using UnityEngine;
 
 public class GameIntroductionManager : SingletonObjectBase<GameIntroductionManager>
 {
+    [Header("ゲームデータ")]
+    [SerializeField]
+    private GameDatas gameDatas;
     [Header("モニター")]
     [SerializeField]
     private Monitor _monitor;
+    [Header("ビデオプレイヤー")]
+    [SerializeField]
+    private YoutubeVideoPlayer _videoPlayer;
     [Header("アニメーションの時間")]
     [SerializeField]
     private float _animationTime = 0.1f;
@@ -29,6 +36,7 @@ public class GameIntroductionManager : SingletonObjectBase<GameIntroductionManag
         _targetPos = _monitor.Transform.position + (_monitor.Transform.right * _targetDistance);
         _targetRot = _monitor.Transform.localEulerAngles + new Vector3(0, -90, 0);
         _clearPos = _targetPos + (_monitor.Transform.right * _targetClearDistance);
+        _videoPlayer.SetInitVideo(gameDatas.GetGameYoutubeURL(0)).Forget();
     }
 
     public override void SetEvent()
@@ -36,6 +44,9 @@ public class GameIntroductionManager : SingletonObjectBase<GameIntroductionManag
         SetEventTarget();
     }
 
+    /// <summary>
+    /// モニターにターゲット時のアニメーションイベント設定
+    /// </summary>
     private void SetEventTarget()
     {
         GameStateManager.MuseumStatus
