@@ -5,6 +5,7 @@ using UnityEngine;
 /// </summary>
 public static class SaveManager
 {
+    private const int SOUND_INDEX = 4;
     private const string MOVE_SPEED_KEY = "moceSpeed";
     private const string SENSITIVITY_KEY = "Sensitivity";
     private const string IS_VERTICAL_REVERSE_KEY = "IsVerRev";
@@ -12,6 +13,7 @@ public static class SaveManager
     private const string MASTER_VOLUME_KEY = "Master";
     private const string BGM_VOLUME_KEY = "BGM";
     private const string SE_VOLUME_KEY = "SE";
+    private const string MOVIE_VOLUME_KEY = "Movie";
 
     /// <summary>
     /// セーブデータからマウス操作が上下反転しているか取得
@@ -57,10 +59,11 @@ public static class SaveManager
     /// <returns>音量</returns>
     public static float[] GetSoundVolume()
     {
-        float[] soundVolumes = new float[3];
+        float[] soundVolumes = new float[SOUND_INDEX];
         soundVolumes[(int)AudioType.Master] = PlayerPrefs.GetFloat(MASTER_VOLUME_KEY, 8f);
         soundVolumes[(int)AudioType.BGM] = PlayerPrefs.GetFloat(BGM_VOLUME_KEY, 8f);
         soundVolumes[(int)AudioType.SE] = PlayerPrefs.GetFloat(SE_VOLUME_KEY, 8f);
+        soundVolumes[(int)AudioType.Movie] = PlayerPrefs.GetFloat(MOVIE_VOLUME_KEY, 8f);
 
         return soundVolumes;
     }
@@ -106,6 +109,7 @@ public static class SaveManager
         PlayerPrefs.SetFloat(MASTER_VOLUME_KEY, volumes[(int)AudioType.Master]);
         PlayerPrefs.SetFloat(BGM_VOLUME_KEY, volumes[(int)AudioType.BGM]);
         PlayerPrefs.SetFloat(SE_VOLUME_KEY, volumes[(int)AudioType.SE]);
+        PlayerPrefs.SetFloat(MOVIE_VOLUME_KEY, volumes[(int)AudioType.Movie]);
     }
 
     /// <summary>

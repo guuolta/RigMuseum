@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SoundPanelView : PanelViewBase
@@ -15,4 +13,8 @@ public class SoundPanelView : PanelViewBase
     [SerializeField]
     private ValueUIPart _seValueUIParts;
     public ValueUIPart SEValueUIPart => _seValueUIParts;
+
+    [SerializeField]
+    private ValueUIPart _movieValueUIParts;
+    public ValueUIPart MovieValueUIPart => _movieValueUIParts;
 }
