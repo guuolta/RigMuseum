@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UniRx;
-using UnityEngine;
 
 public class SoundPanelPresenter : PanelPresenterBase<SoundPanelView>
 {
@@ -18,6 +15,7 @@ public class SoundPanelPresenter : PanelPresenterBase<SoundPanelView>
         View.MasterValueUIPart.SetValue(volumes[(int)AudioType.Master]);
         View.BGMValueUIPart.SetValue(volumes[(int)AudioType.BGM]);
         View.SEValueUIPart.SetValue(volumes[(int)AudioType.SE]);
+        View.MovieValueUIPart.SetValue(volumes[(int)AudioType.Movie]);
     }
 
     private void SetEventValueUIPart()
@@ -41,6 +39,13 @@ public class SoundPanelPresenter : PanelPresenterBase<SoundPanelView>
             .Subscribe(value =>
             {
                 AudioManager.Instance.SetSEVolume(value);
+            }).AddTo(this);
+
+        View.MovieValueUIPart.Value
+            .DistinctUntilChanged()
+            .Subscribe(value =>
+            {
+                AudioManager.Instance.SetMovieVolume(value);
             }).AddTo(this);
     }
 }

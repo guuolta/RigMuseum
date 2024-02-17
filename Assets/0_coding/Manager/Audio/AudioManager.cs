@@ -7,11 +7,12 @@ using UnityEngine.Audio;
 /// </summary>
 public class AudioManager : SingletonObjectBase<AudioManager>
 {
+    private const int SOUND_INDEX = 4;
     private const string MASTER_VOLUME_NAME = "Master";
     private const string BGM_VOLUME_NAME = "BGM";
     private const string SE_VOLUME_NAME = "SE";
 
-    private float[] _volumes = new float[3];
+    private float[] _volumes = new float[SOUND_INDEX];
     [Header("オーディオミキサー")]
     [SerializeField]
     private AudioMixer _audioMixer;
@@ -20,7 +21,10 @@ public class AudioManager : SingletonObjectBase<AudioManager>
     private AudioSource _bgmAudioSource;
     [Header("SEのオーディオソース")]
     [SerializeField]
-    private GameObject _seAudioSource;
+    private AudioSource _seAudioSource;
+    [Header("動画のオーディオソース")]
+    [SerializeField]
+    private AudioSource _movieAudioSource;
     private List<AudioSource> _seAudioSourceList = new List<AudioSource>();
     [Header("通常BGM")]
     [SerializeField]
@@ -91,10 +95,21 @@ public class AudioManager : SingletonObjectBase<AudioManager>
     /// </summary>
     /// <param name="volume"> 音量 </param>
     /// <returns></returns>
-    private float GetSoundVolume(float volume)
+    private float GetAudioMixerVolume(float volume)
     {
         return -80 + volume * 10;
     }
+
+    /// <summary>
+    /// オーディオソースに設定する音量
+    /// </summary>
+    /// <param name="volume"> 音量 </param>
+    /// <returns></returns>
+    private float GetAudioSourceVolume(float volume)
+    {
+        return volume * _volumes[(int)AudioType.Master] /100;
+    }
+
 
     /// <summary>
     /// 音量取得
@@ -112,9 +127,10 @@ public class AudioManager : SingletonObjectBase<AudioManager>
     {
         _volumes = SaveManager.GetSoundVolume();
 
-        _audioMixer.SetFloat(MASTER_VOLUME_NAME, GetSoundVolume(_volumes[(int)AudioType.Master]));
-        _audioMixer.SetFloat(BGM_VOLUME_NAME , GetSoundVolume(_volumes[(int)AudioType.BGM]));
-        _audioMixer.SetFloat(SE_VOLUME_NAME, GetSoundVolume(_volumes[(int)AudioType.SE]));
+        _audioMixer.SetFloat(MASTER_VOLUME_NAME, GetAudioMixerVolume(_volumes[(int)AudioType.Master]));
+        _audioMixer.SetFloat(BGM_VOLUME_NAME , GetAudioMixerVolume(_volumes[(int)AudioType.BGM]));
+        _audioMixer.SetFloat(SE_VOLUME_NAME, GetAudioMixerVolume(_volumes[(int)AudioType.SE]));
+        _movieAudioSource.volume = GetAudioSourceVolume(_volumes[(int)AudioType.Movie]);
     }
 
     /// <summary>
@@ -123,8 +139,9 @@ public class AudioManager : SingletonObjectBase<AudioManager>
     /// <param name="volume">音量</param>
     public void SetMasterVolume(float volume)
     {
-        _audioMixer.SetFloat(MASTER_VOLUME_NAME, GetSoundVolume(volume));
+        _audioMixer.SetFloat(MASTER_VOLUME_NAME, GetAudioMixerVolume(volume));
         _volumes[(int)AudioType.Master] = volume;
+        SetMovieVolume(_volumes[(int)AudioType.Master]);
     }
 
     /// <summary>
@@ -133,7 +150,7 @@ public class AudioManager : SingletonObjectBase<AudioManager>
     /// <param name="volume">音量</param>
     public void SetBGMVolume(float volume)
     {
-        _audioMixer.SetFloat(BGM_VOLUME_NAME, GetSoundVolume(volume));
+        _audioMixer.SetFloat(BGM_VOLUME_NAME, GetAudioMixerVolume(volume));
         _volumes[(int)AudioType.BGM] = volume;
     }
 
@@ -143,8 +160,18 @@ public class AudioManager : SingletonObjectBase<AudioManager>
     /// <param name="volume">音量</param>
     public void SetSEVolume(float volume)
     {
-        _audioMixer.SetFloat(SE_VOLUME_NAME, GetSoundVolume(volume));
+        _audioMixer.SetFloat(SE_VOLUME_NAME, GetAudioMixerVolume(volume));
         _volumes[(int)AudioType.SE] = volume;
+    }
+
+    /// <summary>
+    /// 動画ボリュームを設定
+    /// </summary>
+    /// <param name="volume">音量</param>
+    public void SetMovieVolume(float volume)
+    {
+        _movieAudioSource.volume = GetAudioSourceVolume(volume);
+        _volumes[(int)AudioType.Movie] = volume;
     }
 
 
@@ -171,7 +198,8 @@ public enum AudioType
 {
     Master = 0,
     BGM = 1,
-    SE = 2
+    SE = 2,
+    Movie = 3
 }
 
 /// <summary>
