@@ -26,9 +26,9 @@ public class GameIntroductionManager : SingletonObjectBase<GameIntroductionManag
 
     public override void Init()
     {
-        _targetPos = _monitor.Transform.position + (_monitor.Right * _targetDistance);
-        _targetRot = _monitor.LocalEulerAngles + new Vector3(0, -90, 0);
-        _clearPos = _targetPos + (_monitor.Right * _targetClearDistance);
+        _targetPos = _monitor.Transform.position + (_monitor.Transform.right * _targetDistance);
+        _targetRot = _monitor.Transform.localEulerAngles + new Vector3(0, -90, 0);
+        _clearPos = _targetPos + (_monitor.Transform.right * _targetClearDistance);
     }
 
     public override void SetEvent()

@@ -38,45 +38,4 @@ public class GameObjectBase : ObjectBase
             return _transform;
         }
     }
-
-    /// <summary>
-    /// 前方向
-    /// </summary>
-    public Vector3 Forward
-    {
-        get
-        {
-            return Transform.forward;
-        }
-    }
-    
-    /// <summary>
-    /// 右方向
-    /// </summary>
-    public Vector3 Right
-    {
-        get
-        {
-            return Transform.right;
-        }
-    }
-
-    /// <summary>
-    /// 上方向
-    /// </summary>
-    public Vector3 Up
-    {
-        get
-        {
-            return Transform .up;
-        }
-    }
-
-    public Vector3 LocalEulerAngles
-    {
-        get
-        {
-            return Transform.localEulerAngles;
-        }
-    }
 }

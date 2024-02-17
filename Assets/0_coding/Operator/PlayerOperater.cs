@@ -31,7 +31,9 @@ public class PlayerOperater : ObjectBase
     [Header("オプションキー")]
     [SerializeField]
     private KeyCode _optionKey = KeyCode.Tab;
-    private Player _player;
+    private Transform _transform;
+    private Rigidbody _rb;
+    private Camera _camera;
     private CompositeDisposable _keyEventDisposes = new CompositeDisposable();
     private CompositeDisposable _mouseEventDisposes = new CompositeDisposable();
 
@@ -51,7 +53,9 @@ public class PlayerOperater : ObjectBase
     /// <param name="player"> プレイヤー </param>
     public void SetInit(Player player)
     {
-        _player = player;
+        _transform = player.transform;
+        _rb = player.Rigidbody;
+        _camera = player.Camera;
     }
 
     /// <summary>
@@ -111,8 +115,8 @@ public class PlayerOperater : ObjectBase
             .Where(_ => Input.anyKey)
             .Subscribe(_ =>
             {
-                _player.Rigidbody.velocity = ( frontDir * DeleateMoveValueY(_player.Forward)
-                    + rightDir * DeleateMoveValueY(_player.Right) 
+                _rb.velocity = ( frontDir * DeleateMoveValueY(_transform.forward)
+                    + rightDir * DeleateMoveValueY(_transform.right) 
                     + upDir * new Vector3(0f, 1f, 0f)
                     + downDir * new Vector3(0f, -1f, 0f) )
                     * speed;
@@ -123,7 +127,7 @@ public class PlayerOperater : ObjectBase
             .Where(_ => !Input.anyKey)
             .Subscribe(_ =>
             {
-                _player.Rigidbody.velocity = Vector3.zero;
+                _rb.velocity = Vector3.zero;
                 frontDir = 0;
                 rightDir = 0;
             }).AddTo(_keyEventDisposes);
@@ -140,9 +144,9 @@ public class PlayerOperater : ObjectBase
             .DistinctUntilChanged()
             .Subscribe(direction =>
             {
-                Vector3 rot = _player.LocalEulerAngles;
+                Vector3 rot = _transform.localEulerAngles;
                 rot.y = isReverseHorizontal ? (rot.y - speed * direction) : (rot.y + speed * direction);
-                _player.Transform.localEulerAngles = rot;
+                _transform.localEulerAngles = rot;
             }).AddTo(_mouseEventDisposes);
 
         /*縦方向の視点移動*/
@@ -151,13 +155,13 @@ public class PlayerOperater : ObjectBase
             .DistinctUntilChanged()
             .Subscribe(direction =>
             {
-                Vector3 rot = _player.LocalEulerAngles;
+                Vector3 rot = _transform.localEulerAngles;
                 rot.x = rot.x > 180f ? (rot.x - 360f)
                     : rot.x < -180f ? (rot.x + 360f)
                     : rot.x;
                 rot.x = isReverseVertical ? (rot.x + speed * direction) : (rot.x - speed * direction);
                 rot.x = Mathf.Clamp(rot.x, _downLimitRotation, _upLimitRotation);
-                _player.Transform.localEulerAngles = rot;
+                _transform.localEulerAngles = rot;
             }).AddTo(_mouseEventDisposes);
 
         /*オブジェクトのクリックの処理*/
@@ -167,7 +171,7 @@ public class PlayerOperater : ObjectBase
             {
                 RaycastHit hit;
 
-                if (Physics.Raycast(_player.Camera.ScreenPointToRay(Input.mousePosition), out hit, _clickRange))
+                if (Physics.Raycast(_camera.ScreenPointToRay(Input.mousePosition), out hit, _clickRange))
                 {
                     var obj = hit.collider.gameObject.GetComponent<TouchObjectBase>();
                     if (obj != null)
@@ -200,9 +204,9 @@ public class PlayerOperater : ObjectBase
         _keyEventDisposes = DisposeEvent(_keyEventDisposes);
         _mouseEventDisposes = DisposeEvent(_mouseEventDisposes);
 
-        if (_player.Rigidbody != null)
+        if (_rb != null)
         {
-            _player.Rigidbody.velocity = Vector3.zero;
+            _rb.velocity = Vector3.zero;
         }
     }
 
@@ -236,11 +240,11 @@ public class PlayerOperater : ObjectBase
     /// <returns></returns>
     public async UniTask MovePlayerAsync(float animationTime, Vector3 pos, Vector3 rot, Ease ease)
     {
-        _player.Transform.DOComplete();
+        _transform.DOComplete();
         var sequence = DOTween.Sequence();
 
-        await sequence.Append(_player.Transform.DOMove(pos, animationTime).SetEase(ease))
-            .Join(_player.Transform.DORotate(rot, animationTime).SetEase(ease))
+        await sequence.Append(_transform.DOMove(pos, animationTime).SetEase(ease))
+            .Join(_transform.DORotate(rot, animationTime).SetEase(ease))
             .AsyncWaitForCompletion();
     }
 }

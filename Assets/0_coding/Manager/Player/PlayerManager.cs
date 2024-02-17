@@ -152,6 +152,6 @@ public class PlayerManager : SingletonObjectBase<PlayerManager>
     /// <returns></returns>
     public async UniTask ClearTargetAsync(float animationTime, Vector3 pos)
     {
-        await _playerOperater.MovePlayerAsync(animationTime, pos, _player.LocalEulerAngles, DG.Tweening.Ease.OutQuad);
+        await _playerOperater.MovePlayerAsync(animationTime, pos, _player.Transform.localEulerAngles, DG.Tweening.Ease.OutQuad);
     }
 }
