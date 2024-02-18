@@ -18,6 +18,11 @@ public static class GameStateManager
     /// </summary>
     public static void TogglePauseState()
     {
+        if(_museumStatus.Value != MuseumState.Play && _museumStatus.Value != MuseumState.Pause)
+        {
+            return;
+        }
+
         _museumStatus.Value = _museumStatus.Value == MuseumState.Pause ? MuseumState.Play : MuseumState.Pause;
     }
 

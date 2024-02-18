@@ -21,6 +21,7 @@ public class GameObjectBase : ObjectBase
             return _gameObject;
         }
     }
+
     private Transform _transform;
     /// <summary>
     /// トランスフォーム

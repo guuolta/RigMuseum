@@ -1,12 +1,19 @@
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System;
 using UniRx;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// プレイヤーの動き
 /// </summary>
 public class PlayerOperater : ObjectBase
 {
+    [Header("マウスのクリックの範囲")]
+    [Range(5f, 20f)]
+    [SerializeField]
+    private float _clickRange = 10f;
     [Header("カメラの回転上限")]
     [Range(0f, 180f)]
     [SerializeField]
@@ -26,6 +33,7 @@ public class PlayerOperater : ObjectBase
     private KeyCode _optionKey = KeyCode.Tab;
     private Transform _transform;
     private Rigidbody _rb;
+    private Camera _camera;
     private CompositeDisposable _keyEventDisposes = new CompositeDisposable();
     private CompositeDisposable _mouseEventDisposes = new CompositeDisposable();
 
@@ -42,12 +50,12 @@ public class PlayerOperater : ObjectBase
     /// <summary>
     /// 初期設定
     /// </summary>
-    /// <param name="transform"> プレイヤーのトランスフォーム </param>
-    /// <param name="rb"> プレイヤーのリギッドボディ </param>
-    public void SetInit(Transform transform, Rigidbody rb)
+    /// <param name="player"> プレイヤー </param>
+    public void SetInit(Player player)
     {
-        _transform = transform;
-        _rb = rb;
+        _transform = player.transform;
+        _rb = player.Rigidbody;
+        _camera = player.Camera;
     }
 
     /// <summary>
@@ -155,6 +163,24 @@ public class PlayerOperater : ObjectBase
                 rot.x = Mathf.Clamp(rot.x, _downLimitRotation, _upLimitRotation);
                 _transform.localEulerAngles = rot;
             }).AddTo(_mouseEventDisposes);
+
+        /*オブジェクトのクリックの処理*/
+        Observable.EveryUpdate()
+            .Where(_ => !EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonDown(0))
+            .Subscribe(_ =>
+            {
+                RaycastHit hit;
+
+                if (Physics.Raycast(_camera.ScreenPointToRay(Input.mousePosition), out hit, _clickRange))
+                {
+                    var obj = hit.collider.gameObject.GetComponent<TouchObjectBase>();
+                    if (obj != null)
+                    {
+                        obj.StartEvent();
+                    }
+                }
+            }).AddTo(_mouseEventDisposes);
+
     }
 
     /// <summary>
@@ -193,10 +219,32 @@ public class PlayerOperater : ObjectBase
         return new CompositeDisposable();
     }
 
-    /*縦方向の移動削除*/
+    /// <summary>
+    /// 縦方向の移動削除
+    /// </summary>
+    /// <param name="value"> 移動距離 </param>
+    /// <returns></returns>
     private Vector3 DeleateMoveValueY(Vector3 value)
     {
         value.y = 0;
         return value;
+    }
+
+    /// <summary>
+    /// プレイヤーを移動
+    /// </summary>
+    /// <param name="animationTime"> アニメーションの時間 </param>
+    /// <param name="pos"> 目的地 </param>
+    /// <param name="rot"> 目的回転値 </param>
+    /// <param name="ease"> easeのタイプ </param>
+    /// <returns></returns>
+    public async UniTask MovePlayerAsync(float animationTime, Vector3 pos, Vector3 rot, Ease ease)
+    {
+        _transform.DOComplete();
+        var sequence = DOTween.Sequence();
+
+        await sequence.Append(_transform.DOMove(pos, animationTime).SetEase(ease))
+            .Join(_transform.DORotate(rot, animationTime).SetEase(ease))
+            .AsyncWaitForCompletion();
     }
 }
