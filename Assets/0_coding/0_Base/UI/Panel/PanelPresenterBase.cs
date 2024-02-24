@@ -5,7 +5,7 @@ using UnityEngine;
 /// パネルのプレゼンター
 /// </summary>
 /// <typeparam name="TView"> パネルビュー </typeparam>
-public class PanelPresenterBase<TView> : UIBase
+public class PanelPresenterBase<TView> : UIBase, IPanelPresenter
     where TView : PanelViewBase
 {
     [Header("パネルのアニメーションの時間")]

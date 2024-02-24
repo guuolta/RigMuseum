@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using UniRx;
 using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// ポーズパネルを管理
@@ -8,6 +9,7 @@ using UnityEngine;
 public class PausePanelManager : UIBase
 {
     private bool _isOpenMenuPanel;
+    private IPanelPresenter _activePanel;
     [Header("ポーズメニューパネル")]
     [SerializeField]
     private PauseMenuPanelPresenter _pauseMenuPanelPresenter;
@@ -52,7 +54,7 @@ public class PausePanelManager : UIBase
                 }
                 else
                 {
-                    await ClosePanelAsync(PausePanelType.All);
+                    await ClosePanelAsync();
                     AudioManager.Instance.SaveVolume();
                     PlayerManager.Instance.SaveSetting();
                 }
@@ -76,6 +78,7 @@ public class PausePanelManager : UIBase
         };
     }
 
+
     /// <summary>
     /// パネルを開く
     /// </summary>
@@ -83,65 +86,44 @@ public class PausePanelManager : UIBase
     /// <returns></returns>
     public async UniTask OpenPanelAsync(PausePanelType type)
     {
-        switch(type)
+        await ClosePanelAsync();
+        switch (type)
         {
             case PausePanelType.PauseMenu:
-                await ClosePanelAsync(PausePanelType.All);
-                await _pauseMenuPanelPresenter.OpenPanelAsync();
+                _activePanel = _pauseMenuPanelPresenter;
                 _isOpenMenuPanel = true;
                 break;
             case PausePanelType.Sound:
-                await ClosePanelAsync(PausePanelType.PauseMenu);
-                await _soundSettingPanelPresenter.OpenPanelAsync();
+                _activePanel = _soundSettingPanelPresenter;
                 break;
             case PausePanelType.Mouse:
-                await ClosePanelAsync(PausePanelType.PauseMenu);
-                await _mouseSettingPanelPresenter.OpenPanelAsync();
+                _activePanel = _mouseSettingPanelPresenter;
                 break;
             case PausePanelType.Credit:
-                await ClosePanelAsync(PausePanelType.PauseMenu);
-                await _creditPanelPresenter.OpenPanelAsync();
+                _activePanel = _creditPanelPresenter;
                 break;
             default:
                 break;
         }
 
+        await _activePanel.OpenPanelAsync();
         _closeButton.GameObject.SetActive(true);
     }
 
     /// <summary>
     /// パネルを閉じる
     /// </summary>
-    /// <param name="type"> 対象のパネル </param>
     /// <returns></returns>
-    private async UniTask ClosePanelAsync(PausePanelType type)
+    public async UniTask ClosePanelAsync()
     {
+        if(_activePanel == null)
+        {
+            return;
+        }
+
         _closeButton.GameObject.SetActive(false);
         _isOpenMenuPanel = false;
-
-        switch (type)
-        {
-            case PausePanelType.PauseMenu:
-                await _pauseMenuPanelPresenter.ClosePanelAsync();
-                break;
-            case PausePanelType.Sound:
-                await _soundSettingPanelPresenter.ClosePanelAsync();
-                break;
-            case PausePanelType.Mouse:
-                await _mouseSettingPanelPresenter.ClosePanelAsync();
-                break;
-            case PausePanelType.Credit:
-                await _creditPanelPresenter.ClosePanelAsync();
-                break;
-            case PausePanelType.All:
-                await _pauseMenuPanelPresenter.ClosePanelAsync();
-                await _soundSettingPanelPresenter.ClosePanelAsync();
-                await _mouseSettingPanelPresenter.ClosePanelAsync();
-                await _creditPanelPresenter.ClosePanelAsync();
-                break;
-            default:
-                break;
-        }
+        await _activePanel.ClosePanelAsync();
     }
 }
 
@@ -150,9 +132,76 @@ public class PausePanelManager : UIBase
 /// </summary>
 public enum PausePanelType
 {
-    PauseMenu,
-    Sound,
-    Mouse,
-    Credit,
-    All
+    PauseMenu = 0,
+    Sound = 1,
+    Mouse = 2,
+    Credit = 3
 }
+
+///// <summary>
+///// パネルを開く
+///// </summary>
+///// <param name="type"> 対象のパネル </param>
+///// <returns></returns>
+//public async UniTask OpenPanelAsync(PausePanelType type)
+//{
+//    switch(type)
+//    {
+//        case PausePanelType.PauseMenu:
+//            await ClosePanelAsync(PausePanelType.All);
+//            await _pauseMenuPanelPresenter.OpenPanelAsync();
+//            _isOpenMenuPanel = true;
+//            break;
+//        case PausePanelType.Sound:
+//            await ClosePanelAsync(PausePanelType.PauseMenu);
+//            await _soundSettingPanelPresenter.OpenPanelAsync();
+//            break;
+//        case PausePanelType.Mouse:
+//            await ClosePanelAsync(PausePanelType.PauseMenu);
+//            await _mouseSettingPanelPresenter.OpenPanelAsync();
+//            break;
+//        case PausePanelType.Credit:
+//            await ClosePanelAsync(PausePanelType.PauseMenu);
+//            await _creditPanelPresenter.OpenPanelAsync();
+//            break;
+//        default:
+//            break;
+//    }
+
+//    _closeButton.GameObject.SetActive(true);
+//}
+
+///// <summary>
+///// パネルを閉じる
+///// </summary>
+///// <param name="type"> 対象のパネル </param>
+///// <returns></returns>
+//private async UniTask ClosePanelAsync(PausePanelType type)
+//{
+//    _closeButton.GameObject.SetActive(false);
+//    _isOpenMenuPanel = false;
+
+//    switch (type)
+//    {
+//        case PausePanelType.PauseMenu:
+//            await _pauseMenuPanelPresenter.ClosePanelAsync();
+//            break;
+//        case PausePanelType.Sound:
+//            await _soundSettingPanelPresenter.ClosePanelAsync();
+//            break;
+//        case PausePanelType.Mouse:
+//            await _mouseSettingPanelPresenter.ClosePanelAsync();
+//            break;
+//        case PausePanelType.Credit:
+//            await _creditPanelPresenter.ClosePanelAsync();
+//            break;
+//        case PausePanelType.All:
+//            await _pauseMenuPanelPresenter.ClosePanelAsync();
+//            await _soundSettingPanelPresenter.ClosePanelAsync();
+//            await _mouseSettingPanelPresenter.ClosePanelAsync();
+//            await _creditPanelPresenter.ClosePanelAsync();
+//            break;
+//        default:
+//            break;
+//    }
+//}

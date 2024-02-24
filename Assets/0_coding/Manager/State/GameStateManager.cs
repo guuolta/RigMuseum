@@ -5,7 +5,7 @@ using UniRx;
 /// </summary>
 public static class GameStateManager
 {
-    private static MuseumStateReactiveProperty _museumStatus = new MuseumStateReactiveProperty(MuseumState.Play);
+    private static ReactiveProperty<MuseumState> _museumStatus = new ReactiveProperty<MuseumState>(MuseumState.Play);
     /// <summary>
     /// ステート
     /// </summary>
@@ -50,9 +50,9 @@ public enum MuseumState
     Monitor
 }
 
-[System.Serializable]
-public class MuseumStateReactiveProperty : ReactiveProperty<MuseumState>
-{
-    public MuseumStateReactiveProperty() { }
-    public MuseumStateReactiveProperty(MuseumState initialValue) : base(initialValue) { }
-}
+//[System.Serializable]
+//public class MuseumStateReactiveProperty : ReactiveProperty<MuseumState>
+//{
+//    public MuseumStateReactiveProperty() { }
+//    public MuseumStateReactiveProperty(MuseumState initialValue) : base(initialValue) { }
+//}

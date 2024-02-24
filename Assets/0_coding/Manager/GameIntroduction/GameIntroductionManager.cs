@@ -50,8 +50,8 @@ public class GameIntroductionManager : SingletonObjectBase<GameIntroductionManag
     private void SetEventTarget()
     {
         GameStateManager.MuseumStatus
-            .Skip(1)
             .Select(value => value == MuseumState.Monitor)
+            .SkipWhile(value => !value)
             .DistinctUntilChanged()
             .Subscribe(async value =>
             {
