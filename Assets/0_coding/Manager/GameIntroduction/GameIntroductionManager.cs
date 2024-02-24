@@ -1,9 +1,5 @@
 using Cysharp.Threading.Tasks;
-using Cysharp.Threading.Tasks.Triggers;
-using System.Collections;
-using System.Collections.Generic;
 using UniRx;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameIntroductionManager : SingletonObjectBase<GameIntroductionManager>
@@ -26,6 +22,7 @@ public class GameIntroductionManager : SingletonObjectBase<GameIntroductionManag
     [Header("モニターにターゲット解除時のモニターとプレイヤーの距離")]
     [SerializeField]
     private float _targetClearDistance = 15f;
+
     private Vector3 _targetPos = Vector3.zero;
     private Vector3 _targetRot = Vector3.zero;
     private Vector3 _clearPos = Vector3.zero;
@@ -36,12 +33,13 @@ public class GameIntroductionManager : SingletonObjectBase<GameIntroductionManag
         _targetPos = _monitor.Transform.position + (_monitor.Transform.right * _targetDistance);
         _targetRot = _monitor.Transform.localEulerAngles + new Vector3(0, -90, 0);
         _clearPos = _targetPos + (_monitor.Transform.right * _targetClearDistance);
-        _videoPlayer.SetInitVideo(gameDatas.GetGameYoutubeURL(0)).Forget();
+        _videoPlayer.Play(gameDatas.GetGameYoutubeURL(0)).Forget();
     }
 
     public override void SetEvent()
     {
         SetEventTarget();
+        SetEventVideo();
     }
 
     /// <summary>
@@ -62,6 +60,33 @@ public class GameIntroductionManager : SingletonObjectBase<GameIntroductionManag
                 else
                 {
                     await PlayerManager.Instance.ClearTargetAsync(_animationTime, _clearPos);
+                }
+            }).AddTo(this);
+    }
+
+    private void SetEventVideo()
+    {
+        GameStateManager.MuseumStatus
+            .Skip(1)
+            .DistinctUntilChanged()
+            .Subscribe(value =>
+            {
+                switch (value)
+                {
+                    case MuseumState.Play:
+                        _videoPlayer.AudioSource.spatialBlend = 1;
+                        _videoPlayer.Play();
+                        break;
+                    case MuseumState.Monitor:
+                        _videoPlayer.AudioSource.spatialBlend = 0;
+                        _videoPlayer.Play();
+                        break;
+                    case MuseumState.Pause:
+                        _videoPlayer.Pause();
+                        break;
+                    default:
+                        _videoPlayer.AudioSource.mute = true;
+                        break;
                 }
             }).AddTo(this);
     }

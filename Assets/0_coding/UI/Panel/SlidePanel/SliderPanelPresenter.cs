@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IPanelPresenter
+public class SliderPanelPresenter : PanelPresenterBase<SliderPanelView>
 {
-    public UniTask OpenPanelAsync();
-    public UniTask ClosePanelAsync();
 }

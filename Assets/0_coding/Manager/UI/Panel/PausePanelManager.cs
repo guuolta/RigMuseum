@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
 using UniRx;
 using UnityEngine;
-using System.Collections.Generic;
 
 /// <summary>
 /// ポーズパネルを管理
@@ -9,7 +8,7 @@ using System.Collections.Generic;
 public class PausePanelManager : UIBase
 {
     private bool _isOpenMenuPanel;
-    private IPanelPresenter _activePanel;
+    private IPresenter _activePanel;
     [Header("ポーズメニューパネル")]
     [SerializeField]
     private PauseMenuPanelPresenter _pauseMenuPanelPresenter;
@@ -106,7 +105,7 @@ public class PausePanelManager : UIBase
                 break;
         }
 
-        await _activePanel.OpenPanelAsync();
+        await _activePanel.ShowAsync();
         _closeButton.GameObject.SetActive(true);
     }
 
@@ -123,7 +122,7 @@ public class PausePanelManager : UIBase
 
         _closeButton.GameObject.SetActive(false);
         _isOpenMenuPanel = false;
-        await _activePanel.ClosePanelAsync();
+        await _activePanel.HideAsync();
     }
 }
 
