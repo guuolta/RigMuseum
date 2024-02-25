@@ -48,6 +48,7 @@ public class GameIntroductionManager : SingletonObjectBase<GameIntroductionManag
     private void SetEventTarget()
     {
         GameStateManager.MuseumStatus
+            .TakeUntilDestroy(this)
             .Select(value => value == MuseumState.Monitor)
             .SkipWhile(value => !value)
             .DistinctUntilChanged()
@@ -55,19 +56,24 @@ public class GameIntroductionManager : SingletonObjectBase<GameIntroductionManag
             {
                 if(value)
                 {
+
                     await PlayerManager.Instance.TargetObjectAsync(_animationTime, _targetPos, _targetRot);
                 }
                 else
                 {
                     await PlayerManager.Instance.ClearTargetAsync(_animationTime, _clearPos);
                 }
-            }).AddTo(this);
+            });
     }
 
+    /// <summary>
+    /// 各ステートにおける動画の設定
+    /// </summary>
     private void SetEventVideo()
     {
         GameStateManager.MuseumStatus
             .Skip(1)
+            .TakeUntilDestroy(this)
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
@@ -88,6 +94,6 @@ public class GameIntroductionManager : SingletonObjectBase<GameIntroductionManag
                         _videoPlayer.AudioSource.mute = true;
                         break;
                 }
-            }).AddTo(this);
+            });
     }
 }

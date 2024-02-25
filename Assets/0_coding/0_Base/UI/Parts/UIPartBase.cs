@@ -13,6 +13,10 @@ public class UIPartBase : UIBase
     [Header("UIパーツのアニメーション時間")]
     [SerializeField]
     private float _animationTime = 0.1f;
+    /// <summary>
+    /// UIパーツのアニメーションの時間
+    /// </summary>
+    public float AnimationTime => _animationTime;
 
     /// <summary>
     /// マウスポインターの設定

@@ -39,7 +39,7 @@ public class UnderButton : ButtonBase
             return;
         }
 
-        onEnterEvent.Invoke();
+        //onEnterEvent.Invoke();
         CanvasGroup.DOFade(_alpha, AnimationTime).SetEase(Ease.InSine);
     }
 

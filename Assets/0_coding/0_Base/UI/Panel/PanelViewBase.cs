@@ -13,11 +13,6 @@ public class PanelViewBase : ViewBase
         Transform.localScale = Vector3.zero;
     }
 
-    /// <summary>
-    /// パネルを表示
-    /// </summary>
-    /// <param name="animeTime"> アニメーションの時間 </param>
-    /// <returns></returns>
     public override async UniTask ShowAsync(float animeTime)
     {
         if(Transform.localScale != Vector3.zero)
@@ -30,11 +25,6 @@ public class PanelViewBase : ViewBase
             .AsyncWaitForCompletion();
     }
     
-    /// <summary>
-    /// パネルを隠す
-    /// </summary>
-    /// <param name="animeTime"> アニメーションの時間 </param>
-    /// <returns></returns>
     public override async UniTask HideAsync(float animeTime)
     {
         if(Transform.localScale == Vector3.zero)

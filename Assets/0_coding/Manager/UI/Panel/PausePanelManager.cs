@@ -43,6 +43,7 @@ public class PausePanelManager : UIBase
     {
         GameStateManager.MuseumStatus
             .Skip(1)
+            .TakeUntilDestroy(this)
             .Select(value => value == MuseumState.Pause)
             .DistinctUntilChanged()
             .Subscribe(async value =>
@@ -57,7 +58,7 @@ public class PausePanelManager : UIBase
                     AudioManager.Instance.SaveVolume();
                     PlayerManager.Instance.SaveSetting();
                 }
-            }).AddTo(this);
+            });
     }
      /// <summary>
      /// 閉じるボタンのイベント

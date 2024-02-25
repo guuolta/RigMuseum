@@ -21,23 +21,6 @@ public class ButtonBase : UIBase,
     [SerializeField]
     private float _animationTime = 0.1f;
     public float AnimationTime => _animationTime;
-    private CanvasGroup _canvasGroup;
-    public CanvasGroup CanvasGroup
-    {
-        get
-        {
-            if(_canvasGroup == null)
-            {
-                _canvasGroup = GetComponent<CanvasGroup>();
-                if (_canvasGroup == null)
-                {
-                    _canvasGroup = gameObject.AddComponent<CanvasGroup>();
-                }
-            }
-
-            return _canvasGroup;
-        }
-    }
 
     public override void Init()
     {
@@ -112,29 +95,7 @@ public class ButtonBase : UIBase,
     public virtual async void OnPointerExit(PointerEventData eventData)
     {
         await UniTask.WaitUntil(() => !Input.GetMouseButton(0));
+
         Transform.DOScale(1f, _animationTime).SetEase(Ease.OutSine);
-    }
-
-    /// <summary>
-    /// ボタンを押せるようにするか設定
-    /// </summary>
-    /// <param name="interactable">押せるか</param>
-    public void ChangeInteractive(bool isInteractive)
-    {
-        if (_canvasGroup == null)
-        {
-            return;
-        }
-
-        _canvasGroup.interactable = isInteractive;
-        _canvasGroup.blocksRaycasts = isInteractive;
-        if (isInteractive)
-        {
-            _canvasGroup.alpha = 1f;
-        }
-        else
-        {
-            _canvasGroup.alpha = 0.8f;
-        }
     }
 }
