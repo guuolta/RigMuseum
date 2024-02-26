@@ -19,7 +19,7 @@ public class ObjectBase : MonoBehaviour
     /// <summary>
     /// 変数の初期化など
     /// </summary>
-    public virtual void Init()
+    protected virtual void Init()
     {
 
     }
@@ -27,7 +27,7 @@ public class ObjectBase : MonoBehaviour
     /// <summary>
     /// 先に行いたいイベントの発行
     /// </summary>
-    public virtual void SetFirstEvent()
+    protected virtual void SetFirstEvent()
     {
 
     }
@@ -35,7 +35,7 @@ public class ObjectBase : MonoBehaviour
     /// <summary>
     /// イベントの発行
     /// </summary>
-    public virtual void SetEvent()
+    protected virtual void SetEvent()
     {
 
     }
@@ -43,7 +43,7 @@ public class ObjectBase : MonoBehaviour
     /// <summary>
     /// インスタンス破壊時に最初にする処理
     /// </summary>
-    public virtual void FirstDestroy()
+    protected virtual void FirstDestroy()
     {
 
     }
@@ -51,7 +51,7 @@ public class ObjectBase : MonoBehaviour
     /// <summary>
     /// インスタンス破壊時にする処理
     /// </summary>
-    public virtual void Destroy()
+    protected virtual void Destroy()
     {
 
     }

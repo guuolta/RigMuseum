@@ -34,7 +34,7 @@ public class AudioManager : SingletonObjectBase<AudioManager>
     private List<SE> _seList = new List<SE>();
     private Dictionary<SEType, AudioClip> _seDictionary = new Dictionary<SEType, AudioClip>();
 
-    public override void Init()
+    protected override void Init()
     {
         base.Init();
         GetSEDictionary();

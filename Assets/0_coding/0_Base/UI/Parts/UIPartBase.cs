@@ -1,92 +1,134 @@
-using DG.Tweening;
-using UniRx;
-using UniRx.Triggers;
-using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 
 /// <summary>
 /// UIパーツのベース
 /// </summary>
-public class UIPartBase : UIBase
+public class UIPartBase : UIBase,
+    IPointerClickHandler,
+    IPointerDownHandler,
+    IPointerUpHandler,
+    IPointerEnterHandler,
+    IPointerExitHandler
 {
-    [Header("UIパーツのアニメーション時間")]
-    [SerializeField]
-    private float _animationTime = 0.1f;
-
     /// <summary>
-    /// マウスポインターの設定
+    /// UIパーツが押されたとき処理を実行
     /// </summary>
-    /// <param name="image"> アニメーションする画像 </param>
-    public virtual void SetEventPointer(Image image)
+    /// <param name="eventData"></param>
+    public virtual void OnPointerClick(PointerEventData eventData)
     {
-        SetEventOnClick(image);
-        SetEventOnPointerDown(image);
-        SetEventOnPointerUp(image);
-        SetEventOnPointerEnter(image);
-        SetEventOnPointerExit(image);
+        
     }
 
     /// <summary>
-    /// 画像をクリックしたときの処理 
+    /// UIパーツが押し込まれたときの処理
     /// </summary>
-    /// <param name="image"></param>
-    public virtual void SetEventOnClick(Image image)
+    /// <param name="eventData"></param>
+    public virtual void OnPointerDown(PointerEventData eventData)
     {
-
+        
     }
 
     /// <summary>
-    /// UI上でマウスを押したときの処理
+    /// UIパーツから押し離されたときの処理
     /// </summary>
-    /// <param name="image"> アニメーションする画像 </param>
-    public virtual void SetEventOnPointerDown(Image image)
+    /// <param name="eventData"></param>
+    public virtual void OnPointerUp(PointerEventData eventData)
     {
-        image.OnPointerDownAsObservable()
-            .Subscribe(_ =>
-            {
-                image.transform.DOScale(0.8f, _animationTime).SetEase(Ease.OutCubic);
-                image.DOFade(0.8f, _animationTime).SetEase(Ease.OutCubic);
-            }).AddTo(this);
+        
     }
 
     /// <summary>
-    /// UI上でマウスを離したときの処理
+    /// UIパーツにカーソルが入った時の処理
     /// </summary>
-    /// <param name="image"> アニメーションする画像 </param>
-    public virtual void SetEventOnPointerUp(Image image)
+    /// <param name="eventData"></param>
+    public virtual void OnPointerEnter(PointerEventData eventData)
     {
-        image.OnPointerUpAsObservable()
-            .Subscribe(_ =>
-            {
-                image.transform.DOScale(1f, _animationTime).SetEase(Ease.OutCubic);
-                image.DOFade(1f, _animationTime).SetEase(Ease.OutCubic);
-            }).AddTo(this);
+        
     }
 
     /// <summary>
-    /// UI上にマウスポインターが入ったときの処理
+    /// UIパーツからカーソルが離れた時の処理
     /// </summary>
-    /// <param name="image"> アニメーションする画像 </param>
-    public virtual void SetEventOnPointerEnter(Image image)
+    /// <param name="eventData"></param>
+    public virtual void OnPointerExit(PointerEventData eventData)
     {
-        image.OnPointerEnterAsObservable()
-            .Subscribe(_ =>
-            {
-                image.transform.DOScale(1.1f, _animationTime).SetEase(Ease.OutCubic);
-            }).AddTo(this);
-    }
-
-    /// <summary>
-    /// UI上からマウスポインターが離れたときの処理
-    /// </summary>
-    /// <param name="image"> アニメーションする画像 </param>
-    public virtual void SetEventOnPointerExit(Image image)
-    {
-        image.OnPointerExitAsObservable()
-            .Subscribe(_ =>
-            {
-                image.transform.DOScale(1f, _animationTime).SetEase(Ease.OutCubic);
-            }).AddTo(this);
+        
     }
 }
+
+///// <summary>
+///// マウスポインターの設定
+///// </summary>
+///// <param name="image"> アニメーションする画像 </param>
+//public virtual void SetEventPointer(Image image)
+//{
+//    SetEventOnClick(image);
+//    SetEventOnPointerDown(image);
+//    SetEventOnPointerUp(image);
+//    SetEventOnPointerEnter(image);
+//    SetEventOnPointerExit(image);
+//}
+
+///// <summary>
+///// 画像をクリックしたときの処理 
+///// </summary>
+///// <param name="image"></param>
+//public virtual void SetEventOnClick(Image image)
+//{
+
+//}
+
+///// <summary>
+///// UI上でマウスを押したときの処理
+///// </summary>
+///// <param name="image"> アニメーションする画像 </param>
+//public virtual void SetEventOnPointerDown(Image image)
+//{
+//    image.OnPointerDownAsObservable()
+//        .Subscribe(_ =>
+//        {
+//            image.transform.DOScale(0.8f, AnimationTime).SetEase(Ease.OutCubic);
+//            image.DOFade(0.8f, AnimationTime).SetEase(Ease.OutCubic);
+//        }).AddTo(this);
+//}
+
+///// <summary>
+///// UI上でマウスを離したときの処理
+///// </summary>
+///// <param name="image"> アニメーションする画像 </param>
+//public virtual void SetEventOnPointerUp(Image image)
+//{
+//    image.OnPointerUpAsObservable()
+//        .Subscribe(_ =>
+//        {
+//            image.transform.DOScale(1f, AnimationTime).SetEase(Ease.OutCubic);
+//            image.DOFade(1f, AnimationTime).SetEase(Ease.OutCubic);
+//        }).AddTo(this);
+//}
+
+///// <summary>
+///// UI上にマウスポインターが入ったときの処理
+///// </summary>
+///// <param name="image"> アニメーションする画像 </param>
+//public virtual void SetEventOnPointerEnter(Image image)
+//{
+//    image.OnPointerEnterAsObservable()
+//        .Subscribe(_ =>
+//        {
+//            image.transform.DOScale(1.1f, AnimationTime).SetEase(Ease.OutCubic);
+//        }).AddTo(this);
+//}
+
+///// <summary>
+///// UI上からマウスポインターが離れたときの処理
+///// </summary>
+///// <param name="image"> アニメーションする画像 </param>
+//public virtual void SetEventOnPointerExit(Image image)
+//{
+//    image.OnPointerExitAsObservable()
+//        .Subscribe(_ =>
+//        {
+//            image.transform.DOScale(1f, AnimationTime).SetEase(Ease.OutCubic);
+//        }).AddTo(this);
+//}

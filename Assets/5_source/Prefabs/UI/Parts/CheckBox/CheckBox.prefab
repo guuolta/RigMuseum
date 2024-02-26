@@ -163,9 +163,9 @@ GameObject:
   - component: {fileID: 1667699308842278745}
   - component: {fileID: 6094313427300831431}
   - component: {fileID: 6476343175387173948}
-  - component: {fileID: 2930741805396819116}
+  - component: {fileID: 5511999481652506922}
   m_Layer: 5
-  m_Name: Toggle
+  m_Name: CheckBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -257,7 +257,7 @@ MonoBehaviour:
   m_EffectColor: {r: 1, g: 1, b: 0, a: 0.5}
   m_EffectDistance: {x: 3, y: 4}
   m_UseGraphicAlpha: 1
---- !u!114 &2930741805396819116
+--- !u!114 &5511999481652506922
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -266,8 +266,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 8001199629094817632}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfd4210f563db5c4b91883af9ffade64, type: 3}
+  m_Script: {fileID: 11500000, guid: ee0b8c5dda47fbf47801951751610332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _disInteractiveColor: 0.8
   _animationTime: 0.1
   _mask: {fileID: 5736454616770371740}

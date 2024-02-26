@@ -20,19 +20,19 @@ public class PlayerSettingPanelView : PanelViewBase
     /// </summary>
     public ValueUIPart SensitivityUI => _sensitivityUI;
     
-    [Header("上下反転トグル")]
+    [Header("上下反転チェックボックス")]
     [SerializeField]
-    private ToggleBase _isVirticulToggle;
+    private CheckBoxBase _isVirticulCheckBox;
     /// <summary>
-    /// 上下反転トグル
+    /// 上下反転チェックボックス
     /// </summary>
-    public ToggleBase VerticulToggle => _isVirticulToggle;
+    public CheckBoxBase VerticulCheckBox => _isVirticulCheckBox;
 
-    [Header("左右反転トグル")]
+    [Header("左右反転チェックボックス")]
     [SerializeField]
-    private ToggleBase _isHorizontalToggle;
+    private CheckBoxBase _isHorizontalCheckBox;
     /// <summary>
-    /// 左右反転トグル
+    /// 左右反転チェックボックス
     /// </summary>
-    public ToggleBase HorizontalToggle => _isHorizontalToggle;
+    public CheckBoxBase HorizontalCheckBox => _isHorizontalCheckBox;
 }

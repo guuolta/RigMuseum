@@ -32,23 +32,4 @@ public class ScrollViewBase : UIPartBase
             return _scrollbar;
         }
     }
-
-    private Image _handle;
-    public Image Handle
-    {
-        get
-        {
-            if(_handle == null)
-            {
-                _handle = Scrollbar.handleRect.GetComponent<Image>();
-            }
-
-            return _handle;
-        }
-    }
-
-    public override void SetEvent()
-    {
-        SetEventPointer(Handle);
-    }
 }

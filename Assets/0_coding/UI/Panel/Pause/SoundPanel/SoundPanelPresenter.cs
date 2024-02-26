@@ -2,7 +2,7 @@ using UniRx;
 
 public class SoundPanelPresenter : PanelPresenterBase<SoundPanelView>
 {
-    public override void SetEvent()
+    protected override void SetEvent()
     {
         SetValue();
         SetEventValueUIPart();
@@ -21,13 +21,15 @@ public class SoundPanelPresenter : PanelPresenterBase<SoundPanelView>
     private void SetEventValueUIPart()
     {
         View.MasterValueUIPart.Value
+            .TakeUntilDestroy(this)
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
                 AudioManager.Instance.SetMasterVolume(value);
-            }).AddTo(this);
+            });
 
         View.BGMValueUIPart.Value
+            .TakeUntilDestroy(this)
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
@@ -35,6 +37,7 @@ public class SoundPanelPresenter : PanelPresenterBase<SoundPanelView>
             }).AddTo(this);
 
         View.SEValueUIPart.Value
+            .TakeUntilDestroy(this)
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
@@ -42,6 +45,7 @@ public class SoundPanelPresenter : PanelPresenterBase<SoundPanelView>
             }).AddTo(this);
 
         View.MovieValueUIPart.Value
+            .TakeUntilDestroy(this)
             .DistinctUntilChanged()
             .Subscribe(value =>
             {

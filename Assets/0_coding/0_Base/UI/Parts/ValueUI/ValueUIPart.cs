@@ -26,22 +26,12 @@ public class ValueUIPart : UIBase
     /// 値
     /// </summary>
     public ReactiveProperty<float> Value => _value;
-    private List<IDisposable> _disposables = new List<IDisposable>();
 
-    public override void SetEvent()
+    protected override void SetFirstEvent()
     {
         _slider.SetSlider(_minValue, _maxValue);
         _inputField.SetInputField(_minValue, _maxValue);
         SetEventChangeValue();
-    }
-
-    public void OnDestroy()
-    {
-        foreach (var disposable in _disposables)
-        {
-            disposable.Dispose();
-        }
-        _disposables.Clear();
     }
 
     /// <summary>
@@ -50,22 +40,24 @@ public class ValueUIPart : UIBase
     private void SetEventChangeValue()
     {
         _slider.SliderValueAsObservable
+            .TakeUntilDestroy(this)
             .Skip(1)
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
                 _inputField.SetValue(value);
                 _value.Value = value;
-            }).AddTo(_disposables);
+            });
 
         _inputField.InputValueAsObservable
             .Skip(1)
+            .TakeUntilDestroy(this)
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
                 _slider.SetValue(value);
                 _value.Value = value;
-            }).AddTo(_disposables);
+            });
     }
 
     /// <summary>

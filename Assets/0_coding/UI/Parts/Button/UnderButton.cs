@@ -8,6 +8,11 @@ using UnityEngine.EventSystems;
 
 public class UnderButton : ButtonBase
 {
+    /// <summary>
+    /// ボタンにカーソルがあった時のイベントときのイベント
+    /// </summary>
+    public System.Action onEnterEvent;
+
     [Header("カーソルがあった時に、ボタンが上がる量")]
     [SerializeField]
     private float _upValue;
@@ -34,8 +39,7 @@ public class UnderButton : ButtonBase
             return;
         }
 
-        base.OnPointerEnter(eventData);
-        RectTransform.DOAnchorPosY(_upValue, AnimationTime).SetEase(Ease.InSine);
+        //onEnterEvent.Invoke();
         CanvasGroup.DOFade(_alpha, AnimationTime).SetEase(Ease.InSine);
     }
 

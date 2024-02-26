@@ -1,16 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
+using UniRx;
 using UnityEngine;
 using UnityEngine.Video;
-using YoutubePlayer;
-using System.Threading.Tasks;
-using UniRx;
-using Unity.VisualScripting;
-using Cysharp.Threading.Tasks;
 
 public class YoutubeVideoPlayer : ObjectBase
 {
-    private bool _isPrepareVideo = true;
     private VideoPlayer _videoPlayer;
     public VideoPlayer VideoPlayer
     {
@@ -52,49 +46,45 @@ public class YoutubeVideoPlayer : ObjectBase
         }
     }
 
-    public override void SetEvent()
+    private BoolReactiveProperty _isSetVideo = new BoolReactiveProperty(false);
+    public BoolReactiveProperty IsSetVideo => _isSetVideo;
+
+    /// <samarry>
+    /// 設定されている動画再生
+    /// </samarry>
+    public void Play()
     {
-        SetEventPlayVideo();
+        if(AudioSource.mute)
+        {
+            AudioSource.mute = false;
+        }
+
+        if(!VideoPlayer.isPlaying)
+        {
+            VideoPlayer.Play();
+        }
     }
 
     /// <summary>
-    /// ビデオの再生設定
+    /// 動画再生
     /// </summary>
-    private void SetEventPlayVideo()
+    /// <param name="youtubeURL"> 再生する動画のURL </param>
+    /// <returns></returns>
+    public async UniTask Play(string youtubeURL)
     {
-        GameStateManager.MuseumStatus
-            .Subscribe(async value =>
-            {
-                await UniTask.WaitUntil(() => !_isPrepareVideo);
-
-                switch (value)
-                {
-                    case MuseumState.Play:
-                        AudioSource.mute = true;
-                        VideoPlayer.Play();
-                        break;
-                    case MuseumState.Monitor:
-                        AudioSource.mute = false;
-                        VideoPlayer.Play();
-                        break;
-                    default: 
-                        VideoPlayer.Pause();
-                        break;
-                }
-            }).AddTo(this);
-    }
-
-    public async UniTask SetInitVideo(string youtubeURL)
-    {
-        _isPrepareVideo = true;
-        await YoutubePlayer.PrepareVideoAsync(youtubeURL);
-        _isPrepareVideo = false;
-    }
-
-    public async UniTask PlayVideo(string youtubeURL)
-    {
-        _isPrepareVideo = true;
+        _isSetVideo.Value = false;
         await YoutubePlayer.PlayVideoAsync(youtubeURL);
-        _isPrepareVideo = false;
+        _isSetVideo.Value = true;
+    }
+
+    /// <summary>
+    /// 動画を止める
+    /// </summary>
+    public void Pause()
+    {
+        if (VideoPlayer.isPlaying)
+        {
+            VideoPlayer.Pause();
+        }
     }
 }

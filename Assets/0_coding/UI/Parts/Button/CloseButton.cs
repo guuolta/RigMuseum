@@ -5,9 +5,11 @@ using UnityEngine.EventSystems;
 
 public class CloseButton : ButtonBase
 {
-    public override void OnPointerClick(PointerEventData eventData)
+    public override void SetEventPlaySe()
     {
-        AudioManager.Instance.PlayOneShotSE(SEType.Nega);
-        onClickCallback?.Invoke();
+        onClickCallback += () =>
+        {
+            AudioManager.Instance.PlayOneShotSE(SEType.Nega);
+        };
     }
 }

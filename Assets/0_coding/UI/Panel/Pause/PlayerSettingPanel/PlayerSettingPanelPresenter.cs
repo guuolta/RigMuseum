@@ -3,57 +3,57 @@ using UniRx;
 
 public class PlayerSettingPanelPresenter : PanelPresenterBase<PlayerSettingPanelView>
 {
-    public override void Init()
-    {
-        SetValue();
-    }
-
-    public override void SetEvent()
+    protected override void SetEvent()
     {
         base.SetEvent();
+        SetValue();
         SetEventValue();
-        SetEventToggle();
+        SetEventCheckBox();
     }
 
     private void SetValue()
     {
         View.MoveSpeedUI.SetValue(SaveManager.GetMoveSpeed());
         View.SensitivityUI.SetValue(SaveManager.GetSensitivity());
-        View.VerticulToggle.SetValue(SaveManager.GetIsVerticalReverse());
-        View.HorizontalToggle.SetValue(SaveManager.GetIsHorizontalReverse());
+        View.VerticulCheckBox.SetValue(SaveManager.GetIsVerticalReverse());
+        View.HorizontalCheckBox.SetValue(SaveManager.GetIsHorizontalReverse());
     }
 
     private void SetEventValue()
     {
         View.MoveSpeedUI.Value
+            .TakeUntilDestroy(this)
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
                 PlayerManager.Instance.SetMoveSpeed(value);
-            }).AddTo(this);
+            });
 
         View.SensitivityUI.Value
+            .TakeUntilDestroy(this)
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
                 PlayerManager.Instance.SetSensitivity(value);
-            }).AddTo(this);
+            });
     }
 
-    private void SetEventToggle()
+    private void SetEventCheckBox()
     {
-        View.VerticulToggle.IsToggle
+        View.VerticulCheckBox.IsCheck
+            .TakeUntilDestroy(this)
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
                 PlayerManager.Instance.SetIsReveseVertical(value);
-            }).AddTo(this);
+            });
 
-        View.HorizontalToggle.IsToggle
+        View.HorizontalCheckBox.IsCheck
+            .TakeUntilDestroy(this)
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
                 PlayerManager.Instance.SetIsReverseHorizontal(value);
-            }).AddTo(this);
+            });
     }
 }
