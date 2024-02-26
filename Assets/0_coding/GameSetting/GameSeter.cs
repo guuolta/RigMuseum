@@ -9,13 +9,13 @@ public class GameSeter : ObjectBase
     [SerializeField]
     private int _fps = 60;
 
-    public override void Init()
+    protected override void Init()
     {
         Application.targetFrameRate = _fps;
         GameStateManager.SetMuseumState(MuseumState.Play);
     }
 
-    public override void Destroy()
+    protected override void Destroy()
     {
         SaveManager.Save();
     }

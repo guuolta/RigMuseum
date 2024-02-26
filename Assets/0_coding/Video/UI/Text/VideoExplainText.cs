@@ -7,7 +7,7 @@ using UniRx;
 
 public class VideoExplainText : UIPartBase
 {
-    public override void Init()
+    protected override void Init()
     {
         CanvasGroup.alpha = 0f;
         ChangeInteractive(false);
