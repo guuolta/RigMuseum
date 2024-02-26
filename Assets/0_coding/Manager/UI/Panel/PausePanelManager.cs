@@ -25,12 +25,12 @@ public class PausePanelManager : UIBase
     [SerializeField]
     private CloseButton _closeButton;
 
-    public override void Init()
+    protected override void Init()
     {
         _closeButton.GameObject.SetActive(false);
     }
 
-    public override void SetEvent()
+    protected override void SetEvent()
     {
         SetEventPanel();
         SetEventCloseButton();

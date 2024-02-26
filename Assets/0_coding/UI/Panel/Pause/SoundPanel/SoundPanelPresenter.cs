@@ -2,7 +2,7 @@ using UniRx;
 
 public class SoundPanelPresenter : PanelPresenterBase<SoundPanelView>
 {
-    public override void SetEvent()
+    protected override void SetEvent()
     {
         SetValue();
         SetEventValueUIPart();

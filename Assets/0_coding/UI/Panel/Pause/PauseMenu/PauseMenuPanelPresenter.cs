@@ -9,7 +9,7 @@ public class PauseMenuPanelPresenter : PanelPresenterBase<PauseMenuPanelView>
     [SerializeField]
     private PausePanelManager _pausePanelManager;
 
-    public override void SetEvent()
+    protected override void SetEvent()
     {
         SetEventButton();
     }

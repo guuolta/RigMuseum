@@ -23,22 +23,6 @@ public class SliderBase : UIPartBase
             return _slider;
         }
     }
-    private Image _handle;
-    /// <summary>
-    /// スライダーのハンドル
-    /// </summary>
-    public Image Handle
-    {
-        get
-        {
-            if(_handle == null)
-            {
-                _handle = GetComponent<Image>();
-            }
-
-            return _handle;
-        }
-    }
     private IObservable<float> _sliderValueAsObservable;
     /// <summary>
     /// スライダーの値
@@ -54,11 +38,6 @@ public class SliderBase : UIPartBase
 
             return _sliderValueAsObservable;
         }
-    }
-
-    public override void SetEvent()
-    {
-        SetEventPointer(_handle);
     }
 
     public void SetSlider(float minValue, float maxValue)

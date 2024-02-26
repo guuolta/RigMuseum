@@ -3,9 +3,10 @@ using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ValueInputFieldBase : UIPartBase
+public class ValueInputFieldBase : UIAnimationPartBase
 {
     private float _minValue;
     private float _maxValue;
@@ -24,22 +25,6 @@ public class ValueInputFieldBase : UIPartBase
             return _inputField; 
         } 
     }
-    private Image _image;
-    /// <summary>
-    /// インプットフィールドの画像
-    /// </summary>
-    public Image Image
-    {
-        get
-        {
-            if(_image == null)
-            {
-                _image = GetComponent<Image>();
-            }
-
-            return _image;
-        }
-    }
     private ReactiveProperty<float> _inputValueAsObservable = new ReactiveProperty<float>();
     /// <summary>
     /// InputFieldの値
@@ -47,10 +32,14 @@ public class ValueInputFieldBase : UIPartBase
     public ReactiveProperty<float> InputValueAsObservable => _inputValueAsObservable;
     public UnityAction<string> OnChangeEvent;
 
-    public override void SetFirstEvent()
+    protected override void SetFirstEvent()
     {
-        SetEventPointer(Image);
         SetEventInputValue();
+    }
+
+    public override void OnPointerClick(PointerEventData eventData)
+    {
+        AudioManager.Instance.PlayOneShotSE(SEType.Posi);
     }
 
     /// <summary>

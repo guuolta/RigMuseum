@@ -1,14 +1,24 @@
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using UnityEngine;
-
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 /// <summary>
 /// UI系のベース
 /// </summary>
 public class UIBase : GameObjectBase
 {
-    [Header("ボタンが押せないときの透明度")]
+    [Header("押せないときの透明度")]
     [Range(0f, 1f)]
     [SerializeField]
     private float _disInteractiveColor = 0.8f;
+    [Header("アニメーションの時間")]
+    [SerializeField]
+    private float _animationTime = 0.1f;
+    /// <summary>
+    /// アニメーションの時間
+    /// </summary>
+    public float AnimationTime => _animationTime;
 
     private RectTransform _rectTransform;
     public RectTransform RectTransform
@@ -63,5 +73,19 @@ public class UIBase : GameObjectBase
         {
             _canvasGroup.alpha = _disInteractiveColor;
         }
+    }
+
+    public async UniTask ShowAsync(Image image)
+    {
+        await image.DOFade(1, AnimationTime)
+            .SetEase(Ease.InSine)
+            .AsyncWaitForCompletion();
+    }
+
+    public async UniTask HideAsync(Image image)
+    {
+        await image.DOFade(0, AnimationTime)
+            .SetEase(Ease.OutSine)
+            .AsyncWaitForCompletion();
     }
 }

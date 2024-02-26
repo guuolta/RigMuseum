@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using UniRx;
 using UnityEngine;
 using UnityEngine.Video;
 
@@ -45,6 +46,9 @@ public class YoutubeVideoPlayer : ObjectBase
         }
     }
 
+    private BoolReactiveProperty _isSetVideo = new BoolReactiveProperty(false);
+    public BoolReactiveProperty IsSetVideo => _isSetVideo;
+
     /// <samarry>
     /// 設定されている動画再生
     /// </samarry>
@@ -68,7 +72,9 @@ public class YoutubeVideoPlayer : ObjectBase
     /// <returns></returns>
     public async UniTask Play(string youtubeURL)
     {
+        _isSetVideo.Value = false;
         await YoutubePlayer.PlayVideoAsync(youtubeURL);
+        _isSetVideo.Value = true;
     }
 
     /// <summary>

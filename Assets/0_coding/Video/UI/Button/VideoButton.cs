@@ -1,12 +1,9 @@
-using Cysharp.Threading.Tasks;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class VideoButton : ButtonBase
 {
-    [Header("説明のUI")]
+    [Header("説明のテキスト")]
     [SerializeField]
     private VideoExplainText _explainText;
 
@@ -20,18 +17,11 @@ public class VideoButton : ButtonBase
 
     public override async void OnPointerEnter(PointerEventData eventData)
     {
-        if (Input.GetMouseButton(0))
-        {
-            return;
-        }
-
         await _explainText.ShowAsync();
     }
 
     public override async void OnPointerExit(PointerEventData eventData)
     {
-        await UniTask.WaitUntil(() => !Input.GetMouseButton(0));
-
         await _explainText.HideAsync();
     }
 }

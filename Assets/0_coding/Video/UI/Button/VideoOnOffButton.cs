@@ -1,12 +1,20 @@
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class VideoOnOffButton : ButtonBase
 {
+    [Header("ON時のボタンの画像")]
+    [SerializeField]
+    private Image _onButtonImage;
+    [Header("OFF時のボタンの画像")]
+    [SerializeField]
+    private Image _offButtonImage;
     [Header("ON時の説明のUI")]
     [SerializeField]
     private VideoExplainText _onExplainText;
@@ -16,23 +24,27 @@ public class VideoOnOffButton : ButtonBase
 
     private BoolReactiveProperty _isOn = new BoolReactiveProperty(false);
     public BoolReactiveProperty IsOn => _isOn;
+    private Image _targetImage;
     private VideoExplainText _targetExplainText;
 
-    public override void Init()
+    protected override void Init()
     {
         base.Init();
-        _targetExplainText = _offExplainText;
+        _targetImage = _onButtonImage;
+        _targetExplainText = _onExplainText;
+        _onButtonImage.color += new Color(0, 0, 0, 1);
+        _offButtonImage.color -= new Color(0, 0, 0, 1);
     }
 
-    public override void SetEvent()
+    protected override void SetEvent()
     {
         base.SetEvent();
+        SetEventClick();
         SetEventIsOn();
     }
 
-    public override void SetEventButton()
+    private void SetEventClick()
     {
-        base.SetEventButton();
         onClickCallback += () =>
         {
             _isOn.Value = !_isOn.Value;
@@ -40,22 +52,24 @@ public class VideoOnOffButton : ButtonBase
         };
     }
 
+    /// <summary>
+    /// ボタンがOn、Offの時のイベント
+    /// </summary>
     private void SetEventIsOn()
     {
         IsOn
+            .Skip(1)
             .TakeUntilDestroy(this)
             .DistinctUntilChanged()
             .Subscribe(async value =>
             {
+                HideAsync(_targetImage).Forget();
                 _targetExplainText.HideAsync().Forget();
-                _targetExplainText = value ? _onExplainText : _offExplainText;
+                _targetImage = value ? _offButtonImage : _onButtonImage;
+                _targetExplainText = value ? _offExplainText : _onExplainText;
+                ShowAsync(_targetImage).Forget();
                 await _targetExplainText.ShowAsync();
             });
-    }
-
-    public override void OnPointerClick(PointerEventData eventData)
-    {
-        onClickCallback?.Invoke();
     }
 
     public override void OnPointerUp(PointerEventData eventData)
@@ -68,18 +82,11 @@ public class VideoOnOffButton : ButtonBase
 
     public override async void OnPointerEnter(PointerEventData eventData)
     {
-        if (Input.GetMouseButton(0))
-        {
-            return;
-        }
-
         await _targetExplainText.ShowAsync();
     }
 
     public override async void OnPointerExit(PointerEventData eventData)
     {
-        await UniTask.WaitUntil(() => !Input.GetMouseButton(0));
-
         await _targetExplainText.HideAsync();
     }
 }
