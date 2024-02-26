@@ -40,14 +40,14 @@ public class UnderButton : ButtonBase
         }
 
         //onEnterEvent.Invoke();
-        CanvasGroup.DOFade(_alpha, AnimationTime).SetEase(Ease.InSine);
+        CanvasGroup.DOFade(_alpha, animationTime).SetEase(Ease.InSine);
     }
 
     public override async void OnPointerExit(PointerEventData eventData)
     {
         await UniTask.WaitUntil(() => !Input.GetMouseButton(0));
         base.OnPointerExit(eventData);
-        RectTransform.DOAnchorPosY(_iniPosY, AnimationTime).SetEase(Ease.OutSine);
-        CanvasGroup.DOFade(_iniAlpha, AnimationTime).SetEase(Ease.OutSine);
+        RectTransform.DOAnchorPosY(_iniPosY, animationTime).SetEase(Ease.OutSine).ToUniTask().Forget();
+        CanvasGroup.DOFade(_iniAlpha, animationTime).SetEase(Ease.OutSine).ToUniTask().Forget();
     }
 }

@@ -45,7 +45,7 @@ public class VideoOnOffButton : ButtonBase
 
     private void SetEventClick()
     {
-        onClickCallback += () =>
+        OnClickCallback += () =>
         {
             _isOn.Value = !_isOn.Value;
             
@@ -63,11 +63,11 @@ public class VideoOnOffButton : ButtonBase
             .DistinctUntilChanged()
             .Subscribe(async value =>
             {
-                HideAsync(_targetImage).Forget();
+                HideAsync(_targetImage, Ct).Forget();
                 _targetExplainText.HideAsync().Forget();
                 _targetImage = value ? _offButtonImage : _onButtonImage;
                 _targetExplainText = value ? _offExplainText : _onExplainText;
-                ShowAsync(_targetImage).Forget();
+                ShowAsync(_targetImage, Ct).Forget();
                 await _targetExplainText.ShowAsync();
             });
     }

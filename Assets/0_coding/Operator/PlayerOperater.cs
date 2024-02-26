@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -239,14 +240,15 @@ public class PlayerOperater : ObjectBase
     /// <param name="rot"> 目的回転値 </param>
     /// <param name="ease"> easeのタイプ </param>
     /// <returns></returns>
-    public async UniTask MovePlayerAsync(float animationTime, Vector3 pos, Vector3 rot, Ease ease)
+    public async UniTask MovePlayerAsync(float animationTime, Vector3 pos, Vector3 rot, Ease ease, CancellationToken ct)
     {
         _transform.DOComplete();
         var sequence = DOTween.Sequence();
 
-        await sequence.Append(_transform.DOMove(pos, animationTime).SetEase(ease))
+        await sequence
+            .Append(_transform.DOMove(pos, animationTime).SetEase(ease))
             .Join(_transform.DORotate(rot, animationTime).SetEase(ease))
-            .AsyncWaitForCompletion();
+            .ToUniTask(cancellationToken: ct);
     }
 }
 

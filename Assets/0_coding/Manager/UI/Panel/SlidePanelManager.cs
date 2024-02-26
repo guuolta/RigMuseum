@@ -28,18 +28,18 @@ public class SlidePanelManager : ObjectBase
     /// </summary>
     private void SetEventButton()
     {
-        _rightButton.onClickCallback += async () =>
+        _rightButton.OnClickCallback += async () =>
         {
-            _sliderPanelList[_selectedIndex.Value].HideAsync().Forget();
+            _sliderPanelList[_selectedIndex.Value].HideAsync(Ct).Forget();
             _selectedIndex.Value++;
-            await _sliderPanelList[_selectedIndex.Value].ShowAsync();
+            await _sliderPanelList[_selectedIndex.Value].ShowAsync(Ct);
         };
 
-        _leftButton.onClickCallback += async () =>
+        _leftButton.OnClickCallback += async () =>
         {
-            _sliderPanelList[_selectedIndex.Value].HideAsync().Forget();
+            _sliderPanelList[_selectedIndex.Value].HideAsync(Ct).Forget();
             _selectedIndex.Value--;
-            await _sliderPanelList[_selectedIndex.Value].ShowAsync();
+            await _sliderPanelList[_selectedIndex.Value].ShowAsync(Ct);
         };
 
         _selectedIndex

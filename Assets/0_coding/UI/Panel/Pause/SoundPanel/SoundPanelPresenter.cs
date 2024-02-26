@@ -1,16 +1,23 @@
 using UniRx;
+using Cysharp.Threading.Tasks;
+using System.Threading;
 
 public class SoundPanelPresenter : PanelPresenterBase<SoundPanelView>
 {
     protected override void SetEvent()
     {
-        SetValue();
         SetEventValueUIPart();
+    }
+
+    public override async UniTask ShowAsync(CancellationToken ct)
+    {
+        SetValue();
+        await base.ShowAsync(ct);
     }
 
     private void SetValue()
     {
-        float[] volumes = SaveManager.GetSoundVolume();
+        float[] volumes = AudioManager.Instance.GetSoundVolumes();
 
         View.MasterValueUIPart.SetValue(volumes[(int)AudioType.Master]);
         View.BGMValueUIPart.SetValue(volumes[(int)AudioType.BGM]);

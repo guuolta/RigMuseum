@@ -33,7 +33,7 @@ public class GameIntroductionManager : SingletonObjectBase<GameIntroductionManag
         _targetPos = _monitor.Transform.position + (_monitor.Transform.right * _targetDistance);
         _targetRot = _monitor.Transform.localEulerAngles + new Vector3(0, -90, 0);
         _clearPos = _targetPos + (_monitor.Transform.right * _targetClearDistance);
-        _videoPlayer.Play(gameDatas.GetGameYoutubeURL(0)).Forget();
+        _videoPlayer.Play(gameDatas.GetGameYoutubeURL(0), Ct).Forget();
     }
 
     protected override void SetEvent()
@@ -57,11 +57,11 @@ public class GameIntroductionManager : SingletonObjectBase<GameIntroductionManag
                 if(value)
                 {
 
-                    await PlayerManager.Instance.TargetObjectAsync(_animationTime, _targetPos, _targetRot);
+                    await PlayerManager.Instance.TargetObjectAsync(_animationTime, _targetPos, _targetRot, Ct);
                 }
                 else
                 {
-                    await PlayerManager.Instance.ClearTargetAsync(_animationTime, _clearPos);
+                    await PlayerManager.Instance.ClearTargetAsync(_animationTime, _clearPos, Ct);
                 }
             });
     }

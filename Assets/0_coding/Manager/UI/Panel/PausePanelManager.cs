@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System.Threading;
 using UniRx;
 using UnityEngine;
 
@@ -50,11 +51,11 @@ public class PausePanelManager : UIBase
             {
                 if(value)
                 {
-                    await OpenPanelAsync(PausePanelType.PauseMenu);
+                    await OpenPanelAsync(PausePanelType.PauseMenu, Ct);
                 }
                 else
                 {
-                    await ClosePanelAsync();
+                    await ClosePanelAsync(Ct);
                     AudioManager.Instance.SaveVolume();
                     PlayerManager.Instance.SaveSetting();
                 }
@@ -65,7 +66,7 @@ public class PausePanelManager : UIBase
      /// </summary>
     private void SetEventCloseButton()
     {
-        _closeButton.onClickCallback += async () =>
+        _closeButton.OnClickCallback += async () =>
         {
             if(_isOpenMenuPanel)
             {
@@ -73,7 +74,7 @@ public class PausePanelManager : UIBase
             }
             else
             {
-                await OpenPanelAsync(PausePanelType.PauseMenu);
+                await OpenPanelAsync(PausePanelType.PauseMenu, Ct);
             }
         };
     }
@@ -84,9 +85,9 @@ public class PausePanelManager : UIBase
     /// </summary>
     /// <param name="type"> 対象のパネル </param>
     /// <returns></returns>
-    public async UniTask OpenPanelAsync(PausePanelType type)
+    public async UniTask OpenPanelAsync(PausePanelType type, CancellationToken ct)
     {
-        await ClosePanelAsync();
+        await ClosePanelAsync(ct);
         switch (type)
         {
             case PausePanelType.PauseMenu:
@@ -106,7 +107,7 @@ public class PausePanelManager : UIBase
                 break;
         }
 
-        await _activePanel.ShowAsync();
+        await _activePanel.ShowAsync(ct);
         _closeButton.GameObject.SetActive(true);
     }
 
@@ -114,7 +115,7 @@ public class PausePanelManager : UIBase
     /// パネルを閉じる
     /// </summary>
     /// <returns></returns>
-    public async UniTask ClosePanelAsync()
+    public async UniTask ClosePanelAsync(CancellationToken ct)
     {
         if(_activePanel == null)
         {
@@ -123,7 +124,7 @@ public class PausePanelManager : UIBase
 
         _closeButton.GameObject.SetActive(false);
         _isOpenMenuPanel = false;
-        await _activePanel.HideAsync();
+        await _activePanel.HideAsync(ct);
     }
 }
 

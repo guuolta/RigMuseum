@@ -1,7 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using System.Threading;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 /// <summary>
 /// UI系のベース
@@ -12,13 +12,12 @@ public class UIBase : GameObjectBase
     [Range(0f, 1f)]
     [SerializeField]
     private float _disInteractiveColor = 0.8f;
-    [Header("アニメーションの時間")]
-    [SerializeField]
-    private float _animationTime = 0.1f;
     /// <summary>
     /// アニメーションの時間
     /// </summary>
-    public float AnimationTime => _animationTime;
+    [Header("アニメーションの時間")]
+    [SerializeField]
+    protected float animationTime = 0.1f;
 
     private RectTransform _rectTransform;
     public RectTransform RectTransform
@@ -75,17 +74,17 @@ public class UIBase : GameObjectBase
         }
     }
 
-    public async UniTask ShowAsync(Image image)
+    public async UniTask ShowAsync(Image image, CancellationToken ct)
     {
-        await image.DOFade(1, AnimationTime)
+        await image.DOFade(1, animationTime)
             .SetEase(Ease.InSine)
-            .AsyncWaitForCompletion();
+            .ToUniTask(cancellationToken: ct);
     }
 
-    public async UniTask HideAsync(Image image)
+    public async UniTask HideAsync(Image image, CancellationToken ct)
     {
-        await image.DOFade(0, AnimationTime)
+        await image.DOFade(0, animationTime)
             .SetEase(Ease.OutSine)
-            .AsyncWaitForCompletion();
+            .ToUniTask(cancellationToken: ct);
     }
 }

@@ -22,7 +22,7 @@ public class VideoExplainText : UIPartBase
         CanvasGroup.DOComplete();
 
         await CanvasGroup
-            .DOFade(1, AnimationTime)
+            .DOFade(1, animationTime)
             .SetEase(Ease.InSine)
             .AsyncWaitForCompletion();
 
@@ -38,7 +38,7 @@ public class VideoExplainText : UIPartBase
         CanvasGroup.DOComplete();
 
         await CanvasGroup
-            .DOFade(0, AnimationTime)
+            .DOFade(0, animationTime)
             .SetEase(Ease.OutSine)
             .AsyncWaitForCompletion();
         ChangeInteractive(false);

@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using System.Collections;
-using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class SliderPanelView : PanelViewBase
@@ -13,17 +12,19 @@ public class SliderPanelView : PanelViewBase
     [SerializeField]
     private float _slideAfterPos;
 
-    public override async UniTask ShowAsync(float animeTime)
+    public override async UniTask ShowAsync(float animeTime, CancellationToken ct)
     {
-        await RectTransform.DOAnchorPosX(_slideBeforePos, animeTime)
+        await RectTransform
+            .DOAnchorPosX(_slideBeforePos, animeTime)
             .SetEase(Ease.InSine)
-            .AsyncWaitForCompletion();
+            .ToUniTask(cancellationToken: ct);
     }
 
-    public override async UniTask HideAsync(float animeTime)
+    public override async UniTask HideAsync(float animeTime, CancellationToken ct)
     {
-        await RectTransform.DOAnchorPosX(_slideAfterPos, animeTime)
+        await RectTransform
+            .DOAnchorPosX(_slideAfterPos, animeTime)
             .SetEase(Ease.OutSine)
-            .AsyncWaitForCompletion();
+            .ToUniTask(cancellationToken: ct);
     }
 }

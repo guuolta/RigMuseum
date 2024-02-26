@@ -1,17 +1,8 @@
 using Cysharp.Threading.Tasks;
-using DG.Tweening;
-using Unity.VisualScripting;
-using UnityEngine;
-using UnityEngine.EventSystems;
 
 
 public class ButtonBase : UIAnimationPartBase
 {
-    /// <summary>
-    /// ボタンが押されたときのイベント
-    /// </summary>
-    public System.Action onClickCallback;
-
     protected override void Init()
     {
         ChangeInteractive(true);
@@ -28,7 +19,7 @@ public class ButtonBase : UIAnimationPartBase
     /// </summary>
     public virtual void SetEventPlaySe()
     {
-        onClickCallback += () =>
+        OnClickCallback += () =>
         {
             AudioManager.Instance.PlayOneShotSE(SEType.Posi);
         };
@@ -39,20 +30,11 @@ public class ButtonBase : UIAnimationPartBase
     /// </summary>
     public virtual void SetEventDobleClickPrevention()
     {
-        onClickCallback += async () =>
+        OnClickCallback += async () =>
         {
             ChangeInteractive(false);
-            await UniTask.WaitForSeconds(0.1f);
+            await UniTask.WaitForSeconds(0.1f, cancellationToken: Ct);
             ChangeInteractive(true);
         };
-    }
-
-    /// <summary>
-    /// ボタンが押されたときイベントを実行
-    /// </summary>
-    /// <param name="eventData"></param>
-    public override void OnPointerClick(PointerEventData eventData)
-    {
-        onClickCallback?.Invoke();
     }
 }

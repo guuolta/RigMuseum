@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System.Threading;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Video;
@@ -70,10 +71,10 @@ public class YoutubeVideoPlayer : ObjectBase
     /// </summary>
     /// <param name="youtubeURL"> 再生する動画のURL </param>
     /// <returns></returns>
-    public async UniTask Play(string youtubeURL)
+    public async UniTask Play(string youtubeURL, CancellationToken ct)
     {
         _isSetVideo.Value = false;
-        await YoutubePlayer.PlayVideoAsync(youtubeURL);
+        await YoutubePlayer.PlayVideoAsync(youtubeURL, cancellationToken:ct);
         _isSetVideo.Value = true;
     }
 

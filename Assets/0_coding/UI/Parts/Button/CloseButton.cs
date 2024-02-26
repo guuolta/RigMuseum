@@ -7,7 +7,7 @@ public class CloseButton : ButtonBase
 {
     public override void SetEventPlaySe()
     {
-        onClickCallback += () =>
+        OnClickCallback += () =>
         {
             AudioManager.Instance.PlayOneShotSE(SEType.Nega);
         };

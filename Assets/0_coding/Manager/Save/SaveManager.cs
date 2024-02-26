@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -14,6 +15,8 @@ public static class SaveManager
     private const string BGM_VOLUME_KEY = "BGM";
     private const string SE_VOLUME_KEY = "SE";
     private const string MOVIE_VOLUME_KEY = "Movie";
+
+    private static float[] _soundVolumes;
 
     /// <summary>
     /// セーブデータからマウス操作が上下反転しているか取得
@@ -54,18 +57,38 @@ public static class SaveManager
     }
 
     /// <summary>
-    /// セーブデータから音量取得
+    /// セーブデータから全音量取得
     /// </summary>
     /// <returns>音量</returns>
     public static float[] GetSoundVolume()
     {
-        float[] soundVolumes = new float[SOUND_INDEX];
-        soundVolumes[(int)AudioType.Master] = PlayerPrefs.GetFloat(MASTER_VOLUME_KEY, 8f);
-        soundVolumes[(int)AudioType.BGM] = PlayerPrefs.GetFloat(BGM_VOLUME_KEY, 8f);
-        soundVolumes[(int)AudioType.SE] = PlayerPrefs.GetFloat(SE_VOLUME_KEY, 8f);
-        soundVolumes[(int)AudioType.Movie] = PlayerPrefs.GetFloat(MOVIE_VOLUME_KEY, 8f);
+        if (_soundVolumes == null)
+        {
+            float[] soundVolumes = new float[SOUND_INDEX];
+            soundVolumes[(int)AudioType.Master] = PlayerPrefs.GetFloat(MASTER_VOLUME_KEY, 8f);
+            soundVolumes[(int)AudioType.BGM] = PlayerPrefs.GetFloat(BGM_VOLUME_KEY, 8f);
+            soundVolumes[(int)AudioType.SE] = PlayerPrefs.GetFloat(SE_VOLUME_KEY, 8f);
+            soundVolumes[(int)AudioType.Movie] = PlayerPrefs.GetFloat(MOVIE_VOLUME_KEY, 8f);
 
-        return soundVolumes;
+            Array.Copy(_soundVolumes, _soundVolumes, _soundVolumes.Length);
+        }
+
+        return _soundVolumes;
+    }
+
+    /// <summary>
+    /// セーブデータから音量を返す
+    /// </summary>
+    /// <param name="type"> 音量の種類 </param>
+    /// <returns></returns>
+    public static float GetSoundVolume(AudioType type)
+    {
+        if (_soundVolumes == null)
+        {
+            GetSoundVolume();
+        }
+
+        return _soundVolumes[(int)type];
     }
 
     /// <summary>
@@ -110,6 +133,7 @@ public static class SaveManager
         PlayerPrefs.SetFloat(BGM_VOLUME_KEY, volumes[(int)AudioType.BGM]);
         PlayerPrefs.SetFloat(SE_VOLUME_KEY, volumes[(int)AudioType.SE]);
         PlayerPrefs.SetFloat(MOVIE_VOLUME_KEY, volumes[(int)AudioType.Movie]);
+        Array.Copy(volumes, _soundVolumes, volumes.Length);
     }
 
     /// <summary>
