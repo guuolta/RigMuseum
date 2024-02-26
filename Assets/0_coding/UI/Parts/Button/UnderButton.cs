@@ -24,7 +24,7 @@ public class UnderButton : ButtonBase
     private float _iniPosY;
     private float _iniAlpha;
 
-    public override void Init()
+    protected override void Init()
     {
         base.Init();
         _iniPosY = RectTransform.anchoredPosition.y;

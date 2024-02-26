@@ -19,13 +19,13 @@ public class PlayerManager : SingletonObjectBase<PlayerManager>
     private float _moveSpeed;
     private float _rotateSpeed;
 
-    public override void Init()
+    protected override void Init()
     {
         GetSettings();
         _playerOperater.SetInit(_player);
     }
 
-    public override void SetEvent()
+    protected override void SetEvent()
     {
         SetEventPlayerOperation();
         _playerOperater.SetEventKey(_moveSpeed);

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 /// </summary>
 public class PanelViewBase : ViewBase
 {
-    public override void Init()
+    protected override void Init()
     {
         Transform.localScale = Vector3.zero;
     }

@@ -18,7 +18,7 @@ public class SlidePanelManager : ObjectBase
 
     private ReactiveProperty<int> _selectedIndex = new ReactiveProperty<int>(0);
 
-    public override void SetEvent()
+    protected override void SetEvent()
     {
         SetEventButton();
     }

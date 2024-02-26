@@ -28,7 +28,7 @@ public class GameIntroductionManager : SingletonObjectBase<GameIntroductionManag
     private Vector3 _clearPos = Vector3.zero;
 
 
-    public override void Init()
+    protected override void Init()
     {
         _targetPos = _monitor.Transform.position + (_monitor.Transform.right * _targetDistance);
         _targetRot = _monitor.Transform.localEulerAngles + new Vector3(0, -90, 0);
@@ -36,7 +36,7 @@ public class GameIntroductionManager : SingletonObjectBase<GameIntroductionManag
         _videoPlayer.Play(gameDatas.GetGameYoutubeURL(0)).Forget();
     }
 
-    public override void SetEvent()
+    protected override void SetEvent()
     {
         SetEventTarget();
         SetEventVideo();
