@@ -43,6 +43,29 @@ public class VideoOnOffButton : ButtonBase
         SetEventIsOn();
     }
 
+    public override void OnPointerUp(PointerEventData eventData)
+    {
+    }
+
+    public override void OnPointerDown(PointerEventData eventData)
+    {
+    }
+
+    public override async void OnPointerEnter(PointerEventData eventData)
+    {
+        await _targetExplainText.ShowAsync(Ct);
+    }
+
+    public override async void OnPointerExit(PointerEventData eventData)
+    {
+        await _targetExplainText.HideAsync(Ct);
+    }
+
+    protected override void SetEventPlaySe()
+    {
+
+    }
+
     private void SetEventClick()
     {
         OnClickCallback += () =>
@@ -64,29 +87,13 @@ public class VideoOnOffButton : ButtonBase
             .Subscribe(async value =>
             {
                 HideAsync(_targetImage, Ct).Forget();
-                _targetExplainText.HideAsync().Forget();
+                _targetExplainText.HideAsync(Ct).Forget();
                 _targetImage = value ? _offButtonImage : _onButtonImage;
                 _targetExplainText = value ? _offExplainText : _onExplainText;
                 ShowAsync(_targetImage, Ct).Forget();
-                await _targetExplainText.ShowAsync();
+                await _targetExplainText.ShowAsync(Ct);
             });
     }
 
-    public override void OnPointerUp(PointerEventData eventData)
-    {
-    }
-
-    public override void OnPointerDown(PointerEventData eventData)
-    {
-    }
-
-    public override async void OnPointerEnter(PointerEventData eventData)
-    {
-        await _targetExplainText.ShowAsync();
-    }
-
-    public override async void OnPointerExit(PointerEventData eventData)
-    {
-        await _targetExplainText.HideAsync();
-    }
+    
 }

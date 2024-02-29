@@ -6,13 +6,13 @@ using UnityEngine;
 
 public class OnVideoUIView : ViewBase
 {
-    public override async UniTask ShowAsync(float animationTime, CancellationToken ct)
+    public override async UniTask ShowAsync(CancellationToken ct)
     {
-        
+        await ShowAsync(CanvasGroup, ct);
     }
 
-    public override async UniTask HideAsync(float animationTime, CancellationToken ct)
+    public override async UniTask HideAsync(CancellationToken ct)
     {
-
+        await HideAsync(CanvasGroup, ct);
     }
 }

@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
+using System.Threading;
 
 public class VideoExplainText : UIPartBase
 {
@@ -17,15 +18,11 @@ public class VideoExplainText : UIPartBase
     /// UI表示
     /// </summary>
     /// <returns></returns>
-    public async UniTask ShowAsync()
+    public async UniTask ShowAsync(CancellationToken ct)
     {
         CanvasGroup.DOComplete();
 
-        await CanvasGroup
-            .DOFade(1, animationTime)
-            .SetEase(Ease.InSine)
-            .AsyncWaitForCompletion();
-
+        await ShowAsync(CanvasGroup, ct);
         ChangeInteractive(true);
     }
 
@@ -33,14 +30,11 @@ public class VideoExplainText : UIPartBase
     /// UI消す
     /// </summary>
     /// <returns></returns>
-    public async UniTask HideAsync()
+    public async UniTask HideAsync(CancellationToken ct)
     {
         CanvasGroup.DOComplete();
 
-        await CanvasGroup
-            .DOFade(0, animationTime)
-            .SetEase(Ease.OutSine)
-            .AsyncWaitForCompletion();
+        await HideAsync(CanvasGroup, ct);
         ChangeInteractive(false);
     }
 }

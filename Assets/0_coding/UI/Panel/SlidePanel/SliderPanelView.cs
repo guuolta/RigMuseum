@@ -12,18 +12,18 @@ public class SliderPanelView : PanelViewBase
     [SerializeField]
     private float _slideAfterPos;
 
-    public override async UniTask ShowAsync(float animeTime, CancellationToken ct)
+    public override async UniTask ShowAsync(CancellationToken ct)
     {
         await RectTransform
-            .DOAnchorPosX(_slideBeforePos, animeTime)
+            .DOAnchorPosX(_slideBeforePos, animationTime)
             .SetEase(Ease.InSine)
             .ToUniTask(cancellationToken: ct);
     }
 
-    public override async UniTask HideAsync(float animeTime, CancellationToken ct)
+    public override async UniTask HideAsync(CancellationToken ct)
     {
         await RectTransform
-            .DOAnchorPosX(_slideAfterPos, animeTime)
+            .DOAnchorPosX(_slideAfterPos, animationTime)
             .SetEase(Ease.OutSine)
             .ToUniTask(cancellationToken: ct);
     }

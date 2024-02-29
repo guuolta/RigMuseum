@@ -40,6 +40,7 @@ public class PlayerManager : SingletonObjectBase<PlayerManager>
     {
         GameStateManager.MuseumStatus
             .Skip(1)
+            .TakeUntilDestroy(this)
             .Select(value => value == MuseumState.Play)
             .DistinctUntilChanged()
             .Subscribe(value =>
@@ -53,7 +54,7 @@ public class PlayerManager : SingletonObjectBase<PlayerManager>
                 {
                     _playerOperater.DisposeEventPlayerOperation();
                 }
-            }).AddTo(this);
+            });
     }
 
 

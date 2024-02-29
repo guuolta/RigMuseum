@@ -17,7 +17,7 @@ public class ButtonBase : UIAnimationPartBase
     /// <summary>
     /// SEを鳴らす
     /// </summary>
-    public virtual void SetEventPlaySe()
+    protected virtual void SetEventPlaySe()
     {
         OnClickCallback += () =>
         {
@@ -28,7 +28,7 @@ public class ButtonBase : UIAnimationPartBase
     /// <summary>
     /// 連打防止
     /// </summary>
-    public virtual void SetEventDobleClickPrevention()
+    protected virtual void SetEventDobleClickPrevention()
     {
         OnClickCallback += async () =>
         {

@@ -6,6 +6,7 @@ public class SoundPanelPresenter : PanelPresenterBase<SoundPanelView>
 {
     protected override void SetEvent()
     {
+        SetValue();
         SetEventValueUIPart();
     }
 

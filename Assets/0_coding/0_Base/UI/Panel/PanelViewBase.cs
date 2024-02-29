@@ -14,7 +14,7 @@ public class PanelViewBase : ViewBase
         Transform.localScale = Vector3.zero;
     }
 
-    public override async UniTask ShowAsync(float animeTime, CancellationToken ct)
+    public override async UniTask ShowAsync(CancellationToken ct)
     {
         if(Transform.localScale != Vector3.zero)
         {
@@ -22,12 +22,12 @@ public class PanelViewBase : ViewBase
         }
 
         await Transform
-            .DOScale(Vector2.one, animeTime)
+            .DOScale(Vector2.one, animationTime)
             .SetEase(Ease.InSine)
             .ToUniTask(cancellationToken: ct);
     }
     
-    public override async UniTask HideAsync(float animeTime, CancellationToken ct)
+    public override async UniTask HideAsync(CancellationToken ct)
     {
         if(Transform.localScale == Vector3.zero)
         {
@@ -35,7 +35,7 @@ public class PanelViewBase : ViewBase
         }
 
         await Transform
-            .DOScale(Vector2.zero, animeTime)
+            .DOScale(Vector2.zero, animationTime)
             .SetEase(Ease.OutSine)
             .ToUniTask(cancellationToken: ct);
     }

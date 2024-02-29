@@ -1,6 +1,5 @@
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using System.Collections;
-using System.Collections.Generic;
 using UniRx;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -27,7 +26,7 @@ public class ToggleBase : UIPartBase
         {
             if (_slider == null)
             {
-                _slider.GetComponent<Slider>();
+                _slider = GetComponent<Slider>();
                 _slider.interactable = false;
                 _slider.minValue = 0;
                 _slider.maxValue = 1;
@@ -37,6 +36,9 @@ public class ToggleBase : UIPartBase
             return _slider;
         }
     }
+
+    [Header("ハンドル")]
+    [SerializeField]
     private HandleBase _handle;
     protected HandleBase handle
     {
@@ -56,9 +58,16 @@ public class ToggleBase : UIPartBase
         }
     }
 
+    protected override void Init()
+    {
+        _onImage.color -= new Color(0, 0, 0, 1);
+        _offImage.color += new Color(0, 0, 0, 1);
+    }
+
     protected override void SetEvent()
     {
         SetEventClick();
+        SetEventCheckBox();
     }
 
     private void SetEventClick()
@@ -78,14 +87,37 @@ public class ToggleBase : UIPartBase
             {
                 if(value)
                 {
-                    await slider.DOValue(1, animationTime)
-                        .SetEase(Ease.InSine)
-                        .AsyncWaitForCompletion();
-
+                    slider
+                        .DOValue(1, animationTime)
+                        .SetEase(Ease.Linear)
+                        .ToUniTask(cancellationToken: Ct)
+                        .Forget();
+                    _onImage
+                        .DOFade(1, animationTime)
+                        .SetEase(Ease.Linear)
+                        .ToUniTask(cancellationToken: Ct)
+                        .Forget();
+                    await _offImage
+                        .DOFade(0, animationTime)
+                        .SetEase(Ease.OutSine)
+                        .ToUniTask(cancellationToken: Ct);
                 }
                 else
                 {
-                    slider.value = 0;
+                    slider
+                        .DOValue(0, animationTime)
+                        .SetEase(Ease.Linear)
+                        .ToUniTask(cancellationToken: Ct)
+                        .Forget();
+                    _onImage
+                        .DOFade(0, animationTime)
+                        .SetEase(Ease.Linear)
+                        .ToUniTask(cancellationToken: Ct)
+                        .Forget();
+                    await _offImage
+                        .DOFade(1, animationTime)
+                        .SetEase(Ease.Linear)
+                        .ToUniTask(cancellationToken: Ct);
                 }
             });
     }

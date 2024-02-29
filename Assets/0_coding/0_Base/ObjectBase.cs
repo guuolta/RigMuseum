@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System.Threading;
+using UniRx;
 using UnityEngine;
 
 /// <summary>
@@ -33,6 +34,12 @@ public class ObjectBase : MonoBehaviour
     {
         SetFirstEvent();
         SetEvent();
+    }
+
+    private void OnDestroy()
+    {
+        FirstDestroy();
+        Destroy();
     }
 
     /// <summary>
@@ -73,5 +80,14 @@ public class ObjectBase : MonoBehaviour
     protected virtual void Destroy()
     {
 
+    }
+
+    /// <summary>
+    /// イベント削除
+    /// </summary>
+    protected virtual CompositeDisposable DisposeEvent(CompositeDisposable disposable)
+    {
+        disposable.Dispose();
+        return new CompositeDisposable();
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 public class CloseButton : ButtonBase
 {
-    public override void SetEventPlaySe()
+    protected override void SetEventPlaySe()
     {
         OnClickCallback += () =>
         {

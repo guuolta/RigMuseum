@@ -53,6 +53,10 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
         _bgmAudioSource.Play();
     }
 
+    /// <summary>
+    /// SEを鳴らす
+    /// </summary>
+    /// <param name="clip"> 鳴らすSE </param>
     public void PlayOneShotSE(AudioClip clip)
     {
         foreach(AudioSource se in _seAudioSourceList)
@@ -68,6 +72,10 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
         _seAudioSourceList.Add(seSource);
     }
 
+    /// <summary>
+    /// SEを鳴らす
+    /// </summary>
+    /// <param name="type"> Seの種類 </param>
     public void PlayOneShotSE(SEType type)
     {
         foreach (AudioSource se in _seAudioSourceList)
@@ -83,6 +91,9 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
         _seAudioSourceList.Add(seSource);
     }
 
+    /// <summary>
+    /// SEの辞書を取得
+    /// </summary>
     private void GetSEDictionary()
     {
         foreach(var se in _seList)

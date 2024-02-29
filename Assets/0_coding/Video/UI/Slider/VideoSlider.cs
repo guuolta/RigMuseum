@@ -15,21 +15,11 @@ public class VideoSlider : SliderBase
 
     public override async void OnPointerEnter(PointerEventData eventData)
     {
-        await _explainText.ShowAsync();
+        await _explainText.ShowAsync(Ct);
     }
 
     public override async void OnPointerExit(PointerEventData eventData)
     {
-        await _explainText.HideAsync();
-    }
-
-    private void SetEventSlider()
-    {
-        SliderValueAsObservable
-            .TakeUntilDestroy(this)
-            .DistinctUntilChanged()
-            .Subscribe(value =>
-            {
-            });
+        await _explainText.HideAsync(Ct);
     }
 }

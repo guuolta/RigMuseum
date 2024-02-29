@@ -213,15 +213,6 @@ public class PlayerOperater : ObjectBase
     }
 
     /// <summary>
-    /// イベント削除
-    /// </summary>
-    private CompositeDisposable DisposeEvent(CompositeDisposable disposable)
-    {
-        disposable.Dispose();
-        return new CompositeDisposable();
-    }
-
-    /// <summary>
     /// 縦方向の移動削除
     /// </summary>
     /// <param name="value"> 移動距離 </param>
@@ -250,26 +241,26 @@ public class PlayerOperater : ObjectBase
             .Join(_transform.DORotate(rot, animationTime).SetEase(ease))
             .ToUniTask(cancellationToken: ct);
     }
+
+    ////UI検査用
+    //private void Update()
+    //{
+    //    if (Input.GetMouseButtonDown(0))
+    //    {
+    //        Debug.Log("ok");
+    //        // マウスポインターの位置にあるUI要素を取得
+    //        PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+    //        pointerEventData.position = Input.mousePosition;
+
+    //        // RaycastでUI要素をチェックし、結果をリストに格納
+    //        List<RaycastResult> results = new List<RaycastResult>();
+    //        EventSystem.current.RaycastAll(pointerEventData, results);
+
+    //        // RaycastでヒットしたUI要素の名前を取得
+    //        if (results.Count > 0)
+    //        {
+    //            Debug.Log("UI Name: " + results[0].gameObject.name);
+    //        }
+    //    }
+    //}
 }
-
-////UI検査用
-//private void Update()
-//{
-//    if (Input.GetMouseButtonDown(0))
-//    {
-//        Debug.Log("ok");
-//        // マウスポインターの位置にあるUI要素を取得
-//        PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
-//        pointerEventData.position = Input.mousePosition;
-
-//        // RaycastでUI要素をチェックし、結果をリストに格納
-//        List<RaycastResult> results = new List<RaycastResult>();
-//        EventSystem.current.RaycastAll(pointerEventData, results);
-
-//        // RaycastでヒットしたUI要素の名前を取得
-//        if (results.Count > 0)
-//        {
-//            Debug.Log("UI Name: " + results[0].gameObject.name);
-//        }
-//    }
-//}

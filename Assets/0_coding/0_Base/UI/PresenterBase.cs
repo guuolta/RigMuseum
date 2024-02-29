@@ -9,9 +9,6 @@ using UnityEngine;
 public class PresenterBase<TView> : ObjectBase, IPresenter
     where TView : ViewBase
 {
-    [Header("パネルのアニメーションの時間")]
-    [SerializeField]
-    protected float animationTime = 0.1f;
     private TView _view;
     /// <summary>
     /// ビュー
@@ -31,11 +28,13 @@ public class PresenterBase<TView> : ObjectBase, IPresenter
 
     public virtual async UniTask ShowAsync(CancellationToken ct)
     {
-        await View.ShowAsync(animationTime, ct);
+        await View.ShowAsync(ct);
+        View.ChangeInteractive(true);
     }
 
     public virtual async UniTask HideAsync(CancellationToken ct)
     {
-        await View.HideAsync(animationTime, ct);
+        View.ChangeInteractive(false);
+        await View.HideAsync(ct);
     }
 }
