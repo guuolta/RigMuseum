@@ -753,6 +753,7 @@ GameObject:
   - component: {fileID: 154176649}
   - component: {fileID: 154176651}
   - component: {fileID: 154176650}
+  - component: {fileID: 154176652}
   m_Layer: 0
   m_Name: CursorDitector
   m_TagString: Untagged
@@ -817,6 +818,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 154176648}
   m_CullTransparentMesh: 1
+--- !u!114 &154176652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 154176648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 789e987b4bd036745b2229ee8bdbe2e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _disInteractiveColor: 0
+  animationTime: 0.1
 --- !u!1001 &154779065
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1806,10 +1821,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0
   animationTime: 0.1
+  _screenImage: {fileID: 154176652}
   _seekBar: {fileID: 1341912198}
   _playButton: {fileID: 1338874049}
-  _skipButton: {fileID: 1431075037}
-  _backButton: {fileID: 1245331094}
+  _skipButton: {fileID: 1245331094}
+  _backButton: {fileID: 1431075037}
   _speedButton: {fileID: 622173001}
   _speedPanel: {fileID: 931455150}
   _nextButton: {fileID: 980155704}
@@ -10049,7 +10065,7 @@ MonoBehaviour:
   m_Direction: 0
   m_MinValue: 0
   m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -10104,7 +10120,7 @@ GameObject:
   - component: {fileID: 1431075036}
   - component: {fileID: 1431075037}
   m_Layer: 0
-  m_Name: SkipButton
+  m_Name: BackButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12598,7 +12614,7 @@ GameObject:
   - component: {fileID: 2045879096}
   - component: {fileID: 2045879095}
   m_Layer: 0
-  m_Name: Buttons
+  m_Name: UIParts
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14335,6 +14351,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Url
       value: https://rr4---sn-oguesn6y.googlevideo.com/videoplayback?expire=1709079800&ei=mCjeZfjYLp2ZvcAPkqa42Ao&ip=111.98.64.89&id=o-ACwbkmBJx9F6apa4uHRtJ0rl6qC3jjMedyJslR3qSVXG&itag=22&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&mh=o8&mm=31%2C29&mn=sn-oguesn6y%2Csn-oguelnzr&ms=au%2Crdu&mv=m&mvi=4&pl=18&gcr=jp&initcwndbps=1342500&spc=UWF9f0PdF4KEnFJGmVAEnAcdmrhVuB1VEf6gyi_wvPbtaeU&vprv=1&svpuc=1&mime=video%2Fmp4&cnr=14&ratebypass=yes&dur=193.213&lmt=1705989157033369&mt=1709057838&fvip=5&fexp=24007246&c=ANDROID&txp=4532434&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cgcr%2Cspc%2Cvprv%2Csvpuc%2Cmime%2Ccnr%2Cratebypass%2Cdur%2Clmt&sig=AJfQdSswRQIhAKWIbRHsTnG-ItGVFS_kfYHoEFNWqgCI3IeiXj5ddJQ9AiAhPHhfpqGRSe08TnSy90rp_SekF6ZQFV5PU7yLzsr2Tw%3D%3D&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=APTiJQcwRgIhAJcRp4nQcbz3Hek4IFoStMNgz-fuiz6N9CyOd6uSSOJzAiEA2PbDjnHNDyowNztoMlmi53gjVTPEDuqBZ-nIw9jlKkY%3D
+      objectReference: {fileID: 0}
+    - target: {fileID: 1451889487332203814, guid: ddf34e40d5b091f458fe6b7371d65645,
+        type: 3}
+      propertyPath: m_Looping
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1451889487332203814, guid: ddf34e40d5b091f458fe6b7371d65645,
         type: 3}

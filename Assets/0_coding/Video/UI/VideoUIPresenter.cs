@@ -1,16 +1,11 @@
 using Cysharp.Threading.Tasks;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using UniRx;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.Video;
 
 public class VideoUIPresenter : PresenterBase<VideoUIView>
 {
+    private CompositeDisposable disposables = new CompositeDisposable();
+
     protected override void Init()
     {
         View.ChangeInteractive(false);
@@ -18,12 +13,21 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
 
     protected override void SetEvent()
     {
+        SetEventScreen(Ct);
+        SyncSeekBarAndTime(Ct);
         SetEventSeekBar();
         SetEventPlayButton(Ct);
         SetEventSpeedButton(Ct);
         SetEventMuteButton();
         SetEventVolumeSlider();
         SetEventVideoTime();
+        SetEventToggle();
+    }
+
+
+    protected override void Destroy()
+    {
+        DisposeEvent(disposables);
     }
 
     public override async UniTask ShowAsync(CancellationToken ct)
@@ -32,15 +36,41 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
         await base.ShowAsync(ct);
     }
 
-    private void SetEventSeekBar()
+    /// <summary>
+    /// スクリーン画像のイベント設定
+    /// </summary>
+    /// <param name="ct"></param>
+    private void SetEventScreen(CancellationToken ct)
     {
-        View.SeekBar.SliderValueAsObservable
-            .TakeUntilDestroy(this)
-            .DistinctUntilChanged()
-            .Subscribe(value =>
+        View.ScreenImage.OnClickCallback += () =>
+        {
+            if(GameVideoManager.Instance.IsPlayVideo.Value)
             {
+                Pause(ct);
+            }
+            else
+            {
+                Play(ct);
+            }
+        };
+    }
 
-            });
+    /// <summary>
+    /// シークバーと動画の時間の同期
+    /// </summary>
+    /// <param name="ct"></param>
+    private void SyncSeekBarAndTime(CancellationToken ct)
+    {
+        View.SeekBar.OnPointerUpEvent += () =>
+        {
+            disposables = DisposeEvent(disposables);
+            Play(ct);
+        };
+        View.SeekBar.OnPointerDownEvent += () =>
+        {
+            Pause(ct);
+            SetEventSeekBar();
+        };
 
         GameVideoManager.Instance.VideoTime
             .TakeUntilDestroy(this)
@@ -59,6 +89,24 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
             });
     }
 
+    /// <summary>
+    /// シークバーのイベント設定
+    /// </summary>
+    private void SetEventSeekBar()
+    {
+        View.SeekBar.SliderValueAsObservable
+            .TakeUntilDestroy(this)
+            .DistinctUntilChanged()
+            .Subscribe(value =>
+            {
+                GameVideoManager.Instance.SetVideoTime(value);
+            }).AddTo(disposables);
+    }
+
+    /// <summary>
+    /// 再生ボタンの設定
+    /// </summary>
+    /// <param name="ct"></param>
     private void SetEventPlayButton(CancellationToken ct)
     {
         View.PlayButton.IsOn
@@ -77,6 +125,26 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
             });
     }
 
+    private void SetEventBackButton()
+    {
+        View.BackButton.OnClickCallback += () =>
+        {
+
+        };
+    }
+
+    private void SetEventSkipButton()
+    {
+        View.SkipButton.OnClickCallback += () =>
+        {
+
+        };
+    }
+
+    /// <summary>
+    /// 再生速度ボタンの設定
+    /// </summary>
+    /// <param name="ct"></param>
     private void SetEventSpeedButton(CancellationToken ct)
     {
         View.SpeedButton.OnClickCallback += async () =>
@@ -100,6 +168,9 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
             });
     }
 
+    /// <summary>
+    /// ミュートボタンの設定
+    /// </summary>
     private void SetEventMuteButton()
     {
         View.MuteButton.IsOn
@@ -107,15 +178,21 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
-                GameVideoManager.Instance.Mute(value);    
+                GameVideoManager.Instance.SetMute(value);    
             });
     }
 
+    /// <summary>
+    /// 音量スライダーの初期設定
+    /// </summary>
     private void SetInitVolumeSliderValue()
     {
         View.VolumeSlider.SetValue(AudioManager.Instance.GetSoundVolume(AudioType.Movie));
     }
 
+    /// <summary>
+    /// 音量スライダーの設定
+    /// </summary>
     private void SetEventVolumeSlider()
     {
         View.VolumeSlider.SliderValueAsObservable
@@ -129,7 +206,10 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
             
     }
 
-    public void SetEventVideoTime()
+    /// <summary>
+    /// 再生時間の設定
+    /// </summary>
+    private void SetEventVideoTime()
     {
         GameVideoManager.Instance.VideoTime
             .TakeUntilDestroy(this)
@@ -148,6 +228,46 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
             });
     }
 
+    /// <summary>
+    /// 自動再生トグルの設定
+    /// </summary>
+    private void SetEventToggle()
+    {
+        View.Toggle.IsToggle
+            .TakeUntilDestroy(this)
+            .DistinctUntilChanged()
+            .Subscribe(value =>
+            {
+                GameVideoManager.Instance.SetLoop(value);
+            });
+
+    }
+
+    /// <summary>
+    /// 動画再生
+    /// </summary>
+    /// <param name="ct"></param>
+    private void Play(CancellationToken ct)
+    {
+        View.PlayButton.SetOn(false);
+        GameVideoManager.Instance.Play(ct).Forget();
+    }
+
+    /// <summary>
+    /// 動画停止
+    /// </summary>
+    /// <param name="ct"></param>
+    private void Pause(CancellationToken ct)
+    {
+        View.PlayButton.SetOn(true);
+        GameVideoManager.Instance.Pause(ct).Forget();
+    }
+
+    /// <summary>
+    /// 再生時間のテキストを取得
+    /// </summary>
+    /// <param name="time"> 再生時間 </param>
+    /// <returns></returns>
     private string GetVideoTime(int time)
     {
         if(time < 0)

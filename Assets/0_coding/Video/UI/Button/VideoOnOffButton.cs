@@ -23,6 +23,9 @@ public class VideoOnOffButton : ButtonBase
     private VideoExplainText _offExplainText;
 
     private BoolReactiveProperty _isOn = new BoolReactiveProperty(false);
+    /// <summary>
+    /// ボタンがONの状態か
+    /// </summary>
     public BoolReactiveProperty IsOn => _isOn;
     private Image _targetImage;
     private VideoExplainText _targetExplainText;
@@ -66,6 +69,15 @@ public class VideoOnOffButton : ButtonBase
 
     }
 
+    /// <summary>
+    /// ボタンのOn、Off設定
+    /// </summary>
+    /// <param name="isOn">Onか</param>
+    public void SetOn(bool isOn)
+    {
+        _isOn.Value = isOn;
+    }
+
     private void SetEventClick()
     {
         OnClickCallback += () =>
@@ -84,16 +96,13 @@ public class VideoOnOffButton : ButtonBase
             .Skip(1)
             .TakeUntilDestroy(this)
             .DistinctUntilChanged()
-            .Subscribe(async value =>
+            .Subscribe(value =>
             {
                 HideAsync(_targetImage, Ct).Forget();
                 _targetExplainText.HideAsync(Ct).Forget();
                 _targetImage = value ? _offButtonImage : _onButtonImage;
                 _targetExplainText = value ? _offExplainText : _onExplainText;
                 ShowAsync(_targetImage, Ct).Forget();
-                await _targetExplainText.ShowAsync(Ct);
             });
     }
-
-    
 }

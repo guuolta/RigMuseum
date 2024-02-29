@@ -6,6 +6,9 @@ using UnityEngine.EventSystems;
 
 public class SeekBar : SliderBase
 {
+    public System.Action OnPointerDownEvent;
+    public System.Action OnPointerUpEvent;
+
     private RectTransform _handleRect;
     private Vector2 _iniSize = Vector2.zero;
     private Vector2 _targetSize = Vector2.zero;
@@ -18,6 +21,16 @@ public class SeekBar : SliderBase
 
         RectTransform.sizeDelta = _iniSize;
         _handleRect.localScale = Vector2.zero;
+    }
+
+    public override void OnPointerUp(PointerEventData eventData)
+    {
+        OnPointerUpEvent.Invoke();
+    }
+
+    public override void OnPointerDown(PointerEventData eventData)
+    {
+        OnPointerDownEvent.Invoke();
     }
 
     public override async void OnPointerEnter(PointerEventData eventData)

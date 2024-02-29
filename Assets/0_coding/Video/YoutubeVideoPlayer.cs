@@ -47,16 +47,16 @@ public class YoutubeVideoPlayer : ObjectBase
         }
     }
 
+    private BoolReactiveProperty _isPlayVideo = new BoolReactiveProperty(false);
+    /// <summary>
+    /// 動画が再生されているか
+    /// </summary>
+    public BoolReactiveProperty IsPlayVideo => _isPlayVideo;
     private BoolReactiveProperty _isSetVideo = new BoolReactiveProperty(false);
     /// <summary>
     /// 動画が設定されたか
     /// </summary>
     public BoolReactiveProperty IsSetVideo => _isSetVideo;
-    private BoolReactiveProperty _isFinsh = new BoolReactiveProperty(false);
-    /// <summary>
-    /// 動画が終わったか
-    /// </summary>
-    public BoolReactiveProperty IsFinsh => _isFinsh;
     private ReactiveProperty<int> _videoPlayTime = new ReactiveProperty<int>(0);
     /// <summary>
     /// 動画の再生時間
@@ -72,7 +72,7 @@ public class YoutubeVideoPlayer : ObjectBase
 
     protected override void SetEvent()
     {
-        SetEventVideoFinish();
+        SetEventVideoPlay();
     }
 
     protected override void Destroy()
@@ -86,15 +86,6 @@ public class YoutubeVideoPlayer : ObjectBase
         return base.DisposeEvent(disposable);
     }
 
-    /// <summary>
-    /// ビデオの時間を取得
-    /// </summary>
-    /// <returns></returns>
-    private int GetVideoTime()
-    {
-        return (int)YoutubePlayer.VideoPlayer.length;
-    }
-
     /// <samarry>
     /// 設定されている動画再生
     /// </samarry>
@@ -105,7 +96,7 @@ public class YoutubeVideoPlayer : ObjectBase
             AudioSource.mute = false;
         }
 
-        if(!VideoPlayer.isPlaying)
+        if(!_isPlayVideo.Value)
         {
             VideoPlayer.Play();
         }
@@ -118,7 +109,6 @@ public class YoutubeVideoPlayer : ObjectBase
     /// <returns></returns>
     public async UniTask Play(string youtubeURL, CancellationToken ct)
     {
-        _isFinsh.Value = false;
         _isSetVideo.Value = false;
         await YoutubePlayer.PlayVideoAsync(youtubeURL, cancellationToken:ct);
         _isSetVideo.Value = true;
@@ -131,33 +121,82 @@ public class YoutubeVideoPlayer : ObjectBase
     /// </summary>
     public void Pause()
     {
-        if (VideoPlayer.isPlaying)
+        if (_isPlayVideo.Value)
         {
             VideoPlayer.Pause();
         }
     }
 
+    public void SetVideoPlayTime(float time)
+    {
+        VideoPlayer.time = time;
+        VideoPlayTime.Value = (int)time;
+    }
+
+    /// <summary>
+    /// ビデオの時間を取得
+    /// </summary>
+    /// <returns></returns>
+    private int GetVideoTime()
+    {
+        return (int)YoutubePlayer.VideoPlayer.length;
+    }
+
+    /// <summary>
+    /// 動画が再生したときのイベント設定
+    /// </summary>
+    private void SetEventVideoPlay()
+    {
+        Observable.EveryUpdate()
+            .TakeUntilDestroy(this)
+            .Select(_ => VideoPlayer.isPlaying)
+            .DistinctUntilChanged()
+            .Subscribe(value =>
+            {
+                _isPlayVideo.Value = value;
+            });
+    }
+
+    /// <summary>
+    /// 動画が終了したときのイベント設定
+    /// </summary>
     private void SetEventVideoFinish()
     {
         VideoPlayer.loopPointReached += SetEventLoopPointReached;
     }
 
+    /// <summary>
+    /// 動画が終了したときの処理
+    /// </summary>
+    /// <param name="vp"></param>
     private void SetEventLoopPointReached(VideoPlayer vp)
     {
-        _isFinsh.Value = true;
+        
     }
 
+    /// <summary>
+    /// 動画時間を設定
+    /// </summary>
     private void SetEventPlayTime()
     {
         disposables = DisposeEvent(disposables);
 
         Observable.EveryUpdate()
-            .TakeWhile (_ => !_isFinsh.Value)
             .Select(value => VideoPlayer.time)
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
                 VideoPlayTime.Value = (int)value;
             }).AddTo(disposables);
+    }
+
+
+    /// <summary>
+    /// ループするか設定
+    /// </summary>
+    /// <param name="isLoop"> ループするか </param>
+    public void SetLoop(bool isLoop)
+    {
+        _videoPlayer.isLooping = isLoop;
     }
 }

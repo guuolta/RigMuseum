@@ -1,6 +1,4 @@
 using Cysharp.Threading.Tasks;
-using DG.Tweening;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using TMPro;
 using UnityEngine;
@@ -8,6 +6,13 @@ using UnityEngine.UI;
 
 public class VideoUIView : ViewBase
 {
+    [Header("スクリーン画像")]
+    [SerializeField]
+    private UIPartBase _screenImage;
+    /// <summary>
+    /// スクリーン画像
+    /// </summary>
+    public UIPartBase ScreenImage => _screenImage;
     [Header("シークバー")]
     [SerializeField]
     private SeekBar _seekBar;

@@ -37,6 +37,10 @@ public class GameVideoManager : SingletonObjectBase<GameVideoManager>
     private float _targetClearDistance = 15f;
 
     /// <summary>
+    /// 動画が再生されているか
+    /// </summary>
+    public BoolReactiveProperty IsPlayVideo => _videoPlayer.IsPlayVideo;
+    /// <summary>
     /// 動画の再生時間
     /// </summary>
     public ReactiveProperty<int> VideoPlayTime => _videoPlayer.VideoPlayTime;
@@ -77,6 +81,61 @@ public class GameVideoManager : SingletonObjectBase<GameVideoManager>
     protected override void Destroy()
     {
         DisposeEvent(_disposables);
+    }
+
+    /// <summary>
+    /// 動画再生
+    /// </summary>
+    public async UniTask Play(CancellationToken ct)
+    {
+        await UniTask.WaitUntil(() => _videoPlayer.IsSetVideo.Value, cancellationToken: ct);
+        _videoPlayer.Play();
+    }
+
+    /// <summary>
+    /// 動画停止
+    /// </summary>
+    public async UniTask Pause(CancellationToken ct)
+    {
+        await UniTask.WaitUntil(() => _videoPlayer.IsSetVideo.Value, cancellationToken: ct);
+        _videoPlayer.Pause();
+    }
+
+    /// <summary>
+    /// 再生時間まで動画を飛ばす
+    /// </summary>
+    /// <param name="time"> 時間 </param>
+    public void SetVideoTime(float time)
+    {
+        _videoPlayer.SetVideoPlayTime(time);
+    }
+
+    /// <summary>
+    /// 再生速度設定
+    /// </summary>
+    /// <param name="speed"> 再生速度 </param>
+    public void SetVideoSpeed(float speed)
+    {
+        _videoPlayer.VideoPlayer.playbackSpeed = speed;
+    }
+
+    /// <summary>
+    /// 動画をミュートするか設定
+    /// </summary>
+    /// <param name="mute"> ミュートにするか </param>
+    public void SetMute(bool mute)
+    {
+        _videoPlayer.AudioSource.mute = mute;
+    }
+
+
+    /// <summary>
+    /// 動画をループするか設定
+    /// </summary>
+    /// <param name="isLoop"> ループするか </param>
+    public void SetLoop(bool isLoop)
+    {
+        _videoPlayer.SetLoop(isLoop);
     }
 
     /// <summary>
@@ -160,7 +219,7 @@ public class GameVideoManager : SingletonObjectBase<GameVideoManager>
                         await Pause(ct);
                         break;
                     default:
-                        Mute(true);
+                        SetMute(true);
                         break;
                 }
             });
@@ -174,37 +233,5 @@ public class GameVideoManager : SingletonObjectBase<GameVideoManager>
         }
 
         _disposables = DisposeEvent(_disposables);
-    }
-
-    /// <summary>
-    /// 動画再生
-    /// </summary>
-    public async UniTask Play(CancellationToken ct)
-    {
-        await UniTask.WaitUntil(() => _videoPlayer.IsSetVideo.Value, cancellationToken: ct);
-        _videoPlayer.Play();
-    }
-
-    /// <summary>
-    /// 動画停止
-    /// </summary>
-    public async UniTask Pause(CancellationToken ct)
-    {
-        await UniTask.WaitUntil(() => _videoPlayer.IsSetVideo.Value, cancellationToken: ct);
-        _videoPlayer.Pause();
-    }
-
-    public void SetVideoSpeed(float speed)
-    {
-        _videoPlayer.VideoPlayer.playbackSpeed = speed;
-    }
-
-    /// <summary>
-    /// 動画をミュート
-    /// </summary>
-    /// <param name="mute"> ミュートにするか </param>
-    public void Mute(bool mute)
-    {
-        _videoPlayer.AudioSource.mute = mute;
     }
 }
