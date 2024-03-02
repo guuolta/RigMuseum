@@ -16,6 +16,7 @@ public class UIBase : GameObjectBase
     /// アニメーションの時間
     /// </summary>
     [Header("アニメーションの時間")]
+    [Range(0f, 10f)]
     [SerializeField]
     protected float animationTime = 0.1f;
 

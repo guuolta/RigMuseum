@@ -21,7 +21,7 @@ public class GameDatas : ScriptableObject
             return null;
         }
 
-        if (index > _gameDataList.Count)
+        if (index >= _gameDataList.Count)
         {
             Debug.Log("out of index");
             return _gameDataList[0];
@@ -46,26 +46,31 @@ public class GameDatas : ScriptableObject
 
         return data.YoutubeURL;
     }
+
+    public int GetCount()
+    {
+        return _gameDataList.Count;
+    }
 }
 
 [System.Serializable]
 public class GameData
 {
     [Header("ゲーム名")]
-    public string GameName;
+    public string Title = "";
     [Header("紹介文")]
     [TextArea(1, 10)]
-    public string GameIntroduction;
+    public string Explain = "";
     [Header("製作メンバー(Coading)")]
-    public List<string> CoadingMenber = new List<string>();
+    public string[] CoadingMenber = new string[0];
     [Header("製作メンバー(3D)")]
-    public List<string> ModelMenber = new List<string>();
+    public string[] ModelMenber = new string[0];
     [Header("製作メンバー(2D)")]
-    public List<string> IllustrationMenber = new List<string>();
+    public string[] IllustrationMenber = new string[0];
     [Header("製作メンバー(DTM)")]
-    public List<string> DTMMenber = new List<string>();
+    public string[] DTMMenber = new string[0];
     [Header("ゲームのURｌ(UnityRoomなど)")]
-    public string GameURL;
+    public string GameURL = "";
     [Header("紹介動画のYouTubeのURL(e.g. https://www.youtube.com/watch?v=VIDEO_ID)")]
-    public string YoutubeURL;
+    public string YoutubeURL = "";
 }

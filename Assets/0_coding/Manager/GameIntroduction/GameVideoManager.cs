@@ -4,13 +4,14 @@ using System.Threading;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Playables;
 using UnityEngine.UI;
 
 public class GameVideoManager : SingletonObjectBase<GameVideoManager>
 {
     [Header("ゲームデータ")]
     [SerializeField]
-    private GameDatas gameDatas;
+    private GameDatas _gameDatas;
     [Header("モニター")]
     [SerializeField]
     private Monitor _monitor;
@@ -23,9 +24,18 @@ public class GameVideoManager : SingletonObjectBase<GameVideoManager>
     [Header("動画UIプレゼンター")]
     [SerializeField]
     private VideoUIPresenter _videoUIPresenter;
+    [Header("キャプションUI")]
+    [SerializeField]
+    private GameCaptionPresenter _captionUI;
     [Header("モニターの範囲検知用画像")]
     [SerializeField]
     private Image _rangeImage;
+    [Header("ローディングUI")]
+    [SerializeField]
+    private VideoLoadingPresenter _loadingUI;
+    [Header("モニター上のUI")]
+    [SerializeField]
+    private OnMonitorUIPresenter _onMonitorUI;
     [Header("アニメーションの時間")]
     [SerializeField]
     private float _animationTime = 0.1f;
@@ -36,6 +46,8 @@ public class GameVideoManager : SingletonObjectBase<GameVideoManager>
     [SerializeField]
     private float _targetClearDistance = 15f;
 
+
+    private ReactiveProperty<int> _videoIndex = new ReactiveProperty<int>(0);
     /// <summary>
     /// 動画が再生されているか
     /// </summary>
@@ -49,19 +61,17 @@ public class GameVideoManager : SingletonObjectBase<GameVideoManager>
     /// </summary>
     public ReactiveProperty<int> VideoTime => _videoPlayer.VideoTime;
 
-    private BoolReactiveProperty _isEnterUI = new BoolReactiveProperty(false);
+    private GameData _targetGameData = new GameData();
     private Vector3 _targetPos = Vector3.zero;
     private Vector3 _targetRot = Vector3.zero;
     private Vector3 _clearPos = Vector3.zero;
     private Camera _camera;
     private RectTransform _canvasRectTransform;
-    private CompositeDisposable _disposables = new CompositeDisposable();
-    private Vector2 MousePos = Vector2.zero;
+    private CompositeDisposable _videoDisposables = new CompositeDisposable();
+    private CompositeDisposable _pointerDisposables = new CompositeDisposable();
 
     protected override void Init()
     {
-        _videoPlayer.Play(gameDatas.GetGameYoutubeURL(0), Ct).Forget();
-
         _targetPos = _monitor.Transform.position + (_monitor.Transform.right * _targetDistance);
         _targetRot = _monitor.Transform.localEulerAngles + new Vector3(0, -90, 0);
         _clearPos = _targetPos + (_monitor.Transform.right * _targetClearDistance);
@@ -76,29 +86,61 @@ public class GameVideoManager : SingletonObjectBase<GameVideoManager>
     {
         SetEventTarget();
         SetEventVideo(Ct);
-    }
-
-    protected override void Destroy()
-    {
-        DisposeEvent(_disposables);
+        SetEventVideoPlay(Ct);
     }
 
     /// <summary>
     /// 動画再生
     /// </summary>
-    public async UniTask Play(CancellationToken ct)
+    public async UniTask PlayAsync(CancellationToken ct)
     {
         await UniTask.WaitUntil(() => _videoPlayer.IsSetVideo.Value, cancellationToken: ct);
         _videoPlayer.Play();
     }
 
     /// <summary>
+    /// 次の動画を再生
+    /// </summary>
+    public void PlayNext()
+    {
+        if(_videoIndex.Value == _gameDatas.GetCount() - 1)
+        {
+            _videoIndex.Value = 0;
+            return;
+        }
+
+        _videoIndex.Value++;
+    }
+
+    /// <summary>
     /// 動画停止
     /// </summary>
-    public async UniTask Pause(CancellationToken ct)
+    public void Pause()
     {
-        await UniTask.WaitUntil(() => _videoPlayer.IsSetVideo.Value, cancellationToken: ct);
+        if(!_videoPlayer.IsSetVideo.Value)
+        {
+            return;
+        }
+
         _videoPlayer.Pause();
+    }
+
+    /// <summary>
+    /// 時間飛ばし
+    /// </summary>
+    /// <param name="time"> 飛ばす時間 </param>
+    public void Skip(float time)
+    {
+        SetVideoTime(VideoPlayTime.Value + time);
+    }
+
+    /// <summary>
+    /// 時間戻し
+    /// </summary>
+    /// <param name="time"> 戻す時間 </param>
+    public void Back(float time)
+    {
+        SetVideoTime(VideoPlayTime.Value - time);
     }
 
     /// <summary>
@@ -128,7 +170,6 @@ public class GameVideoManager : SingletonObjectBase<GameVideoManager>
         _videoPlayer.AudioSource.mute = mute;
     }
 
-
     /// <summary>
     /// 動画をループするか設定
     /// </summary>
@@ -136,6 +177,65 @@ public class GameVideoManager : SingletonObjectBase<GameVideoManager>
     public void SetLoop(bool isLoop)
     {
         _videoPlayer.SetLoop(isLoop);
+    }
+
+    /// <summary>
+    /// 動画の再生イベントの設定
+    /// </summary>
+    /// <param name="ct"></param>
+    private void SetEventVideoPlay(CancellationToken ct)
+    {
+        _videoIndex
+            .TakeUntilDestroy(this)
+            .DistinctUntilChanged()
+            .Subscribe(async value =>
+            {
+                _targetGameData = _gameDatas.GetGameData(value);
+
+                _loadingUI.ShowAsync(ct).Forget();
+                Pause();
+                await _videoPlayer.Play(_targetGameData.YoutubeURL, ct);
+                SetGameDataToUI(_targetGameData);
+                _loadingUI.HideAsync(ct).Forget();
+            });
+    }
+
+    /// <summary>
+    /// ゲームデータをキャプションに設定
+    /// </summary>
+    /// <param name="gameData"></param>
+    private void SetGameDataToUI(GameData gameData)
+    {
+        _captionUI.SetTitleText(gameData.Title);
+        _captionUI.SetCoadingMemberText(gameData.CoadingMenber);
+        _captionUI.SetIllustrationMemberText(gameData.IllustrationMenber);
+        _captionUI.SetModelMemberText(gameData.ModelMenber);
+        _captionUI.SetDTMMemberText(gameData.DTMMenber);
+        _captionUI.SetURL(gameData.GameURL);
+        _captionUI.SetExplain(gameData.Explain);
+    }
+
+    /// <summary>
+    /// 動画の自動再生設定
+    /// </summary>
+    /// <param name="isAuto"> 自動再生するか </param>
+    /// <param name="ct"></param>
+    public void SetAutoPlayNext(bool isAuto, CancellationToken ct)
+    {
+        _videoDisposables = DisposeEvent(_videoDisposables);
+
+        if(!isAuto)
+        {
+            return;
+        }
+
+        _videoPlayer.IsFinishVideo
+            .TakeUntilDestroy(this)
+            .Where(value => value)
+            .Subscribe(value =>
+            {
+                PlayNext();
+            }).AddTo(_videoDisposables);
     }
 
     /// <summary>
@@ -170,28 +270,25 @@ public class GameVideoManager : SingletonObjectBase<GameVideoManager>
     /// </summary>
     private void SetEventPointer()
     {
+        Vector2 mousePos = Vector2.zero;
+
         Observable.EveryUpdate()
-            .Select(_ => EventSystem.current.IsPointerOverGameObject())
-            .Subscribe(value =>
+            .TakeUntilDestroy(this)
+            .Where(_ => !EventSystem.current.IsPointerOverGameObject() && _videoUIPresenter.IsShow)
+            .Subscribe(async _ =>
             {
-                _isEnterUI.SetValueAndForceNotify(value);
-            }).AddTo(_disposables);
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(_canvasRectTransform, Input.mousePosition, _camera, out mousePos);
 
-        _isEnterUI
-            .Subscribe(_ =>
-            {
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(_canvasRectTransform, Input.mousePosition, _camera, out MousePos);
-
-                if(_canvasRectTransform.rect.Contains(MousePos))
+                if(_canvasRectTransform.rect.Contains(mousePos))
                 {
-                    _videoUIPresenter.ShowAsync(Ct).Forget();
+                    await _videoUIPresenter.ShowAsync(Ct);
                 }
                 else
                 {
-                    _videoUIPresenter.HideAsync(Ct).Forget();
+                    await _videoUIPresenter.HideAsync(Ct);
                     AudioManager.Instance.SaveVolume();
                 }
-            }).AddTo(_disposables);
+            }).AddTo(_pointerDisposables);
     }
 
     /// <summary>
@@ -208,15 +305,17 @@ public class GameVideoManager : SingletonObjectBase<GameVideoManager>
                 switch (value)
                 {
                     case MuseumState.Play:
+                        await _onMonitorUI.HideAsync(ct);
                         _videoPlayer.AudioSource.spatialBlend = 1;
-                        await Play(ct);
+                        await PlayAsync(ct);
                         break;
                     case MuseumState.Monitor:
+                        await _onMonitorUI.ShowAsync(ct);
                         _videoPlayer.AudioSource.spatialBlend = 0;
-                        await Play(ct);
+                        await PlayAsync(ct);
                         break;
                     case MuseumState.Pause:
-                        await Pause(ct);
+                        Pause();
                         break;
                     default:
                         SetMute(true);
@@ -227,11 +326,11 @@ public class GameVideoManager : SingletonObjectBase<GameVideoManager>
 
     private void DisposePointerEvent()
     {
-        if(_disposables == new CompositeDisposable())
+        if(_pointerDisposables == new CompositeDisposable())
         {
             return;
         }
 
-        _disposables = DisposeEvent(_disposables);
+        _pointerDisposables = DisposeEvent(_pointerDisposables);
     }
 }

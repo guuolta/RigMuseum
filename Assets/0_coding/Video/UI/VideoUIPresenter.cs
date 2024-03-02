@@ -1,9 +1,22 @@
 using Cysharp.Threading.Tasks;
+using System;
 using System.Threading;
 using UniRx;
+using Unity.VisualScripting;
+using UnityEngine;
 
 public class VideoUIPresenter : PresenterBase<VideoUIView>
 {
+    [Header("動画を飛ばす時間")]
+    [SerializeField]
+    private float _skipTime =  10f;
+    [Header("動画を戻す時間")]
+    [SerializeField]
+    private float _backTime = 10f;
+
+    private bool _isShow = true;
+    public bool IsShow => _isShow;
+
     private CompositeDisposable disposables = new CompositeDisposable();
 
     protected override void Init()
@@ -15,13 +28,15 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
     {
         SetEventScreen(Ct);
         SyncSeekBarAndTime(Ct);
-        SetEventSeekBar();
         SetEventPlayButton(Ct);
+        SetEventSkipButton();
+        SetEventBackButton();
+        SetEventNextButton();
         SetEventSpeedButton(Ct);
         SetEventMuteButton();
         SetEventVolumeSlider();
         SetEventVideoTime();
-        SetEventToggle();
+        SetEventToggle(Ct);
     }
 
 
@@ -32,8 +47,10 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
 
     public override async UniTask ShowAsync(CancellationToken ct)
     {
+        _isShow = false;
         SetInitVolumeSliderValue();
         await base.ShowAsync(ct);
+        _isShow = true;
     }
 
     /// <summary>
@@ -116,33 +133,51 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
             {
                 if(value)
                 {
-                    GameVideoManager.Instance.Pause(ct).Forget();
+                    GameVideoManager.Instance.Pause();
                 }
                 else
                 {
-                    GameVideoManager.Instance.Play(ct).Forget();
+                    GameVideoManager.Instance.PlayAsync(ct).Forget();
                 }
             });
     }
 
-    private void SetEventBackButton()
-    {
-        View.BackButton.OnClickCallback += () =>
-        {
-
-        };
-    }
-
+    /// <summary>
+    /// 時間飛ばしボタンのイベント設定
+    /// </summary>
     private void SetEventSkipButton()
     {
         View.SkipButton.OnClickCallback += () =>
         {
-
+            GameVideoManager.Instance.Skip(_skipTime);
         };
     }
 
     /// <summary>
-    /// 再生速度ボタンの設定
+    /// 時間戻しボタンのイベント設定
+    /// </summary>
+    private void SetEventBackButton()
+    {
+        View.BackButton.OnClickCallback += () =>
+        {
+            GameVideoManager.Instance.Back(_backTime);
+        };
+    }
+
+    /// <summary>
+    /// 次の動画再生ボタンのイベント設定
+    /// </summary>
+    /// <param name="ct"></param>
+    private void SetEventNextButton()
+    {
+        View.NextButton.OnClickCallback += () =>
+        {
+            GameVideoManager.Instance.PlayNext();
+        };
+    }
+
+    /// <summary>
+    /// 再生速度ボタンのイベント設定
     /// </summary>
     /// <param name="ct"></param>
     private void SetEventSpeedButton(CancellationToken ct)
@@ -159,17 +194,19 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
             }
         };
 
+
         View.SpeedPanel.OnIndex
+            .Skip(1)
             .TakeUntilDestroy(this)
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
-
+                GameVideoManager.Instance.SetVideoSpeed(GetVideoSpeed(value));
             });
     }
 
     /// <summary>
-    /// ミュートボタンの設定
+    /// ミュートボタンのイベント設定
     /// </summary>
     private void SetEventMuteButton()
     {
@@ -191,7 +228,7 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
     }
 
     /// <summary>
-    /// 音量スライダーの設定
+    /// 音量スライダーのイベント設定
     /// </summary>
     private void SetEventVolumeSlider()
     {
@@ -207,7 +244,7 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
     }
 
     /// <summary>
-    /// 再生時間の設定
+    /// 再生時間のイベント設定
     /// </summary>
     private void SetEventVideoTime()
     {
@@ -229,16 +266,17 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
     }
 
     /// <summary>
-    /// 自動再生トグルの設定
+    /// 自動再生トグルのイベント設定
     /// </summary>
-    private void SetEventToggle()
+    private void SetEventToggle(CancellationToken ct)
     {
         View.Toggle.IsToggle
             .TakeUntilDestroy(this)
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
-                GameVideoManager.Instance.SetLoop(value);
+                GameVideoManager.Instance.SetLoop(!value);
+                GameVideoManager.Instance.SetAutoPlayNext(value, ct);
             });
 
     }
@@ -250,7 +288,7 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
     private void Play(CancellationToken ct)
     {
         View.PlayButton.SetOn(false);
-        GameVideoManager.Instance.Play(ct).Forget();
+        GameVideoManager.Instance.PlayAsync(ct).Forget();
     }
 
     /// <summary>
@@ -260,7 +298,17 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
     private void Pause(CancellationToken ct)
     {
         View.PlayButton.SetOn(true);
-        GameVideoManager.Instance.Pause(ct).Forget();
+        GameVideoManager.Instance.Pause();
+    }
+
+    /// <summary>
+    /// 再生速度取得
+    /// </summary>
+    /// <param name="index"> 速度のセル </param>
+    /// <returns></returns>
+    private float GetVideoSpeed(int index)
+    {
+        return index * 0.25f;
     }
 
     /// <summary>

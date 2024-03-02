@@ -14,6 +14,8 @@ public class SliderPanelView : PanelViewBase
 
     public override async UniTask ShowAsync(CancellationToken ct)
     {
+        RectTransform.DOComplete();
+
         await RectTransform
             .DOAnchorPosX(_slideBeforePos, animationTime)
             .SetEase(Ease.InSine)
@@ -22,6 +24,8 @@ public class SliderPanelView : PanelViewBase
 
     public override async UniTask HideAsync(CancellationToken ct)
     {
+        RectTransform.DOComplete();
+
         await RectTransform
             .DOAnchorPosX(_slideAfterPos, animationTime)
             .SetEase(Ease.OutSine)

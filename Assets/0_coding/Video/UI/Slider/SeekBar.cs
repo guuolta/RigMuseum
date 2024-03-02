@@ -45,15 +45,19 @@ public class SeekBar : SliderBase
 
     public async UniTask Show(CancellationToken ct)
     {
+        RectTransform.DOComplete();
+
+        _handleRect.localScale = Vector2.one;
         await RectTransform
             .DOSizeDelta(_targetSize, animationTime)
             .SetEase(Ease.Linear)
             .ToUniTask(cancellationToken : ct);
-        _handleRect.localScale = Vector2.one;
     }
 
     public async UniTask Hide(CancellationToken ct)
     {
+        RectTransform.DOComplete();
+
         _handleRect.localScale = Vector2.zero;
         await RectTransform
             .DOSizeDelta(_iniSize, animationTime)

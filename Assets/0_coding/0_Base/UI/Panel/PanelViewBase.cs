@@ -21,6 +21,8 @@ public class PanelViewBase : ViewBase
             return;
         }
 
+
+        RectTransform.DOComplete();
         await Transform
             .DOScale(Vector2.one, animationTime)
             .SetEase(Ease.InSine)
@@ -34,6 +36,7 @@ public class PanelViewBase : ViewBase
             return;
         }
 
+        RectTransform.DOComplete();
         await Transform
             .DOScale(Vector2.zero, animationTime)
             .SetEase(Ease.OutSine)

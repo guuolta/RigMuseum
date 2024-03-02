@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System;
 using System.Threading;
 using UniRx;
 using UnityEngine;
@@ -52,11 +53,16 @@ public class YoutubeVideoPlayer : ObjectBase
     /// 動画が再生されているか
     /// </summary>
     public BoolReactiveProperty IsPlayVideo => _isPlayVideo;
-    private BoolReactiveProperty _isSetVideo = new BoolReactiveProperty(false);
+    private BoolReactiveProperty _isSetVideo = new BoolReactiveProperty(true);
     /// <summary>
     /// 動画が設定されたか
     /// </summary>
     public BoolReactiveProperty IsSetVideo => _isSetVideo;
+    private BoolReactiveProperty _isFinishVideo = new BoolReactiveProperty(false);
+    /// <summary>
+    /// 動画が終了したか
+    /// </summary>
+    public BoolReactiveProperty IsFinishVideo => _isFinishVideo;
     private ReactiveProperty<int> _videoPlayTime = new ReactiveProperty<int>(0);
     /// <summary>
     /// 動画の再生時間
@@ -73,11 +79,7 @@ public class YoutubeVideoPlayer : ObjectBase
     protected override void SetEvent()
     {
         SetEventVideoPlay();
-    }
-
-    protected override void Destroy()
-    {
-        DisposeEvent(disposables);
+        SetEventVideoFinish();
     }
 
     protected override CompositeDisposable DisposeEvent(CompositeDisposable disposable)
@@ -110,6 +112,7 @@ public class YoutubeVideoPlayer : ObjectBase
     public async UniTask Play(string youtubeURL, CancellationToken ct)
     {
         _isSetVideo.Value = false;
+        _isFinishVideo.Value = false;
         await YoutubePlayer.PlayVideoAsync(youtubeURL, cancellationToken:ct);
         _isSetVideo.Value = true;
         SetEventPlayTime();
@@ -127,6 +130,10 @@ public class YoutubeVideoPlayer : ObjectBase
         }
     }
 
+    /// <summary>
+    /// 動画の時間を設定する
+    /// </summary>
+    /// <param name="time"></param>
     public void SetVideoPlayTime(float time)
     {
         VideoPlayer.time = time;
@@ -162,16 +169,19 @@ public class YoutubeVideoPlayer : ObjectBase
     /// </summary>
     private void SetEventVideoFinish()
     {
-        VideoPlayer.loopPointReached += SetEventLoopPointReached;
-    }
+        VideoPlayTime
+            .TakeUntilDestroy(this)
+            .DistinctUntilChanged()
+            .Where(value => value == 0)
+            .Subscribe(_ =>
+            {
+                _isFinishVideo.Value = false;
+            });
 
-    /// <summary>
-    /// 動画が終了したときの処理
-    /// </summary>
-    /// <param name="vp"></param>
-    private void SetEventLoopPointReached(VideoPlayer vp)
-    {
-        
+        VideoPlayer.loopPointReached += delegate
+        {
+            _isFinishVideo.SetValueAndForceNotify(true);
+        };
     }
 
     /// <summary>
@@ -182,6 +192,7 @@ public class YoutubeVideoPlayer : ObjectBase
         disposables = DisposeEvent(disposables);
 
         Observable.EveryUpdate()
+            .TakeUntilDestroy(this)
             .Select(value => VideoPlayer.time)
             .DistinctUntilChanged()
             .Subscribe(value =>

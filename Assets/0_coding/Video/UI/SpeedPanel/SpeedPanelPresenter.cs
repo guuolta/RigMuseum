@@ -1,10 +1,6 @@
 using Cysharp.Threading.Tasks;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading;
 using UniRx;
-using UnityEngine;
 
 public class SpeedPanelPresenter : PresenterBase<SpeedPanelView>
 {
@@ -14,6 +10,9 @@ public class SpeedPanelPresenter : PresenterBase<SpeedPanelView>
     /// </summary>
     public bool IsOpen => _isOpen;
     private ReactiveProperty<int> _onIndex = new ReactiveProperty<int>(0);
+    /// <summary>
+    /// 選択されているセル番号
+    /// </summary>
     public ReactiveProperty<int> OnIndex => _onIndex;
 
     protected override void SetEvent()
@@ -58,9 +57,11 @@ public class SpeedPanelPresenter : PresenterBase<SpeedPanelView>
                 {
                     if (i != value)
                     {
-                        View.SpeedCells[i].DisCheck();
+                        View.SpeedCells[i].SetCheck(false);
                     }
                 }
             });
+
+        View.SpeedCells[4].SetCheck(true);
     }
 }

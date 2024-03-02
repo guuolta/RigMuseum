@@ -68,14 +68,13 @@ public class SpeedPanelCell : UIPartBase
         Hide(cell);
     }
 
-    public void DisCheck()
+    /// <summary>
+    /// チェックを設定
+    /// </summary>
+    /// <param name="check"> チェックをつけるか </param>
+    public void SetCheck(bool check)
     {
-        if(!_isCheck.Value)
-        {
-            return;
-        }
-
-        _isCheck.Value = false;
+        _isCheck.Value = check;
     }
 
     private void SetEventCell()
