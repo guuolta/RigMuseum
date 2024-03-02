@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System.Threading;
 using UnityEngine;
 
 /// <summary>
@@ -8,14 +9,11 @@ using UnityEngine;
 public class PresenterBase<TView> : ObjectBase, IPresenter
     where TView : ViewBase
 {
-    [Header("パネルのアニメーションの時間")]
-    [SerializeField]
-    private float _animationTime = 0.1f;
     private TView _view;
     /// <summary>
     /// ビュー
     /// </summary>
-    public TView View
+    protected TView View
     {
         get
         {
@@ -28,13 +26,15 @@ public class PresenterBase<TView> : ObjectBase, IPresenter
         }
     }
 
-    public virtual async UniTask ShowAsync()
+    public virtual async UniTask ShowAsync(CancellationToken ct)
     {
-        await View.ShowAsync(_animationTime);
+        await View.ShowAsync(ct);
+        View.ChangeInteractive(true);
     }
 
-    public virtual async UniTask HideAsync()
+    public virtual async UniTask HideAsync(CancellationToken ct)
     {
-        await View.HideAsync(_animationTime);
+        View.ChangeInteractive(false);
+        await View.HideAsync(ct);
     }
 }

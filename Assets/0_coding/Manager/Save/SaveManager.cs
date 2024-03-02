@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -54,18 +55,19 @@ public static class SaveManager
     }
 
     /// <summary>
-    /// セーブデータから音量取得
+    /// セーブデータから全音量取得
     /// </summary>
     /// <returns>音量</returns>
     public static float[] GetSoundVolume()
     {
-        float[] soundVolumes = new float[SOUND_INDEX];
-        soundVolumes[(int)AudioType.Master] = PlayerPrefs.GetFloat(MASTER_VOLUME_KEY, 8f);
-        soundVolumes[(int)AudioType.BGM] = PlayerPrefs.GetFloat(BGM_VOLUME_KEY, 8f);
-        soundVolumes[(int)AudioType.SE] = PlayerPrefs.GetFloat(SE_VOLUME_KEY, 8f);
-        soundVolumes[(int)AudioType.Movie] = PlayerPrefs.GetFloat(MOVIE_VOLUME_KEY, 8f);
+        float[] _soundVolumes = new float[SOUND_INDEX];
 
-        return soundVolumes;
+        _soundVolumes[(int)AudioType.Master] = PlayerPrefs.GetFloat(MASTER_VOLUME_KEY, 8f);
+        _soundVolumes[(int)AudioType.BGM] = PlayerPrefs.GetFloat(BGM_VOLUME_KEY, 8f);
+        _soundVolumes[(int)AudioType.SE] = PlayerPrefs.GetFloat(SE_VOLUME_KEY, 8f);
+        _soundVolumes[(int)AudioType.Movie] = PlayerPrefs.GetFloat(MOVIE_VOLUME_KEY, 8f);
+
+        return _soundVolumes;
     }
 
     /// <summary>

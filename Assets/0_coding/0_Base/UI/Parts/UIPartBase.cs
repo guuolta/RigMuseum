@@ -12,12 +12,17 @@ public class UIPartBase : UIBase,
     IPointerExitHandler
 {
     /// <summary>
+    /// ボタンが押されたときのイベント
+    /// </summary>
+    public System.Action OnClickCallback;
+
+    /// <summary>
     /// UIパーツが押されたとき処理を実行
     /// </summary>
     /// <param name="eventData"></param>
-    public virtual void OnPointerClick(PointerEventData eventData)
+    public void OnPointerClick(PointerEventData eventData)
     {
-        
+        OnClickCallback?.Invoke();
     }
 
     /// <summary>

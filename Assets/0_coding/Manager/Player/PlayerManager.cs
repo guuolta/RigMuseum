@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System;
+using System.Threading;
 using UniRx;
 using UnityEditor.PackageManager;
 using UnityEngine;
@@ -39,6 +40,7 @@ public class PlayerManager : SingletonObjectBase<PlayerManager>
     {
         GameStateManager.MuseumStatus
             .Skip(1)
+            .TakeUntilDestroy(this)
             .Select(value => value == MuseumState.Play)
             .DistinctUntilChanged()
             .Subscribe(value =>
@@ -52,7 +54,7 @@ public class PlayerManager : SingletonObjectBase<PlayerManager>
                 {
                     _playerOperater.DisposeEventPlayerOperation();
                 }
-            }).AddTo(this);
+            });
     }
 
 
@@ -139,9 +141,9 @@ public class PlayerManager : SingletonObjectBase<PlayerManager>
     /// <param name="pos"> 目的地 </param>
     /// <param name="rot"> 目的回転値 </param>
     /// <returns></returns>
-    public async UniTask TargetObjectAsync(float animationTime, Vector3 pos, Vector3 rot)
+    public async UniTask TargetObjectAsync(float animationTime, Vector3 pos, Vector3 rot, CancellationToken ct)
     {
-        await _playerOperater.MovePlayerAsync(animationTime, pos, rot, DG.Tweening.Ease.InQuad);
+        await _playerOperater.MovePlayerAsync(animationTime, pos, rot, DG.Tweening.Ease.InQuad, ct);
     }
 
     /// <summary>
@@ -150,8 +152,8 @@ public class PlayerManager : SingletonObjectBase<PlayerManager>
     /// <param name="animationTime"> アニメーションの時間 </param>
     /// <param name="pos"> 解除時の位置 </param>
     /// <returns></returns>
-    public async UniTask ClearTargetAsync(float animationTime, Vector3 pos)
+    public async UniTask ClearTargetAsync(float animationTime, Vector3 pos, CancellationToken ct)
     {
-        await _playerOperater.MovePlayerAsync(animationTime, pos, _player.Transform.localEulerAngles, DG.Tweening.Ease.OutQuad);
+        await _playerOperater.MovePlayerAsync(animationTime, pos, _player.Transform.localEulerAngles, DG.Tweening.Ease.OutQuad, ct);
     }
 }

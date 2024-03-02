@@ -1,3 +1,6 @@
+using Cysharp.Threading.Tasks;
+using System.Threading;
+using UniRx;
 using UnityEngine;
 
 /// <summary>
@@ -5,6 +8,23 @@ using UnityEngine;
 /// </summary>
 public class ObjectBase : MonoBehaviour
 {
+    private CancellationToken _ct;
+    /// <summary>
+    /// キャンセレーショントークン
+    /// </summary>
+    public CancellationToken Ct
+    {
+        get
+        {
+            if (_ct == null)
+            {
+                _ct = this.GetCancellationTokenOnDestroy();
+            }
+
+            return _ct;
+        }
+    }
+
     private void Awake()
     {
         Init();
@@ -14,6 +34,12 @@ public class ObjectBase : MonoBehaviour
     {
         SetFirstEvent();
         SetEvent();
+    }
+
+    private void OnDestroy()
+    {
+        FirstDestroy();
+        Destroy();
     }
 
     /// <summary>
@@ -54,5 +80,14 @@ public class ObjectBase : MonoBehaviour
     protected virtual void Destroy()
     {
 
+    }
+
+    /// <summary>
+    /// イベント削除
+    /// </summary>
+    protected virtual CompositeDisposable DisposeEvent(CompositeDisposable disposable)
+    {
+        disposable.Dispose();
+        return new CompositeDisposable();
     }
 }

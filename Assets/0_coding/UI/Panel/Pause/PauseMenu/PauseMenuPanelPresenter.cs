@@ -1,6 +1,3 @@
-using Cysharp.Threading.Tasks;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PauseMenuPanelPresenter : PanelPresenterBase<PauseMenuPanelView>
@@ -19,19 +16,19 @@ public class PauseMenuPanelPresenter : PanelPresenterBase<PauseMenuPanelView>
     /// </summary>
     private void SetEventButton()
     {
-        View.SoundSettingButton.onClickCallback += async () =>
+        View.SoundSettingButton.OnClickCallback += async () =>
         {
-            await _pausePanelManager.OpenPanelAsync(PausePanelType.Sound);
+            await _pausePanelManager.OpenPanelAsync(PausePanelType.Sound, Ct);
         };
 
-        View.MouseSettingButton.onClickCallback += async () =>
+        View.MouseSettingButton.OnClickCallback += async () =>
         {
-            await _pausePanelManager.OpenPanelAsync(PausePanelType.Mouse);
+            await _pausePanelManager.OpenPanelAsync(PausePanelType.Mouse, Ct);
         };
 
-        View.CreditButton.onClickCallback += async () =>
+        View.CreditButton.OnClickCallback += async () =>
         {
-            await _pausePanelManager.OpenPanelAsync(PausePanelType.Credit);
+            await _pausePanelManager.OpenPanelAsync(PausePanelType.Credit, Ct);
         };
     }
 }

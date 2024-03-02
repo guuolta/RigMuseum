@@ -5,9 +5,19 @@ using UnityEngine.EventSystems;
 
 public class HandleBase : UIAnimationPartBase
 {
+    bool _isPlaySe = true;
+
     public override void OnPointerDown(PointerEventData eventData)
     {
         base.OnPointerDown(eventData);
-        AudioManager.Instance.PlayOneShotSE(SEType.Posi);
+        if (_isPlaySe)
+        {
+            AudioManager.Instance.PlayOneShotSE(SEType.Posi);
+        }
+    }
+
+    public void SetOffSe()
+    {
+        _isPlaySe = false;
     }
 }

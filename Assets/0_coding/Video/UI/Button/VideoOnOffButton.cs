@@ -23,6 +23,9 @@ public class VideoOnOffButton : ButtonBase
     private VideoExplainText _offExplainText;
 
     private BoolReactiveProperty _isOn = new BoolReactiveProperty(false);
+    /// <summary>
+    /// ボタンがONの状態か
+    /// </summary>
     public BoolReactiveProperty IsOn => _isOn;
     private Image _targetImage;
     private VideoExplainText _targetExplainText;
@@ -43,9 +46,41 @@ public class VideoOnOffButton : ButtonBase
         SetEventIsOn();
     }
 
+    public override void OnPointerUp(PointerEventData eventData)
+    {
+    }
+
+    public override void OnPointerDown(PointerEventData eventData)
+    {
+    }
+
+    public override async void OnPointerEnter(PointerEventData eventData)
+    {
+        await _targetExplainText.ShowAsync(Ct);
+    }
+
+    public override async void OnPointerExit(PointerEventData eventData)
+    {
+        await _targetExplainText.HideAsync(Ct);
+    }
+
+    protected override void SetEventPlaySe()
+    {
+
+    }
+
+    /// <summary>
+    /// ボタンのOn、Off設定
+    /// </summary>
+    /// <param name="isOn">Onか</param>
+    public void SetOn(bool isOn)
+    {
+        _isOn.Value = isOn;
+    }
+
     private void SetEventClick()
     {
-        onClickCallback += () =>
+        OnClickCallback += () =>
         {
             _isOn.Value = !_isOn.Value;
             
@@ -61,32 +96,13 @@ public class VideoOnOffButton : ButtonBase
             .Skip(1)
             .TakeUntilDestroy(this)
             .DistinctUntilChanged()
-            .Subscribe(async value =>
+            .Subscribe(value =>
             {
-                HideAsync(_targetImage).Forget();
-                _targetExplainText.HideAsync().Forget();
+                HideAsync(_targetImage, Ct).Forget();
+                _targetExplainText.HideAsync(Ct).Forget();
                 _targetImage = value ? _offButtonImage : _onButtonImage;
                 _targetExplainText = value ? _offExplainText : _onExplainText;
-                ShowAsync(_targetImage).Forget();
-                await _targetExplainText.ShowAsync();
+                ShowAsync(_targetImage, Ct).Forget();
             });
-    }
-
-    public override void OnPointerUp(PointerEventData eventData)
-    {
-    }
-
-    public override void OnPointerDown(PointerEventData eventData)
-    {
-    }
-
-    public override async void OnPointerEnter(PointerEventData eventData)
-    {
-        await _targetExplainText.ShowAsync();
-    }
-
-    public override async void OnPointerExit(PointerEventData eventData)
-    {
-        await _targetExplainText.HideAsync();
     }
 }

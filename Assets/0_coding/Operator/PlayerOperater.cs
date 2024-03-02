@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -212,15 +213,6 @@ public class PlayerOperater : ObjectBase
     }
 
     /// <summary>
-    /// イベント削除
-    /// </summary>
-    private CompositeDisposable DisposeEvent(CompositeDisposable disposable)
-    {
-        disposable.Dispose();
-        return new CompositeDisposable();
-    }
-
-    /// <summary>
     /// 縦方向の移動削除
     /// </summary>
     /// <param name="value"> 移動距離 </param>
@@ -239,35 +231,36 @@ public class PlayerOperater : ObjectBase
     /// <param name="rot"> 目的回転値 </param>
     /// <param name="ease"> easeのタイプ </param>
     /// <returns></returns>
-    public async UniTask MovePlayerAsync(float animationTime, Vector3 pos, Vector3 rot, Ease ease)
+    public async UniTask MovePlayerAsync(float animationTime, Vector3 pos, Vector3 rot, Ease ease, CancellationToken ct)
     {
         _transform.DOComplete();
         var sequence = DOTween.Sequence();
 
-        await sequence.Append(_transform.DOMove(pos, animationTime).SetEase(ease))
+        await sequence
+            .Append(_transform.DOMove(pos, animationTime).SetEase(ease))
             .Join(_transform.DORotate(rot, animationTime).SetEase(ease))
-            .AsyncWaitForCompletion();
+            .ToUniTask(cancellationToken: ct);
     }
+
+    ////UI検査用
+    //private void Update()
+    //{
+    //    if (Input.GetMouseButtonDown(0))
+    //    {
+    //        Debug.Log("ok");
+    //        // マウスポインターの位置にあるUI要素を取得
+    //        PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+    //        pointerEventData.position = Input.mousePosition;
+
+    //        // RaycastでUI要素をチェックし、結果をリストに格納
+    //        List<RaycastResult> results = new List<RaycastResult>();
+    //        EventSystem.current.RaycastAll(pointerEventData, results);
+
+    //        // RaycastでヒットしたUI要素の名前を取得
+    //        if (results.Count > 0)
+    //        {
+    //            Debug.Log("UI Name: " + results[0].gameObject.name);
+    //        }
+    //    }
+    //}
 }
-
-////UI検査用
-//private void Update()
-//{
-//    if (Input.GetMouseButtonDown(0))
-//    {
-//        Debug.Log("ok");
-//        // マウスポインターの位置にあるUI要素を取得
-//        PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
-//        pointerEventData.position = Input.mousePosition;
-
-//        // RaycastでUI要素をチェックし、結果をリストに格納
-//        List<RaycastResult> results = new List<RaycastResult>();
-//        EventSystem.current.RaycastAll(pointerEventData, results);
-
-//        // RaycastでヒットしたUI要素の名前を取得
-//        if (results.Count > 0)
-//        {
-//            Debug.Log("UI Name: " + results[0].gameObject.name);
-//        }
-//    }
-//}

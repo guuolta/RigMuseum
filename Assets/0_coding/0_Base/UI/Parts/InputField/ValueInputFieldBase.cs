@@ -37,9 +37,17 @@ public class ValueInputFieldBase : UIAnimationPartBase
         SetEventInputValue();
     }
 
-    public override void OnPointerClick(PointerEventData eventData)
+    protected override void SetEvent()
     {
-        AudioManager.Instance.PlayOneShotSE(SEType.Posi);
+        SetEventClick();
+    }
+
+    private void SetEventClick()
+    {
+        OnClickCallback += () =>
+        {
+            AudioManager.Instance.PlayOneShotSE(SEType.Posi);
+        };
     }
 
     /// <summary>

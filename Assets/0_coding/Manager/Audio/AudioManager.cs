@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
 using UnityEngine.Audio;
 
 /// <summary>
 /// オーディオを管理
 /// </summary>
-public class AudioManager : SingletonObjectBase<AudioManager>
+public class AudioManager : DontDestroySingletonObject<AudioManager>
 {
     private const int SOUND_INDEX = 4;
     private const string MASTER_VOLUME_NAME = "Master";
@@ -52,6 +53,10 @@ public class AudioManager : SingletonObjectBase<AudioManager>
         _bgmAudioSource.Play();
     }
 
+    /// <summary>
+    /// SEを鳴らす
+    /// </summary>
+    /// <param name="clip"> 鳴らすSE </param>
     public void PlayOneShotSE(AudioClip clip)
     {
         foreach(AudioSource se in _seAudioSourceList)
@@ -67,6 +72,10 @@ public class AudioManager : SingletonObjectBase<AudioManager>
         _seAudioSourceList.Add(seSource);
     }
 
+    /// <summary>
+    /// SEを鳴らす
+    /// </summary>
+    /// <param name="type"> Seの種類 </param>
     public void PlayOneShotSE(SEType type)
     {
         foreach (AudioSource se in _seAudioSourceList)
@@ -82,6 +91,9 @@ public class AudioManager : SingletonObjectBase<AudioManager>
         _seAudioSourceList.Add(seSource);
     }
 
+    /// <summary>
+    /// SEの辞書を取得
+    /// </summary>
     private void GetSEDictionary()
     {
         foreach(var se in _seList)
@@ -110,7 +122,6 @@ public class AudioManager : SingletonObjectBase<AudioManager>
         return volume * _volumes[(int)AudioType.Master] /100;
     }
 
-
     /// <summary>
     /// 音量取得
     /// </summary>
@@ -121,12 +132,20 @@ public class AudioManager : SingletonObjectBase<AudioManager>
     }
 
     /// <summary>
+    /// 音量取得
+    /// </summary>
+    /// <returns></returns>
+    public float GetSoundVolume(AudioType type)
+    {
+        return _volumes[(int)type];
+    }
+
+    /// <summary>
     /// 音量の初期値設定
     /// </summary>
     private void SetInitVolume()
     {
         _volumes = SaveManager.GetSoundVolume();
-
         _audioMixer.SetFloat(MASTER_VOLUME_NAME, GetAudioMixerVolume(_volumes[(int)AudioType.Master]));
         _audioMixer.SetFloat(BGM_VOLUME_NAME , GetAudioMixerVolume(_volumes[(int)AudioType.BGM]));
         _audioMixer.SetFloat(SE_VOLUME_NAME, GetAudioMixerVolume(_volumes[(int)AudioType.SE]));
@@ -141,7 +160,7 @@ public class AudioManager : SingletonObjectBase<AudioManager>
     {
         _audioMixer.SetFloat(MASTER_VOLUME_NAME, GetAudioMixerVolume(volume));
         _volumes[(int)AudioType.Master] = volume;
-        SetMovieVolume(_volumes[(int)AudioType.Master]);
+        SetMovieVolume(_volumes[(int)AudioType.Movie]);
     }
 
     /// <summary>
@@ -173,7 +192,6 @@ public class AudioManager : SingletonObjectBase<AudioManager>
         _movieAudioSource.volume = GetAudioSourceVolume(volume);
         _volumes[(int)AudioType.Movie] = volume;
     }
-
 
     /// <summary>
     /// すべてのボリュームをセーブ

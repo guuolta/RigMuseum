@@ -7,14 +7,28 @@ public class UIAnimationPartBase : UIPartBase
 {
     public override void OnPointerDown(PointerEventData eventData)
     {
-        Transform.DOScale(0.8f, AnimationTime).SetEase(Ease.InSine);
-        CanvasGroup.DOFade(0.8f, AnimationTime).SetEase(Ease.InSine);
+        Transform
+            .DOScale(0.8f, animationTime)
+            .SetEase(Ease.InSine)
+            .ToUniTask(cancellationToken: Ct)
+            .Forget();
+        CanvasGroup
+            .DOFade(0.8f, animationTime)
+            .SetEase(Ease.InSine)
+            .ToUniTask(cancellationToken: Ct)
+            .Forget();
     }
 
     public override void OnPointerUp(PointerEventData eventData)
     {
-        Transform.DOScale(1f, AnimationTime).SetEase(Ease.OutSine);
-        CanvasGroup.DOFade(1f, AnimationTime).SetEase(Ease.OutSine);
+        Transform.DOScale(1f, animationTime)
+            .SetEase(Ease.OutSine)
+            .ToUniTask(cancellationToken: Ct)
+            .Forget();
+        CanvasGroup.DOFade(1f, animationTime)
+            .SetEase(Ease.OutSine)
+            .ToUniTask(cancellationToken: Ct)
+            .Forget();
     }
 
     public override void OnPointerEnter(PointerEventData eventData)
@@ -24,13 +38,21 @@ public class UIAnimationPartBase : UIPartBase
             return;
         }
 
-        Transform.DOScale(1.2f, AnimationTime).SetEase(Ease.InSine);
+        Transform
+            .DOScale(1.2f, animationTime)
+            .SetEase(Ease.InSine)
+            .ToUniTask(cancellationToken: Ct)
+            .Forget();
     }
 
     public override async void OnPointerExit(PointerEventData eventData)
     {
-        await UniTask.WaitUntil(() => !Input.GetMouseButton(0));
+        await UniTask.WaitUntil(() => !Input.GetMouseButton(0), cancellationToken: Ct);
 
-        Transform.DOScale(1f, AnimationTime).SetEase(Ease.OutSine);
+        Transform
+            .DOScale(1f, animationTime)
+            .SetEase(Ease.OutSine)
+            .ToUniTask(cancellationToken: Ct)
+            .Forget();
     }
 }
