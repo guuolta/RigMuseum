@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03d53f8c9adc8784da3ef6e48fcaf890, type: 3}
+  m_Name: IllustrationDatas
+  m_EditorClassIdentifier: 
+  _dataList:
+  - _title: "\u30AC\u30FC\u30EB"
+    _image: {fileID: 21300000, guid: d80d84461fac233488ba6d9675ab53e7, type: 3}
+    _members: []
+    _description: 
+    _frameType: 2
+  - _title: sun
+    _image: {fileID: 21300000, guid: a097fe99f0d26a143a6c131227d833e3, type: 3}
+    _members: []
+    _description: 
+    _frameType: 1
+  - _title: eiyuu
+    _image: {fileID: 21300000, guid: e4704edc863194b47ba94e247e12cd1c, type: 3}
+    _members: []
+    _description: 
+    _frameType: 0
+  _frame:
+  - {fileID: 4074841546216604819, guid: aace9768d25f9ce459387599240b9b32, type: 3}
+  - {fileID: 5378165328660860385, guid: e2a35b7f4fa23f1419096716c7283f8e, type: 3}
+  - {fileID: 7480471472253538803, guid: 6df24c6eb16547948a400225beaaa7bf, type: 3}

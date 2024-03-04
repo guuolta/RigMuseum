@@ -212,7 +212,7 @@ public class GameVideoManager : SingletonObjectBase<GameVideoManager>
         _captionUI.SetModelMemberText(gameData.ModelMenber);
         _captionUI.SetDTMMemberText(gameData.DTMMenber);
         _captionUI.SetURL(gameData.GameURL);
-        _captionUI.SetExplain(gameData.Explain);
+        _captionUI.SetExplain(gameData.Description);
     }
 
     /// <summary>
