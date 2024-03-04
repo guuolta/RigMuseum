@@ -12,32 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1460471fa24197a42ab75470e6dd1a98, type: 3}
   m_Name: GameDatas
   m_EditorClassIdentifier: 
-  _gameDataList:
-  - Title: ssssss
-    Explain: 'test
-
-
-      tesw
-
-      test
-
-      ga'
-    CoadingMenber:
-    - fdswesf
-    - gbv
-    ModelMenber:
-    - vcasz
-    - vZ
-    - vasd
-    IllustrationMenber: []
-    DTMMenber: []
-    GameURL: fffff
-    YoutubeURL: https://www.youtube.com/watch?v=H88kps8X4Mk
-  - Title: test
-    Explain: 
-    CoadingMenber: []
-    ModelMenber: []
-    IllustrationMenber: []
-    DTMMenber: []
-    GameURL: 
-    YoutubeURL: https://www.youtube.com/watch?v=DD3NLtLGejM
+  _dataList:
+  - _title: "\u30AC\u30C1\u8B1D\u7F6A\u30B9\u30C6\u30A3\u30C3\u30C1"
+    _description: "\u30B9\u30C6\u30A3\u30C3\u30C1\n\u3042\uFF53\uFF46\n\n\n\u3042\uFF53\uFF46\n\n\u3042\uFF46\uFF46\uFF46\uFF46"
+    _coadingMenber:
+    - s
+    - r
+    - gafsvzx
+    _modelMenber:
+    - e
+    - r
+    _illustrationMenber: []
+    _dtmMenber: []
+    _gameURL: https://fasdfsa
+    _youtubeURL: https://www.youtube.com/watch?v=ajAeuXIJ2Rw
+  - _title: "\u30BF\u30FC\u30C8\u30EB\u30FB\u5727\u8FEB\u9762\u63A5"
+    _description: 
+    _coadingMenber: []
+    _modelMenber: []
+    _illustrationMenber: []
+    _dtmMenber: []
+    _gameURL: 
+    _youtubeURL: https://www.youtube.com/watch?v=CUGeEFdQK2g
