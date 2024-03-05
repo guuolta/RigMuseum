@@ -173,6 +173,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 7480471472253538803}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fd18a37b5550add4a9f0004ba4a46774,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4159366852292907731}
   m_SourcePrefab: {fileID: 100100000, guid: fd18a37b5550add4a9f0004ba4a46774, type: 3}
 --- !u!4 &82623641106248731 stripped
 Transform:
@@ -199,3 +203,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _canvas: {fileID: 4018310667893151555}
+--- !u!65 &4159366852292907731
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 751636521372593825}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.013332807, y: 0.0010835079, z: 0.018286282}
+  m_Center: {x: 0, y: -0.0003078815, z: 0}

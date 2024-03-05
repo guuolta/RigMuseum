@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using UniRx;
 
 /// <summary>
@@ -32,6 +33,7 @@ public static class GameStateManager
     /// <param name="state"> ステート </param>
     public static void SetMuseumState(MuseumState state)
     {
+        UnityEngine.Debug.Log("ステートを設定 : " + state);
         _museumStatus.Value = state;
     }
 }

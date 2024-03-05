@@ -10,7 +10,12 @@ public class IllustrationCaptionObject : TouchObjectBase
     /// </summary>
     public IllustrationCaptionPresenter CaptionUI => _captionUI;
 
-    public override async void StartEvent()
+    protected override void Init()
+    {
+        Transform.GetChild(0).GetComponentInChildren<Canvas>().worldCamera = Camera.main;
+    }
+
+    public override void StartEvent()
     {
         GameStateManager.SetMuseumState(MuseumState.Target);
     }

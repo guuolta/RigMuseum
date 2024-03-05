@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.VisualScripting;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -22,6 +24,14 @@ public class IllustrationDatas : ScriptableObjectBase<IllustrationData>
     /// キャプションベース
     /// </summary>
     public IllustrationCaptionObject CaptionBase => _captionBase;
+
+    [Header("イラストとキャプションの距離")]
+    [SerializeField]
+    private float _offset = 10f;
+    /// <summary>
+    /// イラストとキャプションの距離
+    /// </summary>
+    public float Offset => _offset;
 }
 
 #if UNITY_EDITOR
@@ -30,8 +40,9 @@ public class IllustrationDatasEditor : Editor
 {
     private const string ENUM_FILE_NAME = "FrameType";
     private const string ENUM_FOLDER_PATH = "Assets/0_coding/1_Data/Illustrations";
-    private const string PREFAB_FOLDER_PATH = "Assets/3_2D/0_Prefabs/Illustration";
+    private const string ILLUSTRATION_FOLDER_PATH = "Assets/3_2D/0_Prefabs/Illustration";
     private const string CAPTION_FOLDER_PATH = "Assets/3_2D/0_Prefabs/Caption";
+    private const string ILLUSTRATION_OBJECT_FOLDER_PATH = "Assets/3_2D/0_Prefabs/IllustrationObjects";
     private const string MATERIAL_FOLDER_PATH = "Assets/3_2D/1_Materials";
     private const string MATERIAL_PATH = "Universal Render Pipeline/Lit";
     private const string PREFAB_EXTENSION = ".prefab";
@@ -43,12 +54,12 @@ public class IllustrationDatasEditor : Editor
         //ボタンを表示
         var createEnumButton = GUILayout.Button("Create Enum");
         var createPrefabButton = GUILayout.Button("Create Prefab");
-        var createCaptionButton = GUILayout.Button("Create Caption");
 
         //データを表示
         serializedObject.Update();
         EditorGUILayout.PropertyField(serializedObject.FindProperty("_frame"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("_captionBase"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("_offset"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("_dataList"));
         serializedObject.ApplyModifiedProperties();
 
@@ -79,8 +90,9 @@ public class IllustrationDatasEditor : Editor
                 }
             }
 
-            string[] prefabFiles = Directory.GetFiles(PREFAB_FOLDER_PATH);
+            string[] prefabFiles = Directory.GetFiles(ILLUSTRATION_FOLDER_PATH);
             string[] materialFiles = Directory.GetFiles(MATERIAL_FOLDER_PATH);
+            string[] captionFiles = Directory.GetFiles(CAPTION_FOLDER_PATH);
 
             foreach (var illustrationData in illustrationDatasList)
             {
@@ -89,36 +101,25 @@ public class IllustrationDatasEditor : Editor
 
                 if(title == ""
                     || illustrationData.Image == null
+                    || illustrationData.Description == ""
+                    || illustrationData.Members == new string[0]
                     || (SearchDistinctFile(prefabFiles, index + "_" + title + PREFAB_EXTENSION)
-                        && SearchDistinctFile(materialFiles, index + "_" + title + MATERIAL_EXTENSION)))
+                        && SearchDistinctFile(materialFiles, index + "_" + title + MATERIAL_EXTENSION)
+                        && SearchDistinctFile(captionFiles, index + "_" + title + "Caption" + PREFAB_EXTENSION)))
                 {
                     continue;
                 }
 
                 Material material = CreateMaterial(illustrationData);
-                CreateIllustrationPrefab(illustrationData, illustrationDatas.Frame[(int)illustrationData.FrameType], material);
-            }
-        }
-
-        //キャプション生成
-        if(createCaptionButton)
-        {
-            IllustrationDatas illustrationDatas = (IllustrationDatas)target;
-            var illustrationDatasList = illustrationDatas.GetDataList();
-
-            string[] captionFiles = Directory.GetFiles(CAPTION_FOLDER_PATH);
-            foreach(var illustrationData in illustrationDatasList)
-            {
-                string title = illustrationData.Title;
-                if(title == ""
-                    || illustrationData.Description == ""
-                    || illustrationData.Members == new string[0]
-                    || SearchDistinctCaption(captionFiles, title))
+                GameObject illustration = CreateIllustrationPrefab(illustrationData, illustrationDatas.Frame[(int)illustrationData.FrameType], material);
+                if(illustrationData.CaptionDirection != Direction.None)
                 {
+                    GameObject caption = CreateCaption(illustrationData, illustrationDatas.CaptionBase.GameObject);
+                    CreateIllustrationObject(illustrationData, illustration, caption, illustrationDatas.Offset);
                     continue;
                 }
 
-                CreateCaption(illustrationData, illustrationDatas.CaptionBase.GameObject);
+                CreateIllustrationObject(illustrationData, illustration);
             }
         }
     }
@@ -184,85 +185,20 @@ public class IllustrationDatasEditor : Editor
     }
 
     /// <summary>
-    /// 同じ名前のイラストのプレハブがあるか調べる
-    /// </summary>
-    /// <param name="files"> 探すフォルダのプレハブ </param>
-    /// <param name="name"> 対象のイラスト名 </param>
-    /// <param name="index"> 対象のイラストの番号 </param>
-    /// <returns> 同じイラストのプレハブがあるか </returns>
-    private bool SearchDistinctIllustlationPrefab(string[] files, string name, int index)
-    {
-        if (!SearchDistinctFile(files, name))
-        {
-            return false; 
-        }
-
-        var illustrationObject = AssetDatabase.LoadAssetAtPath<GameObject>(PREFAB_FOLDER_PATH + "/" + name + PREFAB_EXTENSION);
-        if (illustrationObject == null)
-        {
-            return false;
-        }
-
-        var illustration = illustrationObject.GetComponent<IllustrationObject>();
-        if (illustration == null)
-        {
-            return false;
-        }
-
-        if (illustration.Index != index)
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    /// <summary>
-    /// 同じマテリアルがあるか調べる
-    /// </summary>
-    /// <param name="files"> 探すフォルダのマテリアル </param>
-    /// <param name="name"> マテリアルの名前 </param>
-    /// <returns> 同じマテリアルがあるか </returns>
-    private bool SearchDistinctMaterial(string[] files, string name)
-    {
-        if(!SearchDistinctFile(files, name))
-        {
-            return false;
-        }
-
-        var materialPath = MATERIAL_FOLDER_PATH + "/" + name + MATERIAL_EXTENSION;
-        var materialExists = File.Exists(materialPath);
-        if(!materialExists)
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    /// <summary>
-    /// 同じ名前のキャプションがあるか調べる
-    /// </summary>
-    /// <param name="files"> 探すフォルダのキャプション </param>
-    /// <param name="name"> キャプション </param>
-    /// <returns></returns>
-    private bool SearchDistinctCaption(string[] files, string name)
-    {
-        return SearchDistinctFile(files, name);
-    }
-
-    /// <summary>
     /// プレハブ生成
     /// </summary>
     /// <param name="illustration"> イラストデータ </param>
     /// <param name="frame"> 設定するオブジェクト </param>
     /// <param name="material"> 設定するマテリアル </param>
-    private void CreateIllustrationPrefab(IllustrationData illustration, IllustrationObject frame, Material material)
+    private GameObject CreateIllustrationPrefab(IllustrationData illustration, IllustrationObject frame, Material material)
     {
         GameObject prefab = GetNewPrefab(frame.GameObject);
         prefab.GetComponent<IllustrationObject>().SetIllustration(illustration.Index, illustration.Image, material);
-        PrefabUtility.SaveAsPrefabAsset(prefab, PREFAB_FOLDER_PATH + "/" + illustration.Index.ToString() + "_" + illustration.Title + PREFAB_EXTENSION);
-        DestroyImmediate(prefab);
+        PrefabUtility.SaveAsPrefabAsset(prefab, ILLUSTRATION_FOLDER_PATH + "/" 
+            + illustration.Index.ToString() + "_" + illustration.Title
+            + PREFAB_EXTENSION);
+
+        return prefab;
     }
 
     /// <summary>
@@ -270,7 +206,7 @@ public class IllustrationDatasEditor : Editor
     /// </summary>
     /// <param name="illustration"> イラストデータ </param>
     /// <param name="captionBase"> キャプションのオブジェクトベース </param>
-    private void CreateCaption(IllustrationData illustration, GameObject captionBase)
+    private GameObject CreateCaption(IllustrationData illustration, GameObject captionBase)
     {
         var caption = GetNewPrefab(captionBase).GetComponent<IllustrationCaptionObject>();
         var captionUI = caption.CaptionUI;
@@ -278,18 +214,139 @@ public class IllustrationDatasEditor : Editor
         captionUI.SetExplain(illustration.Description);
         captionUI.SetAuthorText(illustration.Members);
 
-        PrefabUtility.SaveAsPrefabAsset(caption.GameObject, CAPTION_FOLDER_PATH + "/" + illustration.Title + "Caption" + PREFAB_EXTENSION);
-        DestroyImmediate(caption.GameObject);
+        PrefabUtility.SaveAsPrefabAsset(caption.GameObject, CAPTION_FOLDER_PATH + "/"
+            + illustration.Index.ToString() + "_" + illustration.Title + "Caption"
+            + PREFAB_EXTENSION);
+
+        return caption.GameObject;
+    }
+
+    /// <summary>
+    /// イラストオブジェクト生成
+    /// </summary>
+    /// <param name="illustrationData"> イラストデータ </param>
+    /// <param name="illustration"> イラスト </param>
+    /// <param name="caption"> キャプション </param>
+    /// <param name="offset"> キャプションとイラストの距離 </param>
+    private void CreateIllustrationObject(IllustrationData illustrationData, GameObject illustration, GameObject caption, float offset)
+    {
+        GameObject obj = GetNewObject(illustrationData.Index.ToString() + "_" + illustrationData.Title);
+        illustration.transform.SetParent(obj.transform);
+
+        caption.transform.SetParent(obj.transform);
+        SetPosition(illustration, caption, illustrationData.CaptionDirection, offset);
+
+        PrefabUtility.SaveAsPrefabAsset(obj, ILLUSTRATION_OBJECT_FOLDER_PATH + "/" + illustrationData.Index.ToString() + "_" + illustrationData.Title + PREFAB_EXTENSION);
+        DestroyImmediate(obj);
+        DestroyImmediate(illustration);
+        DestroyImmediate(caption);
+    }
+
+    /// <summary>
+    /// イラストオブジェクト生成
+    /// </summary>
+    /// <param name="illustrationData"> イラストデータ </param>
+    /// <param name="illustration"> イラスト </param>
+    private void CreateIllustrationObject(IllustrationData illustrationData, GameObject illustration)
+    {
+        GameObject obj = GetNewObject(illustrationData.Index.ToString() + "_" + illustrationData.Title);
+        illustration.transform.SetParent(obj.transform);
+
+        PrefabUtility.SaveAsPrefabAsset(obj, ILLUSTRATION_OBJECT_FOLDER_PATH + "/" + illustrationData.Index.ToString() + "_" + illustrationData.Title + PREFAB_EXTENSION);
+        DestroyImmediate(obj);
+        DestroyImmediate(illustration);
+    }
+
+    /// <summary>
+    /// 新しいオブジェクトを取得
+    /// </summary>
+    /// <param name="name"> オブジェクト名 </param>
+    /// <returns></returns>
+    private GameObject GetNewObject(string name)
+    {
+        GameObject obj = EditorUtility.CreateGameObjectWithHideFlags(name, HideFlags.HideInHierarchy);
+
+        return obj;
     }
 
     /// <summary>
     /// 新しいプレハブを取得
     /// </summary>
-    /// <param name="base"> ベースオブジェクト </param>
+    /// <param name="baseObejct"> ベースオブジェクト </param>
     /// <returns></returns>
-    private GameObject GetNewPrefab(GameObject @base)
+    private GameObject GetNewPrefab(GameObject baseObejct)
     {
-        return PrefabUtility.InstantiatePrefab(@base) as GameObject;
+        return PrefabUtility.InstantiatePrefab(baseObejct) as GameObject;
+    }
+
+    /// <summary>
+    /// 対象のオブジェクトの位置を設定する
+    /// </summary>
+    /// <param name="refObj"> 基準オブジェクト </param>
+    /// <param name="targetObj"> 対象のオブジェクト </param>
+    /// <param name="direction"> 方向 </param>
+    /// <param name="offset"> 基準と対象の距離 </param>
+    private void SetPosition(GameObject refObj, GameObject targetObj, Direction direction, float offset)
+    {
+        var renderer = refObj.GetComponent<MeshRenderer>();
+        if(renderer == null)
+        {
+            var child = refObj.transform.GetChild(0);
+            if(child == null)
+            {
+                return;
+            }
+
+            renderer = child.GetComponent<MeshRenderer>();
+            if(renderer == null)
+            {
+                Debug.Log("Renderer is not found");
+                return;
+            }
+        }
+
+        switch(direction)
+        {
+            case Direction.Left:
+                targetObj.transform.position = GetMovePos(refObj.transform.position,
+                    -targetObj.transform.right,
+                    renderer.bounds.size.x,
+                    offset);
+                break;
+            case Direction.Right:
+                targetObj.transform.position = GetMovePos(refObj.transform.position,
+                    targetObj.transform.right,
+                    renderer.bounds.size.x,
+                    offset); 
+                break;
+            case Direction.Up:
+                targetObj.transform.position = GetMovePos(refObj.transform.position,
+                    targetObj.transform.up,
+                    renderer.bounds.size.y,
+                    offset); 
+                break;
+            case Direction.Down:
+                targetObj.transform.position = GetMovePos(refObj.transform.position,
+                    -targetObj.transform.up,
+                    renderer.bounds.size.y,
+                    offset);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /// <summary>
+    /// 移動後の位置を取得
+    /// </summary>
+    /// <param name="refPos"> 基準 </param>
+    /// <param name="direction"> 方向 </param>
+    /// <param name="size"> 基準オブジェクトの大きさ </param>
+    /// <param name="offset"> 基準と対象の距離 </param>
+    /// <returns></returns>
+    private Vector3 GetMovePos(Vector3 refPos, Vector3 direction, float size, float offset)
+    {
+        return refPos + direction * (size / 2 + offset);
     }
 
     /// <summary>
@@ -301,7 +358,9 @@ public class IllustrationDatasEditor : Editor
     {
         Material material = GetNewMaterial(illustration.Image.texture);
 
-        AssetDatabase.CreateAsset(material, MATERIAL_FOLDER_PATH + "/" + illustration.Index.ToString() + "_" + illustration.Title + MATERIAL_EXTENSION);
+        AssetDatabase.CreateAsset(material, MATERIAL_FOLDER_PATH + "/"
+            + illustration.Index.ToString() + "_" + illustration.Title
+            + MATERIAL_EXTENSION);
         AssetDatabase.SaveAssets();
 
         AssetDatabase.Refresh();
@@ -372,6 +431,13 @@ public class IllustrationData
     /// フレームの種類
     /// </summary>
     public FrameType FrameType => _frameType;
+    [Header("キャプションの位置")]
+    [SerializeField]
+    private Direction _captionDirection = Direction.None;
+    /// <summary>
+    /// キャプションの位置
+    /// </summary>
+    public Direction CaptionDirection => _captionDirection;
 
     /// <summary>
     /// イラスト番号を設定
@@ -387,3 +453,80 @@ public class IllustrationData
         _index = index;
     }
 }
+
+public enum Direction
+{
+    None,
+    Left,
+    Right,
+    Up,
+    Down
+}
+
+///// <summary>
+///// 同じ名前のイラストのプレハブがあるか調べる
+///// </summary>
+///// <param name="files"> 探すフォルダのプレハブ </param>
+///// <param name="name"> 対象のイラスト名 </param>
+///// <param name="index"> 対象のイラストの番号 </param>
+///// <returns> 同じイラストのプレハブがあるか </returns>
+//private bool SearchDistinctIllustlationPrefab(string[] files, string name, int index)
+//{
+//    if (!SearchDistinctFile(files, name))
+//    {
+//        return false; 
+//    }
+
+//    var illustrationObject = AssetDatabase.LoadAssetAtPath<GameObject>(ILLUSTRATION_FOLDER_PATH + "/" + name + PREFAB_EXTENSION);
+//    if (illustrationObject == null)
+//    {
+//        return false;
+//    }
+
+//    var illustration = illustrationObject.GetComponent<IllustrationObject>();
+//    if (illustration == null)
+//    {
+//        return false;
+//    }
+
+//    if (illustration.Index != index)
+//    {
+//        return false;
+//    }
+
+//    return true;
+//}
+
+///// <summary>
+///// 同じマテリアルがあるか調べる
+///// </summary>
+///// <param name="files"> 探すフォルダのマテリアル </param>
+///// <param name="name"> マテリアルの名前 </param>
+///// <returns> 同じマテリアルがあるか </returns>
+//private bool SearchDistinctMaterial(string[] files, string name)
+//{
+//    if(!SearchDistinctFile(files, name))
+//    {
+//        return false;
+//    }
+
+//    var materialPath = MATERIAL_FOLDER_PATH + "/"+ name + MATERIAL_EXTENSION;
+//    var materialExists = File.Exists(materialPath);
+//    if(!materialExists)
+//    {
+//        return false;
+//    }
+
+//    return true;
+//}
+
+///// <summary>
+///// 同じ名前のキャプションがあるか調べる
+///// </summary>
+///// <param name="files"> 探すフォルダのキャプション </param>
+///// <param name="name"> キャプション </param>
+///// <returns></returns>
+//private bool SearchDistinctCaption(string[] files, string name)
+//{
+//    return SearchDistinctFile(files, name);
+//}

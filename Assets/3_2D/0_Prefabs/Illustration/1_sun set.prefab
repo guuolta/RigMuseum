@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &4009312193725093810
+--- !u!1001 &5577866656326501897
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -61,7 +61,7 @@ PrefabInstance:
     - target: {fileID: 4439923875683551542, guid: e2a35b7f4fa23f1419096716c7283f8e,
         type: 3}
       propertyPath: m_Name
-      value: 1_sun
+      value: 1_sun set
       objectReference: {fileID: 0}
     - target: {fileID: 4515567030909343690, guid: e2a35b7f4fa23f1419096716c7283f8e,
         type: 3}
@@ -77,20 +77,20 @@ PrefabInstance:
         type: 3}
       propertyPath: _canvas
       value: 
-      objectReference: {fileID: 1983480951090343450}
+      objectReference: {fileID: 7011503684736024481}
     - target: {fileID: 8156283854816269912, guid: e2a35b7f4fa23f1419096716c7283f8e,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: f42ea41346944724a8e9303fad250488, type: 2}
+      objectReference: {fileID: 2100000, guid: 9836e56213ec6c6449aed0584e46e07a, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e2a35b7f4fa23f1419096716c7283f8e, type: 3}
---- !u!1 &1983480951090343450 stripped
+--- !u!1 &7011503684736024481 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3181033752845236648, guid: e2a35b7f4fa23f1419096716c7283f8e,
     type: 3}
-  m_PrefabInstance: {fileID: 4009312193725093810}
+  m_PrefabInstance: {fileID: 5577866656326501897}
   m_PrefabAsset: {fileID: 0}

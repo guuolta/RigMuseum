@@ -118,6 +118,12 @@ public class UIBase : GameObjectBase
     /// <returns></returns>
     public virtual async UniTask ShowAsync(Image image, CancellationToken ct)
     {
+        image.DOComplete();
+        if (image.color.a == 1)
+        {
+            return;
+        }
+
         await image.DOFade(1, animationTime)
             .SetEase(Ease.InSine)
             .ToUniTask(cancellationToken: ct);
@@ -131,6 +137,12 @@ public class UIBase : GameObjectBase
     /// <returns></returns>
     public virtual async UniTask ShowAsync(CanvasGroup canvasGroup, CancellationToken ct)
     {
+        canvasGroup.DOComplete();
+        if (canvasGroup.alpha == 1)
+        {
+            return;
+        }
+
         await canvasGroup.DOFade(1, animationTime)
             .SetEase(Ease.InSine)
             .ToUniTask(cancellationToken: ct);
@@ -144,6 +156,12 @@ public class UIBase : GameObjectBase
     /// <returns></returns>
     public virtual async UniTask HideAsync(Image image, CancellationToken ct)
     {
+        image.DOComplete();
+        if (image.color.a == 0)
+        {
+            return;
+        }
+
         await image.DOFade(0, animationTime)
             .SetEase(Ease.OutSine)
             .ToUniTask(cancellationToken: ct);
@@ -157,6 +175,12 @@ public class UIBase : GameObjectBase
     /// <returns></returns>
     public virtual async UniTask HideAsync(CanvasGroup canvasGroup, CancellationToken ct)
     {
+        canvasGroup.DOComplete();
+        if (canvasGroup.alpha == 0)
+        {
+            return;
+        }
+
         await canvasGroup.DOFade(0, animationTime)
             .SetEase(Ease.OutSine)
             .ToUniTask(cancellationToken: ct);

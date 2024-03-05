@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class IllustrationObject : GameObjectBase
+public class IllustrationObject : TouchObjectBase
 {
     private int _index;
     /// <summary>
@@ -22,6 +22,11 @@ public class IllustrationObject : GameObjectBase
 
             return _canvas;
         }
+    }
+
+    public override void StartEvent()
+    {
+        GameStateManager.SetMuseumState(MuseumState.Target);
     }
 
     /// <summary>
