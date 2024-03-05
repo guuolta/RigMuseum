@@ -1,15 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Reflection;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 using System.IO;
-using JetBrains.Annotations;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
-using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 [CreateAssetMenu(fileName = "IllustrationDatas", menuName = "ScriptableObjects/CreateIllustrationDatas")]
 public class IllustrationDatas : ScriptableObjectBase<IllustrationData>
@@ -21,6 +15,13 @@ public class IllustrationDatas : ScriptableObjectBase<IllustrationData>
     /// 額縁
     /// </summary>
     public List<IllustrationObject> Frame => _frame;
+    [Header("キャプションベース")]
+    [SerializeField]
+    private IllustrationCaptionObject _captionBase = null;
+    /// <summary>
+    /// キャプションベース
+    /// </summary>
+    public IllustrationCaptionObject CaptionBase => _captionBase;
 }
 
 #if UNITY_EDITOR
@@ -30,6 +31,7 @@ public class IllustrationDatasEditor : Editor
     private const string ENUM_FILE_NAME = "FrameType";
     private const string ENUM_FOLDER_PATH = "Assets/0_coding/1_Data/Illustrations";
     private const string PREFAB_FOLDER_PATH = "Assets/3_2D/0_Prefabs/Illustration";
+    private const string CAPTION_FOLDER_PATH = "Assets/3_2D/0_Prefabs/Caption";
     private const string MATERIAL_FOLDER_PATH = "Assets/3_2D/1_Materials";
     private const string MATERIAL_PATH = "Universal Render Pipeline/Lit";
     private const string PREFAB_EXTENSION = ".prefab";
@@ -41,10 +43,12 @@ public class IllustrationDatasEditor : Editor
         //ボタンを表示
         var createEnumButton = GUILayout.Button("Create Enum");
         var createPrefabButton = GUILayout.Button("Create Prefab");
+        var createCaptionButton = GUILayout.Button("Create Caption");
 
         //データを表示
         serializedObject.Update();
         EditorGUILayout.PropertyField(serializedObject.FindProperty("_frame"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("_captionBase"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("_dataList"));
         serializedObject.ApplyModifiedProperties();
 
@@ -85,14 +89,36 @@ public class IllustrationDatasEditor : Editor
 
                 if(title == ""
                     || illustrationData.Image == null
-                    || (SearchDistinctIllustlationPrefab(prefabFiles, index + "_" + title, illustrationData.Index)
-                        && SearchDistinctMaterial(materialFiles, index + "_" + title)))
+                    || (SearchDistinctFile(prefabFiles, index + "_" + title + PREFAB_EXTENSION)
+                        && SearchDistinctFile(materialFiles, index + "_" + title + MATERIAL_EXTENSION)))
                 {
                     continue;
                 }
 
                 Material material = CreateMaterial(illustrationData);
-                CreatePrefab(illustrationData, illustrationDatas.Frame[(int)illustrationData.FrameType], material);
+                CreateIllustrationPrefab(illustrationData, illustrationDatas.Frame[(int)illustrationData.FrameType], material);
+            }
+        }
+
+        //キャプション生成
+        if(createCaptionButton)
+        {
+            IllustrationDatas illustrationDatas = (IllustrationDatas)target;
+            var illustrationDatasList = illustrationDatas.GetDataList();
+
+            string[] captionFiles = Directory.GetFiles(CAPTION_FOLDER_PATH);
+            foreach(var illustrationData in illustrationDatasList)
+            {
+                string title = illustrationData.Title;
+                if(title == ""
+                    || illustrationData.Description == ""
+                    || illustrationData.Members == new string[0]
+                    || SearchDistinctCaption(captionFiles, title))
+                {
+                    continue;
+                }
+
+                CreateCaption(illustrationData, illustrationDatas.CaptionBase.GameObject);
             }
         }
     }
@@ -215,12 +241,23 @@ public class IllustrationDatasEditor : Editor
     }
 
     /// <summary>
+    /// 同じ名前のキャプションがあるか調べる
+    /// </summary>
+    /// <param name="files"> 探すフォルダのキャプション </param>
+    /// <param name="name"> キャプション </param>
+    /// <returns></returns>
+    private bool SearchDistinctCaption(string[] files, string name)
+    {
+        return SearchDistinctFile(files, name);
+    }
+
+    /// <summary>
     /// プレハブ生成
     /// </summary>
     /// <param name="illustration"> イラストデータ </param>
     /// <param name="frame"> 設定するオブジェクト </param>
     /// <param name="material"> 設定するマテリアル </param>
-    private void CreatePrefab(IllustrationData illustration, IllustrationObject frame, Material material)
+    private void CreateIllustrationPrefab(IllustrationData illustration, IllustrationObject frame, Material material)
     {
         GameObject prefab = GetNewPrefab(frame.GameObject);
         prefab.GetComponent<IllustrationObject>().SetIllustration(illustration.Index, illustration.Image, material);
@@ -229,13 +266,30 @@ public class IllustrationDatasEditor : Editor
     }
 
     /// <summary>
+    /// キャプション生成
+    /// </summary>
+    /// <param name="illustration"> イラストデータ </param>
+    /// <param name="captionBase"> キャプションのオブジェクトベース </param>
+    private void CreateCaption(IllustrationData illustration, GameObject captionBase)
+    {
+        var caption = GetNewPrefab(captionBase).GetComponent<IllustrationCaptionObject>();
+        var captionUI = caption.CaptionUI;
+        captionUI.SetTitleText(illustration.Title);
+        captionUI.SetExplain(illustration.Description);
+        captionUI.SetAuthorText(illustration.Members);
+
+        PrefabUtility.SaveAsPrefabAsset(caption.GameObject, CAPTION_FOLDER_PATH + "/" + illustration.Title + "Caption" + PREFAB_EXTENSION);
+        DestroyImmediate(caption.GameObject);
+    }
+
+    /// <summary>
     /// 新しいプレハブを取得
     /// </summary>
-    /// <param name="frame"> フレーム </param>
+    /// <param name="base"> ベースオブジェクト </param>
     /// <returns></returns>
-    private GameObject GetNewPrefab(GameObject frame)
+    private GameObject GetNewPrefab(GameObject @base)
     {
-        return PrefabUtility.InstantiatePrefab(frame) as GameObject;
+        return PrefabUtility.InstantiatePrefab(@base) as GameObject;
     }
 
     /// <summary>

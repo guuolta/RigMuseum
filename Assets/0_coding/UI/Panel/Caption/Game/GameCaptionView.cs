@@ -1,20 +1,11 @@
-using Cysharp.Threading.Tasks;
-using System.Threading;
 using TMPro;
 using UnityEngine;
 
-public class GameCaptionView : ViewBase
+public class GameCaptionView : CaptionPanelViewBase
 {
     [Header("親キャンバス")]
     [SerializeField]
     private Canvas _canvas;
-    [Header("タイトルテキスト")]
-    [SerializeField]
-    private TMP_Text _titleText;
-    /// <summary>
-    /// タイトルテキスト
-    /// </summary>
-    public TMP_Text TitleText => _titleText;
     [Header("プログラマーメンバーテキスト")]
     [SerializeField]
     private TMP_Text _coadingMemberText;
@@ -50,13 +41,6 @@ public class GameCaptionView : ViewBase
     /// URLテキスト
     /// </summary>
     public TMP_Text UrlText => _urlText;
-    [Header("説明テキスト")]
-    [SerializeField]
-    private TMP_Text _explainText;
-    /// <summary>
-    /// 説明テキスト
-    /// </summary>
-    public TMP_Text ExplainText => _explainText;
     [Header("キャプションボタン")]
     [SerializeField]
     private UnderButton _captionButton;
@@ -105,16 +89,6 @@ public class GameCaptionView : ViewBase
         _minPosY = RectTransform.anchoredPosition.y - _distance;
     }
 
-    public override UniTask ShowAsync(CancellationToken ct)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public override UniTask HideAsync(CancellationToken ct)
-    {
-        throw new System.NotImplementedException();
-    }
-
     /// <summary>
     /// パネルをY軸方向に移動
     /// </summary>
@@ -122,14 +96,5 @@ public class GameCaptionView : ViewBase
     public void MovePosY(float value)
     {
         RectTransform.anchoredPosition = new Vector2(RectTransform.anchoredPosition.x, Mathf.Clamp(value, _minPosY, _maxPosY-_distance) + _distance);
-    }
-
-    /// <summary>
-    /// テキストを消す
-    /// </summary>
-    /// <param name="targetText"> テキスト </param>
-    public void HideText(TMP_Text targetText)
-    {
-        targetText.transform.parent.gameObject.SetActive(false);
     }
 }

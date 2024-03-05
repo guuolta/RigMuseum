@@ -45,7 +45,7 @@ public enum MuseumState
     None,
     Play,
     Pause,
-    Caption,
+    Target,
     Music,
     Monitor
 }

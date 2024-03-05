@@ -324,6 +324,9 @@ public class GameVideoManager : SingletonObjectBase<GameVideoManager>
             });
     }
 
+    /// <summary>
+    /// イベント削除
+    /// </summary>
     private void DisposePointerEvent()
     {
         if(_pointerDisposables == new CompositeDisposable())
