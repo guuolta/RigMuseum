@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: -0.0003, z: 0}
-  m_LocalScale: {x: 0.0105, y: 0.016, z: 1}
+  m_LocalScale: {x: 0.01, y: 0.0155, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 82623641106248731}
@@ -144,7 +144,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: fd18a37b5550add4a9f0004ba4a46774,
         type: 3}
       propertyPath: m_Name
-      value: picture_frame
+      value: LongWoodFrame
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

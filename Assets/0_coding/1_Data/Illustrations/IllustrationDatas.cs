@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Reflection;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -8,6 +9,7 @@ using System.IO;
 using JetBrains.Annotations;
 using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 [CreateAssetMenu(fileName = "IllustrationDatas", menuName = "ScriptableObjects/CreateIllustrationDatas")]
 public class IllustrationDatas : ScriptableObjectBase<IllustrationData>
@@ -25,17 +27,20 @@ public class IllustrationDatas : ScriptableObjectBase<IllustrationData>
 [CustomEditor(typeof(IllustrationDatas))]
 public class IllustrationDatasEditor : Editor
 {
+    private const string ENUM_FILE_NAME = "FrameType";
+    private const string ENUM_FOLDER_PATH = "Assets/0_coding/1_Data/Illustrations";
     private const string PREFAB_FOLDER_PATH = "Assets/3_2D/0_Prefabs/Illustration";
     private const string MATERIAL_FOLDER_PATH = "Assets/3_2D/1_Materials";
     private const string MATERIAL_PATH = "Universal Render Pipeline/Lit";
-    private const string PREFAB_EXTENSION = "._Variant.prefab";
+    private const string PREFAB_EXTENSION = ".prefab";
     private const string MATERIAL_EXTENSION = ".mat";
-    private int _listCount = 0; 
+    private int _listCount = 0;
 
     public override void OnInspectorGUI()
     {
         //ボタンを表示
-        var button = GUILayout.Button("Create Prefab");
+        var createEnumButton = GUILayout.Button("Create Enum");
+        var createPrefabButton = GUILayout.Button("Create Prefab");
 
         //データを表示
         serializedObject.Update();
@@ -43,22 +48,31 @@ public class IllustrationDatasEditor : Editor
         EditorGUILayout.PropertyField(serializedObject.FindProperty("_dataList"));
         serializedObject.ApplyModifiedProperties();
 
-        //ボタンが押されたら
-        if (button)
+        //Enum生成
+        if(createEnumButton)
+        {
+            IllustrationDatas illustrationDatas = (IllustrationDatas)target;
+            string enumCode = GetEnumCode(GetFrameNameList(illustrationDatas.Frame));
+            string savePath = ENUM_FOLDER_PATH + "/" + ENUM_FILE_NAME + ".cs";
+
+            File.WriteAllText(savePath, enumCode);
+            AssetDatabase.Refresh();
+        }
+
+        //プレハブ生成
+        if (createPrefabButton)
         {
             IllustrationDatas illustrationDatas = (IllustrationDatas)target;
             var illustrationDatasList = illustrationDatas.GetDataList();
             int count = illustrationDatas.GetCount();
-
             //イラスト番号設定
-            if (count != _listCount)
+            if(_listCount != count)
             {
-                for (int i = 0; i < count; count++)
+                _listCount = count;
+                for (int i = 0; i < count; i++)
                 {
                     illustrationDatasList[i].SetIndex(i);
                 }
-
-                _listCount = count;
             }
 
             string[] prefabFiles = Directory.GetFiles(PREFAB_FOLDER_PATH);
@@ -66,20 +80,62 @@ public class IllustrationDatasEditor : Editor
 
             foreach (var illustrationData in illustrationDatasList)
             {
+                string index = illustrationData.Index.ToString();
                 string title = illustrationData.Title;
 
                 if(title == ""
                     || illustrationData.Image == null
-                    || SearchDistinctMaterial(materialFiles, title)
-                    || SearchDistinctIllustlationPrefab(prefabFiles, title, illustrationData.Index))
+                    || (SearchDistinctIllustlationPrefab(prefabFiles, index + "_" + title, illustrationData.Index)
+                        && SearchDistinctMaterial(materialFiles, index + "_" + title)))
                 {
                     continue;
                 }
 
-                Material material = CreateMaterial(title, illustrationData.Image);
+                Material material = CreateMaterial(illustrationData);
                 CreatePrefab(illustrationData, illustrationDatas.Frame[(int)illustrationData.FrameType], material);
             }
         }
+    }
+
+    /// <summary>
+    /// フレームの名前のリストを取得
+    /// </summary>
+    /// <param name="illustrationDatas"></param>
+    /// <returns></returns>
+    private List<string> GetFrameNameList(List<IllustrationObject> illustrationDatas)
+    {
+        List<string> valueList = new List<string>();
+
+        foreach (var illustrationData in illustrationDatas)
+        {
+            if (illustrationData.GameObject.name == "")
+            {
+                continue;
+            }
+
+            valueList.Add(illustrationData.GameObject.name);
+        }
+
+        return valueList;
+    }
+
+    /// <summary>
+    /// Enumのコードを取得
+    /// </summary>
+    /// <param name="enumList"> 設定するEnumリスト </param>
+    /// <returns></returns>
+    private string GetEnumCode(List<string> enumList)
+    {
+        string enumCode = "public enum " + ENUM_FILE_NAME + "\n{\n";
+        
+        int i;
+        for(i = 0; i < enumList.Count-1; i++)
+        {
+            enumCode += "    " + enumList[i] + ",\n";
+        }
+        enumCode += "    " + enumList[i] + "\n}";
+
+        return enumCode;
     }
 
     /// <summary>
@@ -110,18 +166,24 @@ public class IllustrationDatasEditor : Editor
     /// <returns> 同じイラストのプレハブがあるか </returns>
     private bool SearchDistinctIllustlationPrefab(string[] files, string name, int index)
     {
-        if(!SearchDistinctFile(files, name))
+        if (!SearchDistinctFile(files, name))
         {
             return false; 
         }
 
-        var illustrationObject = AssetDatabase.LoadAssetAtPath<IllustrationObject>(PREFAB_FOLDER_PATH + "/" + name);
-        if(illustrationObject == null)
+        var illustrationObject = AssetDatabase.LoadAssetAtPath<GameObject>(PREFAB_FOLDER_PATH + "/" + name + PREFAB_EXTENSION);
+        if (illustrationObject == null)
         {
             return false;
         }
 
-        if (illustrationObject.Index != index)
+        var illustration = illustrationObject.GetComponent<IllustrationObject>();
+        if (illustration == null)
+        {
+            return false;
+        }
+
+        if (illustration.Index != index)
         {
             return false;
         }
@@ -142,8 +204,9 @@ public class IllustrationDatasEditor : Editor
             return false;
         }
 
-        var material = Path.GetExtension(MATERIAL_FOLDER_PATH + "/" + name);
-        if(material != MATERIAL_EXTENSION)
+        var materialPath = MATERIAL_FOLDER_PATH + "/" + name + MATERIAL_EXTENSION;
+        var materialExists = File.Exists(materialPath);
+        if(!materialExists)
         {
             return false;
         }
@@ -161,7 +224,7 @@ public class IllustrationDatasEditor : Editor
     {
         GameObject prefab = GetNewPrefab(frame.GameObject);
         prefab.GetComponent<IllustrationObject>().SetIllustration(illustration.Index, illustration.Image, material);
-        PrefabUtility.SaveAsPrefabAsset(prefab, PREFAB_FOLDER_PATH + "/" + illustration.Title + PREFAB_EXTENSION);
+        PrefabUtility.SaveAsPrefabAsset(prefab, PREFAB_FOLDER_PATH + "/" + illustration.Index.ToString() + "_" + illustration.Title + PREFAB_EXTENSION);
         DestroyImmediate(prefab);
     }
 
@@ -180,11 +243,11 @@ public class IllustrationDatasEditor : Editor
     /// </summary>
     /// <param name="name"> 名前 </param>
     /// <param name="illustlation"> 設定するイラスト </param>
-    private Material CreateMaterial(string name, Sprite illustlation)
+    private Material CreateMaterial(IllustrationData illustration)
     {
-        Material material = GetNewMaterial(illustlation.texture);
+        Material material = GetNewMaterial(illustration.Image.texture);
 
-        AssetDatabase.CreateAsset(material, MATERIAL_FOLDER_PATH + "/" + name + MATERIAL_EXTENSION);
+        AssetDatabase.CreateAsset(material, MATERIAL_FOLDER_PATH + "/" + illustration.Index.ToString() + "_" + illustration.Title + MATERIAL_EXTENSION);
         AssetDatabase.SaveAssets();
 
         AssetDatabase.Refresh();
@@ -262,22 +325,11 @@ public class IllustrationData
     /// <param name="index"> イラスト番号 </param>
     public void SetIndex(int index)
     {
-        if(_index < 0)
+        if(index < 0)
         {
             return;
         }
 
-        Debug.Log(index);
         _index = index;
     }
-}
-
-/// <summary>
-/// フレームの種類
-/// </summary>
-public enum FrameType
-{
-    None,
-    Wood,
-    LongWood
 }

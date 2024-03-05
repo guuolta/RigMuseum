@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &6312667332306599067
+--- !u!1001 &7806761179905413131
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -60,24 +60,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 136021613353539459, guid: 6df24c6eb16547948a400225beaaa7bf,
         type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.010500022
-      objectReference: {fileID: 0}
-    - target: {fileID: 136021613353539459, guid: 6df24c6eb16547948a400225beaaa7bf,
-        type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.0148714
+      value: 0.014163209
       objectReference: {fileID: 0}
     - target: {fileID: 751636521372593825, guid: 6df24c6eb16547948a400225beaaa7bf,
         type: 3}
       propertyPath: m_Name
-      value: "\u30AC\u30FC\u30EB._Variant"
+      value: "0_\u30AC\u30FC\u30EB"
       objectReference: {fileID: 0}
     - target: {fileID: 3822146925411265997, guid: 6df24c6eb16547948a400225beaaa7bf,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 8ff6a6da738355d468db9cd19fd53648, type: 2}
+      objectReference: {fileID: 2100000, guid: eaa6582e4dd0a8d43a7f0500a9c423d0, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
