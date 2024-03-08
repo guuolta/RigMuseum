@@ -1,13 +1,11 @@
 using Cysharp.Threading.Tasks;
-using System;
 using System.Threading;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Playables;
 using UnityEngine.UI;
 
-public class GameVideoManager : SingletonObjectBase<GameVideoManager>
+public class GameVideoManager : ProductionManagerBase<GameVideoManager>
 {
     [Header("ゲームデータ")]
     [SerializeField]
@@ -35,16 +33,7 @@ public class GameVideoManager : SingletonObjectBase<GameVideoManager>
     private VideoLoadingPresenter _loadingUI;
     [Header("モニター上のUI")]
     [SerializeField]
-    private OnMonitorUIPresenter _onMonitorUI;
-    [Header("アニメーションの時間")]
-    [SerializeField]
-    private float _animationTime = 0.1f;
-    [Header("モニターにターゲット時のモニターとプレイヤーの距離")]
-    [SerializeField]
-    private float _targetDistance = 10f;
-    [Header("モニターにターゲット解除時のモニターとプレイヤーの距離")]
-    [SerializeField]
-    private float _targetClearDistance = 15f;
+    private OnMonitorPresenter _onMonitorUI;
 
 
     private ReactiveProperty<int> _videoIndex = new ReactiveProperty<int>(0);
@@ -72,9 +61,9 @@ public class GameVideoManager : SingletonObjectBase<GameVideoManager>
 
     protected override void Init()
     {
-        _targetPos = _monitor.Transform.position + (_monitor.Transform.right * _targetDistance);
-        _targetRot = _monitor.Transform.localEulerAngles + new Vector3(0, -90, 0);
-        _clearPos = _targetPos + (_monitor.Transform.right * _targetClearDistance);
+        _targetPos = GetCameraPos(_monitor.Transform.position, _monitor.Transform.right, distance);
+        _targetRot = GetCameraRot(_monitor.Transform.localEulerAngles, new Vector3(0, -90, 0));
+        _clearPos = GetCameraPos(_targetPos, _monitor.Transform.right, clearDistance);
         
         _camera = _videoCanvas.worldCamera;
         _canvasRectTransform = _videoCanvas.GetComponent<RectTransform>();
@@ -84,7 +73,7 @@ public class GameVideoManager : SingletonObjectBase<GameVideoManager>
 
     protected override void SetEvent()
     {
-        SetEventTarget();
+        SetEventTarget(Ct);
         SetEventVideo(Ct);
         SetEventVideoPlay(Ct);
     }
@@ -241,7 +230,7 @@ public class GameVideoManager : SingletonObjectBase<GameVideoManager>
     /// <summary>
     /// モニターにターゲット時のイベント設定
     /// </summary>
-    private void SetEventTarget()
+    private void SetEventTarget(CancellationToken ct)
     {
         GameStateManager.MuseumStatus
             .TakeUntilDestroy(this)
@@ -252,7 +241,7 @@ public class GameVideoManager : SingletonObjectBase<GameVideoManager>
             {
                 if(value)
                 {
-                    await PlayerManager.Instance.TargetObjectAsync(_animationTime, _targetPos, _targetRot, Ct);
+                    await TargetAsync(_monitor, ct);
                     SetEventPointer();
                     _rangeImage.enabled = true;
                 }
@@ -260,7 +249,7 @@ public class GameVideoManager : SingletonObjectBase<GameVideoManager>
                 {
                     DisposePointerEvent();
                     _rangeImage.enabled = false;
-                    await PlayerManager.Instance.ClearTargetAsync(_animationTime, _clearPos, Ct);
+                    await ClearTargetAsync(ct);
                 }
             });
     }
@@ -324,6 +313,9 @@ public class GameVideoManager : SingletonObjectBase<GameVideoManager>
             });
     }
 
+    /// <summary>
+    /// イベント削除
+    /// </summary>
     private void DisposePointerEvent()
     {
         if(_pointerDisposables == new CompositeDisposable())

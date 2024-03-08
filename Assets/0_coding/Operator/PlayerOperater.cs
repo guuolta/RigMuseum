@@ -13,7 +13,7 @@ using UnityEngine.EventSystems;
 public class PlayerOperater : ObjectBase
 {
     [Header("マウスのクリックの範囲")]
-    [Range(5f, 20f)]
+    [Range(10f, 30f)]
     [SerializeField]
     private float _clickRange = 10f;
     [Header("カメラの回転上限")]
@@ -41,12 +41,8 @@ public class PlayerOperater : ObjectBase
 
     protected override void SetEvent()
     {
+        SetEventObjectClick();
         SetEventOptionKey();
-    }
-
-    protected override void Destroy()
-    {
-        DisposeEventPlayerOperation();
     }
 
     /// <summary>
@@ -76,6 +72,7 @@ public class PlayerOperater : ObjectBase
 
         /*前後どちらか*/
         Observable.EveryUpdate()
+            .TakeUntilDestroy(this)
             .Where(_ => Input.GetAxis("Vertical") != 0)
             .Select(direction => Input.GetAxis("Vertical"))
             .Subscribe(direction => frontDir = direction)
@@ -83,6 +80,7 @@ public class PlayerOperater : ObjectBase
 
         /*左右どちらか*/
         Observable.EveryUpdate()
+            .TakeUntilDestroy(this)
             .Where(_ => Input.GetAxis("Horizontal") != 0)
             .Select(direction => Input.GetAxis("Horizontal"))
             .Subscribe(direction => rightDir = direction)
@@ -90,30 +88,35 @@ public class PlayerOperater : ObjectBase
 
         /*上方向か*/
         Observable.EveryUpdate()
+            .TakeUntilDestroy(this)
             .Where(_ => Input.GetKey(_upMoveKey))
             .Subscribe(_ => upDir = 1)
             .AddTo(_keyEventDisposes);
         
         /*上方向解除*/
         Observable.EveryUpdate()
+            .TakeUntilDestroy(this)
             .Where(_ => Input.GetKeyUp(_upMoveKey))
             .Subscribe(_ => upDir = 0)
             .AddTo(_keyEventDisposes);
 
         /*下方向か*/
         Observable.EveryUpdate()
+            .TakeUntilDestroy(this)
             .Where(_ => Input.GetKey(_downMoveKey))
             .Subscribe(_ => downDir = 1)
             .AddTo(_keyEventDisposes);
 
         /*下方向解除*/
         Observable.EveryUpdate()
+            .TakeUntilDestroy(this)
             .Where(_ => Input.GetKeyUp(_downMoveKey))
             .Subscribe(_ => downDir = 0)
             .AddTo(_keyEventDisposes);
 
         /*移動処理*/
         Observable.EveryUpdate()
+            .TakeUntilDestroy(this)
             .Where(_ => Input.anyKey)
             .Subscribe(_ =>
             {
@@ -126,6 +129,7 @@ public class PlayerOperater : ObjectBase
 
         /*初期化処理*/
         Observable.EveryUpdate()
+            .TakeUntilDestroy(this)
             .Where(_ => !Input.anyKey)
             .Subscribe(_ =>
             {
@@ -142,6 +146,7 @@ public class PlayerOperater : ObjectBase
     {
         /*横方向の視点移動*/
         Observable.EveryUpdate()
+            .TakeUntilDestroy(this)
             .Select(direction => Input.GetAxis("Mouse X"))
             .DistinctUntilChanged()
             .Subscribe(direction =>
@@ -153,6 +158,7 @@ public class PlayerOperater : ObjectBase
 
         /*縦方向の視点移動*/
         Observable.EveryUpdate()
+            .TakeUntilDestroy(this)
             .Select(direction => Input.GetAxis("Mouse Y"))
             .DistinctUntilChanged()
             .Subscribe(direction =>
@@ -166,9 +172,18 @@ public class PlayerOperater : ObjectBase
                 _transform.localEulerAngles = rot;
             }).AddTo(_mouseEventDisposes);
 
-        /*オブジェクトのクリックの処理*/
+        
+    }
+
+    /// <summary>
+    /// オブジェクトのクリックの処理設定
+    /// </summary>
+    private void SetEventObjectClick()
+    {
         Observable.EveryUpdate()
-            .Where(_ => !EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonDown(0))
+            .TakeUntilDestroy(this)
+            .Where(_ => GameStateManager.MuseumStatus.Value != MuseumState.Pause && Input.GetMouseButtonDown(0))
+            .DistinctUntilChanged()
             .Subscribe(_ =>
             {
                 RaycastHit hit;
@@ -181,8 +196,7 @@ public class PlayerOperater : ObjectBase
                         obj.StartEvent();
                     }
                 }
-            }).AddTo(_mouseEventDisposes);
-
+            });
     }
 
     /// <summary>
@@ -191,11 +205,13 @@ public class PlayerOperater : ObjectBase
     private void SetEventOptionKey()
     {
         Observable.EveryUpdate()
+            .TakeUntilDestroy(this)
             .Where(_ => Input.GetKeyDown(_optionKey))
+            .DistinctUntilChanged()
             .Subscribe(_ =>
             {
                 GameStateManager.TogglePauseState();
-            }).AddTo(this);
+            });
     }
 
     /// <summary>

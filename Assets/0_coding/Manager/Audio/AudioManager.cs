@@ -43,6 +43,11 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
         PlayBGMAudioClip(_mainAudioClip);
     }
 
+    protected override void SetEvent()
+    {
+        SetEventAudio();
+    }
+
     /// <summary>
     /// BGM設定
     /// </summary>
@@ -191,6 +196,39 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
     {
         _movieAudioSource.volume = GetAudioSourceVolume(volume);
         _volumes[(int)AudioType.Movie] = volume;
+    }
+
+    /// <summary>
+    /// ミュート設定
+    /// </summary>
+    /// <param name="isMute"> ミュートにするか </param>
+    public void SetMute(bool isMute)
+    {
+        _bgmAudioSource.mute = isMute;
+        _seAudioSource.mute = isMute;
+        _movieAudioSource.mute = isMute;
+    }
+
+    /// <summary>
+    /// ステートごとの音量設定
+    /// </summary>
+    private void SetEventAudio()
+    {
+        GameStateManager.MuseumStatus
+            .TakeUntilDestroy(this)
+            .DistinctUntilChanged()
+            .Subscribe(value =>
+            {
+                switch (value)
+                {
+                    case MuseumState.Play:
+                        SetMute(false);
+                        break;
+                    case MuseumState.Monitor:
+                        _bgmAudioSource.mute = true;
+                        break;
+                }
+            });
     }
 
     /// <summary>
