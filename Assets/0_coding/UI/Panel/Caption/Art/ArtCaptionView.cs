@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class IllustrationCaptionView : CaptionPanelViewBase
+public class ArtCaptionView : CaptionPanelViewBase
 {
     [Header("製作者テキスト")]
     [SerializeField]

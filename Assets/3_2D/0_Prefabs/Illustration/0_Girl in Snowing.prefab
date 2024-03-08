@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &4960544837129058294
+--- !u!1001 &2668001564199955123
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -73,6 +73,11 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: a337ed59410b41345813ad1d63cc81fb, type: 2}
+    - target: {fileID: 7480471472253538803, guid: 6df24c6eb16547948a400225beaaa7bf,
+        type: 3}
+      propertyPath: NameUIName
+      value: 0_Girl in SnowingNameUI
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

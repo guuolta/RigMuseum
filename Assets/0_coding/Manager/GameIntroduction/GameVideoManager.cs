@@ -33,7 +33,7 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
     private VideoLoadingPresenter _loadingUI;
     [Header("モニター上のUI")]
     [SerializeField]
-    private OnMonitorUIPresenter _onMonitorUI;
+    private OnMonitorPresenter _onMonitorUI;
 
 
     private ReactiveProperty<int> _videoIndex = new ReactiveProperty<int>(0);
@@ -73,7 +73,7 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
 
     protected override void SetEvent()
     {
-        SetEventTarget();
+        SetEventTarget(Ct);
         SetEventVideo(Ct);
         SetEventVideoPlay(Ct);
     }
@@ -230,7 +230,7 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
     /// <summary>
     /// モニターにターゲット時のイベント設定
     /// </summary>
-    private void SetEventTarget()
+    private void SetEventTarget(CancellationToken ct)
     {
         GameStateManager.MuseumStatus
             .TakeUntilDestroy(this)
@@ -241,7 +241,7 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
             {
                 if(value)
                 {
-                    await PlayerManager.Instance.TargetObjectAsync(animationTime, _targetPos, _targetRot, Ct);
+                    await TargetAsync(_monitor, ct);
                     SetEventPointer();
                     _rangeImage.enabled = true;
                 }
@@ -249,7 +249,7 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
                 {
                     DisposePointerEvent();
                     _rangeImage.enabled = false;
-                    await PlayerManager.Instance.ClearTargetAsync(animationTime, _clearPos, Ct);
+                    await ClearTargetAsync(ct);
                 }
             });
     }

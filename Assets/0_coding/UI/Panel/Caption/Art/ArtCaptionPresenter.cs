@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IllustrationCaptionPresenter : CaptionPanelPresenterBase<IllustrationCaptionView>
+public class ArtCaptionPresenter : CaptionPanelPresenterBase<ArtCaptionView>
 {
     /// <summary>
     /// 製作者を設定

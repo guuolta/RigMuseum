@@ -40,4 +40,6 @@ MonoBehaviour:
   - {fileID: 7480471472253538803, guid: 6df24c6eb16547948a400225beaaa7bf, type: 3}
   _captionBase: {fileID: 129202002104432307, guid: 764eb8f80adcefa46b6502f3146baa33,
     type: 3}
+  _nameUIBase: {fileID: 2245386857668647613, guid: fce95eb67ba889f4ab4cf68559cd016d,
+    type: 3}
   _offset: 5

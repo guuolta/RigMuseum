@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Unity.VisualScripting;
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -19,12 +17,18 @@ public class IllustrationDatas : ScriptableObjectBase<IllustrationData>
     public List<IllustrationObject> Frame => _frame;
     [Header("キャプションベース")]
     [SerializeField]
-    private IllustrationCaptionObject _captionBase = null;
+    private ArtCaptionObject _captionBase = null;
     /// <summary>
     /// キャプションベース
     /// </summary>
-    public IllustrationCaptionObject CaptionBase => _captionBase;
-
+    public ArtCaptionObject CaptionBase => _captionBase;
+    [Header("作品名UIベース")]
+    [SerializeField]
+    ObjectNamePanelPresenter _nameUIBase = null;
+    /// <summary>
+    /// 作品名UIベース
+    /// </summary>
+    public ObjectNamePanelPresenter NameUIBase => _nameUIBase;
     [Header("イラストとキャプションの距離")]
     [SerializeField]
     private float _offset = 10f;
@@ -38,15 +42,24 @@ public class IllustrationDatas : ScriptableObjectBase<IllustrationData>
 [CustomEditor(typeof(IllustrationDatas))]
 public class IllustrationDatasEditor : Editor
 {
+    private const string MATERIAL_PATH = "Universal Render Pipeline/Lit";
+
     private const string ENUM_FILE_NAME = "FrameType";
+
+    private const string NAME_UI_FILE_NAME_ENDING = "NameUI";
+    private const string CAPTION_NAME_UI_FILE_NAME_ENDING = "CaptionNameUI";
+
     private const string ENUM_FOLDER_PATH = "Assets/0_coding/1_Data/Illustrations";
     private const string ILLUSTRATION_FOLDER_PATH = "Assets/3_2D/0_Prefabs/Illustration";
     private const string CAPTION_FOLDER_PATH = "Assets/3_2D/0_Prefabs/Caption";
     private const string ILLUSTRATION_OBJECT_FOLDER_PATH = "Assets/3_2D/0_Prefabs/IllustrationObjects";
     private const string MATERIAL_FOLDER_PATH = "Assets/3_2D/1_Materials";
-    private const string MATERIAL_PATH = "Universal Render Pipeline/Lit";
+    private const string ILLUSTRATION_NAME_UI_FOLDER_PATH = "Assets/5_source/Prefabs/UI/Panel/ObjectName/IllustrationNamePanels";
+    private const string ILLUSTRATION_CAPTION_NAME_UI_FOLDER_PATH = "Assets/5_source/Prefabs/UI/Panel/ObjectName/IllustrationCaptionNamePanels";
+
     private const string PREFAB_EXTENSION = ".prefab";
     private const string MATERIAL_EXTENSION = ".mat";
+    
     private int _listCount = 0;
 
     public override void OnInspectorGUI()
@@ -59,6 +72,7 @@ public class IllustrationDatasEditor : Editor
         serializedObject.Update();
         EditorGUILayout.PropertyField(serializedObject.FindProperty("_frame"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("_captionBase"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("_nameUIBase"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("_offset"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("_dataList"));
         serializedObject.ApplyModifiedProperties();
@@ -66,7 +80,7 @@ public class IllustrationDatasEditor : Editor
         //Enum生成
         if(createEnumButton)
         {
-            IllustrationDatas illustrationDatas = (IllustrationDatas)target;
+            var illustrationDatas = (IllustrationDatas)target;
             string enumCode = GetEnumCode(GetFrameNameList(illustrationDatas.Frame));
             string savePath = ENUM_FOLDER_PATH + "/" + ENUM_FILE_NAME + ".cs";
 
@@ -77,7 +91,7 @@ public class IllustrationDatasEditor : Editor
         //プレハブ生成
         if (createPrefabButton)
         {
-            IllustrationDatas illustrationDatas = (IllustrationDatas)target;
+            var illustrationDatas = (IllustrationDatas)target;
             var illustrationDatasList = illustrationDatas.GetDataList();
             int count = illustrationDatas.GetCount();
             //イラスト番号設定
@@ -111,11 +125,14 @@ public class IllustrationDatasEditor : Editor
                 }
 
                 Material material = CreateMaterial(illustrationData);
+                CreateNmaeUI(index, title, illustrationDatas.NameUIBase);
                 GameObject illustration = CreateIllustrationPrefab(illustrationData, illustrationDatas.Frame[(int)illustrationData.FrameType], material);
-                if(illustrationData.CaptionDirection != Direction.None)
+                if (illustrationData.CaptionDirection != Direction.None)
                 {
+                    CreateCaptionNameUI(index, title, illustrationDatas.NameUIBase);
                     GameObject caption = CreateCaption(illustrationData, illustrationDatas.CaptionBase.GameObject);
                     CreateIllustrationObject(illustrationData, illustration, caption, illustrationDatas.Offset);
+                    
                     continue;
                 }
 
@@ -193,7 +210,9 @@ public class IllustrationDatasEditor : Editor
     private GameObject CreateIllustrationPrefab(IllustrationData illustration, IllustrationObject frame, Material material)
     {
         GameObject prefab = GetNewPrefab(frame.GameObject);
-        prefab.GetComponent<IllustrationObject>().SetIllustration(illustration.Index, illustration.Image, material);
+        var illustrationObject = prefab.GetComponent<IllustrationObject>();
+        illustrationObject.SetIllustration(illustration.Index, illustration.Image, material);
+        SetNameUI(illustrationObject, illustration.Index.ToString(), illustration.Title);
         PrefabUtility.SaveAsPrefabAsset(prefab, ILLUSTRATION_FOLDER_PATH + "/" 
             + illustration.Index.ToString() + "_" + illustration.Title
             + PREFAB_EXTENSION);
@@ -208,7 +227,9 @@ public class IllustrationDatasEditor : Editor
     /// <param name="captionBase"> キャプションのオブジェクトベース </param>
     private GameObject CreateCaption(IllustrationData illustration, GameObject captionBase)
     {
-        var caption = GetNewPrefab(captionBase).GetComponent<IllustrationCaptionObject>();
+        var caption = GetNewPrefab(captionBase).GetComponent<ArtCaptionObject>();
+        SetCaptionNameUI(caption, illustration.Index.ToString(), illustration.Title);
+
         var captionUI = caption.CaptionUI;
         captionUI.SetTitleText(illustration.Title);
         captionUI.SetExplain(illustration.Description);
@@ -258,6 +279,36 @@ public class IllustrationDatasEditor : Editor
     }
 
     /// <summary>
+    /// 名前のUI生成
+    /// </summary>
+    /// <param name="index"> イラスト番号 </param>
+    /// <param name="name"> イラスト名 </param>
+    /// <param name="nameUIBase"> 名前UIベース </param>
+    private void CreateNmaeUI(string index, string name, ObjectNamePanelPresenter nameUIBase)
+    {
+        GameObject nameUI = GetNewPrefab(nameUIBase.gameObject);
+        nameUI.GetComponent<ObjectNamePanelPresenter>().SetText(name);
+
+        PrefabUtility.SaveAsPrefabAsset(nameUI, ILLUSTRATION_NAME_UI_FOLDER_PATH + "/" + index + "_" + name + NAME_UI_FILE_NAME_ENDING + PREFAB_EXTENSION);
+        DestroyImmediate(nameUI);
+    }
+
+    /// <summary>
+    /// キャプションの名前UI生成
+    /// </summary>
+    /// <param name="index"> イラスト番号 </param>
+    /// <param name="name"> イラスト名 </param>
+    /// <param name="nameUIBase"> 名前UIベース </param>
+    private void CreateCaptionNameUI(string index, string name, ObjectNamePanelPresenter nameUIBase)
+    {
+        GameObject nameUI = GetNewPrefab(nameUIBase.gameObject);
+        nameUI.GetComponent<ObjectNamePanelPresenter>().SetText(name + "\nキャプション");
+
+        PrefabUtility.SaveAsPrefabAsset(nameUI, ILLUSTRATION_CAPTION_NAME_UI_FOLDER_PATH + "/" + index + "_" + name + CAPTION_NAME_UI_FILE_NAME_ENDING + PREFAB_EXTENSION);
+        DestroyImmediate(nameUI);
+    }
+
+    /// <summary>
     /// 新しいオブジェクトを取得
     /// </summary>
     /// <param name="name"> オブジェクト名 </param>
@@ -277,6 +328,26 @@ public class IllustrationDatasEditor : Editor
     private GameObject GetNewPrefab(GameObject baseObejct)
     {
         return PrefabUtility.InstantiatePrefab(baseObejct) as GameObject;
+    }
+
+    /// <summary>
+    /// 名前UIを設定
+    /// </summary>
+    /// <param name="target"> 設定するオブジェクト </param>
+    /// <param name="nameUI"> 名前 </param>
+    private void SetNameUI(TouchObjectBase target, string index, string name)
+    {
+        target.SetNameUI(index + "_" + name + NAME_UI_FILE_NAME_ENDING);
+    }
+
+    /// <summary>
+    /// キャプションの名前UIを設定
+    /// </summary>
+    /// <param name="target"> 設定するオブジェクト </param>
+    /// <param name="nameUI"> 名前 </param>
+    private void SetCaptionNameUI(TouchObjectBase target, string index, string name)
+    {
+        target.SetNameUI(index + "_" + name + CAPTION_NAME_UI_FILE_NAME_ENDING);
     }
 
     /// <summary>

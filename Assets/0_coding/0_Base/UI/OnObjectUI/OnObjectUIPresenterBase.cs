@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class OnMonitorUIPresenter : PresenterBase<OnMonitorUIView>
+public class OnObjectUIPresenterBase<TView> : PresenterBase<TView>
+    where TView : OnObjectUIViewBase
 {
     protected override void SetEvent()
     {

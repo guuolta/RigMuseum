@@ -1,10 +1,8 @@
 using Cysharp.Threading.Tasks;
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
-public class OnMonitorUIView : ViewBase
+public class OnObjectUIViewBase : ViewBase
 {
     [Header("閉じるボタン")]
     [SerializeField]

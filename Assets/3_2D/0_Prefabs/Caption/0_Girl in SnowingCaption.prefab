@@ -8,6 +8,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 129202002104432307, guid: 764eb8f80adcefa46b6502f3146baa33,
+        type: 3}
+      propertyPath: NameUIName
+      value: 0_Girl in SnowingCaptionNameUI
+      objectReference: {fileID: 0}
     - target: {fileID: 164997495102897413, guid: 764eb8f80adcefa46b6502f3146baa33,
         type: 3}
       propertyPath: m_text

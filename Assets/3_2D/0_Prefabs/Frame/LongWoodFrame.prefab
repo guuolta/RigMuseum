@@ -202,6 +202,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55b7a51fa33e22946af4571e4569dedd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectName: 
+  _distance: 20
+  _direction: 6
   _canvas: {fileID: 4018310667893151555}
 --- !u!65 &4159366852292907731
 BoxCollider:

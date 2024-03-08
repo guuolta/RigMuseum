@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &1378295718735564491
+--- !u!1001 &460134165028481189
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -22,6 +22,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.y
       value: 0.015000037
+      objectReference: {fileID: 0}
+    - target: {fileID: 4074841546216604819, guid: aace9768d25f9ce459387599240b9b32,
+        type: 3}
+      propertyPath: NameUIName
+      value: 2_Hero in DigitalNameUI
       objectReference: {fileID: 0}
     - target: {fileID: 7544539299695016548, guid: aace9768d25f9ce459387599240b9b32,
         type: 3}

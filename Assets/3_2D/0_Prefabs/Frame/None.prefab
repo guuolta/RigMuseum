@@ -45,6 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55b7a51fa33e22946af4571e4569dedd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectName: 
+  _direction: 6
   _canvas: {fileID: 4699886041377920706}
 --- !u!1 &4699886041377920706
 GameObject:

@@ -14,11 +14,11 @@ public class CaptionPanelViewBase : ViewBase
     public TMP_Text TitleText => _titleText;
     [Header("説明テキスト")]
     [SerializeField]
-    private TMP_Text _explainText;
+    private TMP_Text _descriptionText;
     /// <summary>
     /// 説明テキスト
     /// </summary>
-    public TMP_Text ExplainText => _explainText;
+    public TMP_Text DescriptionText => _descriptionText;
 
     public override UniTask ShowAsync(CancellationToken ct)
     {

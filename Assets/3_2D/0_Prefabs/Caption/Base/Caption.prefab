@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1761855107453908381}
   - component: {fileID: 7040843369052245586}
   m_Layer: 5
-  m_Name: Contents
+  m_Name: Description
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -361,7 +361,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1399165628574907821}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.5}
+  m_LocalPosition: {x: 0, y: 0, z: -0.6}
   m_LocalScale: {x: 0.083333336, y: 0.06666667, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -464,7 +464,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 12, y: 15, z: 0.2}
+  m_LocalScale: {x: 12, y: 15, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2765206594488403781}
@@ -776,7 +776,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b607a63bff80dfc44b11fd47f6e14038, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _captionUI: {fileID: 3233577270192177281}
+  objectName: 
+  _distance: 10
+  _direction: 2
+  _captionUI: {fileID: 1212638720296891952}
 --- !u!65 &1873946485234217067
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -944,8 +947,8 @@ GameObject:
   - component: {fileID: 5540279555552839689}
   - component: {fileID: 4049869421543572842}
   - component: {fileID: 8490028020730801011}
-  - component: {fileID: 3233577270192177281}
-  - component: {fileID: 9168042760181959927}
+  - component: {fileID: 1212638720296891952}
+  - component: {fileID: 6918233578625617756}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -1010,7 +1013,7 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &3233577270192177281
+--- !u!114 &1212638720296891952
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1019,10 +1022,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 8410397092859827087}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ba44ce6fc4f4b44faeaf11aea22457e, type: 3}
+  m_Script: {fileID: 11500000, guid: 25398045f1b31a74a80feb7527a64c7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &9168042760181959927
+--- !u!114 &6918233578625617756
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1031,11 +1034,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8410397092859827087}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6b75e7ff42ce4142ae68a87637a5b0a, type: 3}
+  m_Script: {fileID: 11500000, guid: a31e3a9d7d6f17348afb690f60974ec6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0
   animationTime: 0.1
   _titleText: {fileID: 164997495102897413}
-  _explainText: {fileID: 7040843369052245586}
+  _descriptionText: {fileID: 7040843369052245586}
   _authorText: {fileID: 2084129072529800248}

@@ -18,7 +18,7 @@ public class CaptionPanelPresenterBase<TView> : PresenterBase<TView>
     /// <param name="explain"> 説明 </param>
     public void SetExplain(string explain)
     {
-        SetText(explain, View.ExplainText);
+        SetText(explain, View.DescriptionText);
     }
 
     /// <summary>
