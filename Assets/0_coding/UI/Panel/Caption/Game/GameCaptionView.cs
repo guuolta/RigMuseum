@@ -41,6 +41,13 @@ public class GameCaptionView : CaptionPanelViewBase
     /// URLテキスト
     /// </summary>
     public TMP_Text UrlText => _urlText;
+    [Header("クリップボタン")]
+    [SerializeField]
+    private ClipButton _clipButton;
+    /// <summary>
+    /// クリップボタン
+    /// </summary>
+    public ClipButton ClipButton => _clipButton;
     [Header("キャプションボタン")]
     [SerializeField]
     private UnderButton _captionButton;

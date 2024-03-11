@@ -110,7 +110,7 @@ public class IllustrationDatasEditor : Editor
 
             foreach (var illustrationData in illustrationDatasList)
             {
-                string index = illustrationData.Index.ToString();
+                string index = illustrationData.ID.ToString();
                 string title = illustrationData.Title;
 
                 if(title == ""
@@ -211,10 +211,10 @@ public class IllustrationDatasEditor : Editor
     {
         GameObject prefab = GetNewPrefab(frame.GameObject);
         var illustrationObject = prefab.GetComponent<IllustrationObject>();
-        illustrationObject.SetIllustration(illustration.Index, illustration.Image, material);
-        SetNameUI(illustrationObject, illustration.Index.ToString(), illustration.Title);
+        illustrationObject.SetIllustration(illustration.ID, illustration.Image, material);
+        SetNameUI(illustrationObject, illustration.ID.ToString(), illustration.Title);
         PrefabUtility.SaveAsPrefabAsset(prefab, ILLUSTRATION_FOLDER_PATH + "/" 
-            + illustration.Index.ToString() + "_" + illustration.Title
+            + illustration.ID.ToString() + "_" + illustration.Title
             + PREFAB_EXTENSION);
 
         return prefab;
@@ -228,7 +228,7 @@ public class IllustrationDatasEditor : Editor
     private GameObject CreateCaption(IllustrationData illustration, GameObject captionBase)
     {
         var caption = GetNewPrefab(captionBase).GetComponent<ArtCaptionObject>();
-        SetCaptionNameUI(caption, illustration.Index.ToString(), illustration.Title);
+        SetCaptionNameUI(caption, illustration.ID.ToString(), illustration.Title);
 
         var captionUI = caption.CaptionUI;
         captionUI.SetTitleText(illustration.Title);
@@ -236,7 +236,7 @@ public class IllustrationDatasEditor : Editor
         captionUI.SetAuthorText(illustration.Members);
 
         PrefabUtility.SaveAsPrefabAsset(caption.GameObject, CAPTION_FOLDER_PATH + "/"
-            + illustration.Index.ToString() + "_" + illustration.Title + "Caption"
+            + illustration.ID.ToString() + "_" + illustration.Title + "Caption"
             + PREFAB_EXTENSION);
 
         return caption.GameObject;
@@ -251,13 +251,13 @@ public class IllustrationDatasEditor : Editor
     /// <param name="offset"> キャプションとイラストの距離 </param>
     private void CreateIllustrationObject(IllustrationData illustrationData, GameObject illustration, GameObject caption, float offset)
     {
-        GameObject obj = GetNewObject(illustrationData.Index.ToString() + "_" + illustrationData.Title);
+        GameObject obj = GetNewObject(illustrationData.ID.ToString() + "_" + illustrationData.Title);
         illustration.transform.SetParent(obj.transform);
 
         caption.transform.SetParent(obj.transform);
         SetPosition(illustration, caption, illustrationData.CaptionDirection, offset);
 
-        PrefabUtility.SaveAsPrefabAsset(obj, ILLUSTRATION_OBJECT_FOLDER_PATH + "/" + illustrationData.Index.ToString() + "_" + illustrationData.Title + PREFAB_EXTENSION);
+        PrefabUtility.SaveAsPrefabAsset(obj, ILLUSTRATION_OBJECT_FOLDER_PATH + "/" + illustrationData.ID.ToString() + "_" + illustrationData.Title + PREFAB_EXTENSION);
         DestroyImmediate(obj);
         DestroyImmediate(illustration);
         DestroyImmediate(caption);
@@ -270,10 +270,10 @@ public class IllustrationDatasEditor : Editor
     /// <param name="illustration"> イラスト </param>
     private void CreateIllustrationObject(IllustrationData illustrationData, GameObject illustration)
     {
-        GameObject obj = GetNewObject(illustrationData.Index.ToString() + "_" + illustrationData.Title);
+        GameObject obj = GetNewObject(illustrationData.ID.ToString() + "_" + illustrationData.Title);
         illustration.transform.SetParent(obj.transform);
 
-        PrefabUtility.SaveAsPrefabAsset(obj, ILLUSTRATION_OBJECT_FOLDER_PATH + "/" + illustrationData.Index.ToString() + "_" + illustrationData.Title + PREFAB_EXTENSION);
+        PrefabUtility.SaveAsPrefabAsset(obj, ILLUSTRATION_OBJECT_FOLDER_PATH + "/" + illustrationData.ID.ToString() + "_" + illustrationData.Title + PREFAB_EXTENSION);
         DestroyImmediate(obj);
         DestroyImmediate(illustration);
     }
@@ -430,7 +430,7 @@ public class IllustrationDatasEditor : Editor
         Material material = GetNewMaterial(illustration.Image.texture);
 
         AssetDatabase.CreateAsset(material, MATERIAL_FOLDER_PATH + "/"
-            + illustration.Index.ToString() + "_" + illustration.Title
+            + illustration.ID.ToString() + "_" + illustration.Title
             + MATERIAL_EXTENSION);
         AssetDatabase.SaveAssets();
 
@@ -461,11 +461,11 @@ public class IllustrationDatasEditor : Editor
 [System.Serializable]
 public class IllustrationData
 {
-    private int _index = -1;
+    private int _id = -1;
     /// <summary>
     /// イラスト番号
     /// </summary>
-    public int Index => _index;
+    public int ID => _id;
     [Header("イラスト名")]
     [SerializeField]
     private string _title = "";
@@ -521,7 +521,7 @@ public class IllustrationData
             return;
         }
 
-        _index = index;
+        _id = index;
     }
 }
 

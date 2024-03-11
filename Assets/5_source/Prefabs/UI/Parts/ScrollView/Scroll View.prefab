@@ -215,7 +215,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0.8
-  _animationTime: 0.1
+  animationTime: 0.1
 --- !u!1 &2622357832253222784
 GameObject:
   m_ObjectHideFlags: 0
@@ -308,13 +308,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Content: {fileID: 221572797345495573}
-  m_Horizontal: 1
+  m_Horizontal: 0
   m_Vertical: 1
   m_MovementType: 1
   m_Elasticity: 0.1
-  m_Inertia: 1
+  m_Inertia: 0
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 3
   m_Viewport: {fileID: 3394563423491536563}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 6627820861142266128}
@@ -338,7 +338,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0.8
-  _animationTime: 0.1
+  animationTime: 0.1
 --- !u!1 &3317439357908722230
 GameObject:
   m_ObjectHideFlags: 0

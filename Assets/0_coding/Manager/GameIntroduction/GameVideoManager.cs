@@ -30,7 +30,7 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
     private Image _rangeImage;
     [Header("ローディングUI")]
     [SerializeField]
-    private VideoLoadingPresenter _loadingUI;
+    private CircleLoadingPresenter _loadingUI;
     [Header("モニター上のUI")]
     [SerializeField]
     private OnMonitorPresenter _onMonitorUI;

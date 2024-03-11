@@ -8,6 +8,7 @@ public class GameCaptionPresenter : CaptionPanelPresenterBase<GameCaptionView>
     protected override void SetEvent()
     {
         SetEventShowCaption();
+        SetEventClipButton();
     }
 
     /// <summary>
@@ -53,6 +54,17 @@ public class GameCaptionPresenter : CaptionPanelPresenterBase<GameCaptionView>
     public void SetURL(string url)
     {
         SetText(url, View.UrlText);
+    }
+
+    /// <summary>
+    /// クリップボタンのイベント設定
+    /// </summary>
+    private void SetEventClipButton()
+    {
+        View.ClipButton.OnClickCallback += () =>
+        {
+            GUIUtility.systemCopyBuffer = View.UrlText.text;
+        };
     }
 
     /// <summary>
