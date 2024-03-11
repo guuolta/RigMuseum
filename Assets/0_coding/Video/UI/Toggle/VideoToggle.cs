@@ -6,11 +6,11 @@ public class VideoToggle : ToggleBase
 {
     [Header("ON時の説明のUI")]
     [SerializeField]
-    private VideoExplainText _onExplainText;
+    private ExplainText _onExplainText;
     [Header("OFF時の説明のUI")]
     [SerializeField]
-    private VideoExplainText _offExplainText;
-    private VideoExplainText _targetExplainText;
+    private ExplainText _offExplainText;
+    private ExplainText _targetExplainText;
 
     protected override void Init()
     {

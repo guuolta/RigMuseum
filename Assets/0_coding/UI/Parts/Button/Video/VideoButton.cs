@@ -5,7 +5,7 @@ public class VideoButton : ButtonBase
 {
     [Header("説明のテキスト")]
     [SerializeField]
-    private VideoExplainText _explainText;
+    private ExplainText _explainText;
 
     protected override void SetEventPlaySe()
     {

@@ -17,10 +17,10 @@ public class VideoOnOffButton : ButtonBase
     private Image _offButtonImage;
     [Header("ON時の説明のUI")]
     [SerializeField]
-    private VideoExplainText _onExplainText;
+    private ExplainText _onExplainText;
     [Header("OFF時の説明のUI")]
     [SerializeField]
-    private VideoExplainText _offExplainText;
+    private ExplainText _offExplainText;
 
     private BoolReactiveProperty _isOn = new BoolReactiveProperty(false);
     /// <summary>
@@ -28,7 +28,7 @@ public class VideoOnOffButton : ButtonBase
     /// </summary>
     public BoolReactiveProperty IsOn => _isOn;
     private Image _targetImage;
-    private VideoExplainText _targetExplainText;
+    private ExplainText _targetExplainText;
 
     protected override void Init()
     {

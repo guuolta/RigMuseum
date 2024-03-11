@@ -4,7 +4,7 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class VideoLoadingView : ViewBase
+public class CircleLoadingView : ViewBase
 {
     [Header("ローディングアニメーションする丸を持つオブジェクト")]
     [SerializeField]
