@@ -31,7 +31,7 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
         SetEventPlayButton(Ct);
         SetEventSkipButton();
         SetEventBackButton();
-        SetEventNextButton();
+        SetEventNextButton(Ct);
         SetEventSpeedButton(Ct);
         SetEventMuteButton();
         SetEventVolumeSlider();
@@ -61,13 +61,19 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
     {
         View.ScreenImage.OnClickCallback += () =>
         {
+            if(View.SpeedPanel.IsOpen)
+            {
+                View.SpeedPanel.HideAsync(ct).Forget();
+                return;
+            }
+
             if(GameVideoManager.Instance.IsPlayVideo.Value)
             {
-                Pause(ct);
+                Pause();
             }
             else
             {
-                Play(ct);
+                Play();
             }
         };
     }
@@ -81,11 +87,11 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
         View.SeekBar.OnPointerUpEvent += () =>
         {
             disposables = DisposeEvent(disposables);
-            Play(ct);
+            Play();
         };
         View.SeekBar.OnPointerDownEvent += () =>
         {
-            Pause(ct);
+            Pause();
             SetEventSeekBar();
         };
 
@@ -129,17 +135,33 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
         View.PlayButton.IsOn
             .TakeUntilDestroy(this)
             .DistinctUntilChanged()
-            .Subscribe(value =>
+            .Subscribe(async value =>
             {
                 if(value)
                 {
-                    GameVideoManager.Instance.Pause();
+                    await GameVideoManager.Instance.PauseAsync(ct);
                 }
                 else
                 {
-                    GameVideoManager.Instance.PlayAsync(ct).Forget();
+                    await GameVideoManager.Instance.PlayAsync(ct);
                 }
             });
+    }
+
+    /// <summary>
+    /// 動画再生
+    /// </summary>
+    private void Play()
+    {
+        View.PlayButton.SetOn(false);
+    }
+
+    /// <summary>
+    /// 動画停止
+    /// </summary>
+    private void Pause()
+    {
+        View.PlayButton.SetOn(true);
     }
 
     /// <summary>
@@ -168,11 +190,11 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
     /// 次の動画再生ボタンのイベント設定
     /// </summary>
     /// <param name="ct"></param>
-    private void SetEventNextButton()
+    private void SetEventNextButton(CancellationToken ct)
     {
-        View.NextButton.OnClickCallback += () =>
+        View.NextButton.OnClickCallback += async () =>
         {
-            GameVideoManager.Instance.PlayNext();
+            await GameVideoManager.Instance.PlayNextAsync(ct);
         };
     }
 
@@ -281,25 +303,7 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
 
     }
 
-    /// <summary>
-    /// 動画再生
-    /// </summary>
-    /// <param name="ct"></param>
-    private void Play(CancellationToken ct)
-    {
-        View.PlayButton.SetOn(false);
-        GameVideoManager.Instance.PlayAsync(ct).Forget();
-    }
-
-    /// <summary>
-    /// 動画停止
-    /// </summary>
-    /// <param name="ct"></param>
-    private void Pause(CancellationToken ct)
-    {
-        View.PlayButton.SetOn(true);
-        GameVideoManager.Instance.Pause();
-    }
+    
 
     /// <summary>
     /// 再生速度取得

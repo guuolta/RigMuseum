@@ -6,7 +6,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ValueInputFieldBase : UIAnimationPartBase
+public class ValueInputFieldBase : AnimationPartBase
 {
     private float _minValue;
     private float _maxValue;

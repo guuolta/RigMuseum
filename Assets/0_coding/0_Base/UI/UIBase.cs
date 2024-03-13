@@ -26,9 +26,7 @@ public class UIBase : GameObjectBase
         get
         {
             if(_rectTransform == null)
-            {
                 _rectTransform = GetComponent<RectTransform>();
-            }
 
             return _rectTransform;
         }
@@ -43,9 +41,7 @@ public class UIBase : GameObjectBase
             {
                 _canvasGroup = GetComponent<CanvasGroup>();
                 if (_canvasGroup == null)
-                {
                     _canvasGroup = gameObject.AddComponent<CanvasGroup>();
-                }
             }
 
             return _canvasGroup;
@@ -130,7 +126,7 @@ public class UIBase : GameObjectBase
     }
 
     /// <summary>
-    /// UIを表示
+    /// UIをフェードで表示
     /// </summary>
     /// <param name="canvasGroup"></param>
     /// <param name="ct"></param>

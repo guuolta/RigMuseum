@@ -1,8 +1,12 @@
 using Cysharp.Threading.Tasks;
+using UnityEngine;
 
-
-public class ButtonBase : UIAnimationPartBase
+public class ButtonBase : AnimationPartBase
 {
+    [Header("SE")]
+    [SerializeField]
+    private SEType _seType = SEType.Posi;
+
     protected override void Init()
     {
         ChangeInteractive(true);
@@ -17,11 +21,14 @@ public class ButtonBase : UIAnimationPartBase
     /// <summary>
     /// SEを鳴らす
     /// </summary>
-    protected virtual void SetEventPlaySe()
+    protected void SetEventPlaySe()
     {
+        if(_seType == SEType.None)
+            return;
+
         OnClickCallback += () =>
         {
-            AudioManager.Instance.PlayOneShotSE(SEType.Posi);
+            AudioManager.Instance.PlayOneShotSE(_seType);
         };
     }
 

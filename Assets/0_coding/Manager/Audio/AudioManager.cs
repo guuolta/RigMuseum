@@ -64,7 +64,7 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
     /// <param name="clip"> 鳴らすSE </param>
     public void PlayOneShotSE(AudioClip clip)
     {
-        foreach(AudioSource se in _seAudioSourceList)
+        foreach (AudioSource se in _seAudioSourceList)
         {
             if(!se.isPlaying)
             {
@@ -73,8 +73,8 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
             }
         }
 
-        var seSource = Instantiate(_seAudioSource).GetComponent<AudioSource>();
-        _seAudioSourceList.Add(seSource);
+        CreateSEAudioSource();
+        PlayOneShotSE(clip);
     }
 
     /// <summary>
@@ -83,6 +83,9 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
     /// <param name="type"> Seの種類 </param>
     public void PlayOneShotSE(SEType type)
     {
+        if(type == SEType.None)
+            return;
+
         foreach (AudioSource se in _seAudioSourceList)
         {
             if (!se.isPlaying)
@@ -92,6 +95,15 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
             }
         }
 
+        CreateSEAudioSource();
+        PlayOneShotSE(type);
+    }
+
+    /// <summary>
+    /// SEのオーディオソースを生成
+    /// </summary>
+    private void CreateSEAudioSource()
+    {
         var seSource = Instantiate(_seAudioSource).GetComponent<AudioSource>();
         _seAudioSourceList.Add(seSource);
     }
@@ -102,9 +114,7 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
     private void GetSEDictionary()
     {
         foreach(var se in _seList)
-        {
             _seDictionary.Add(se.SEType, se.Clip);
-        }
     }
 
     /// <summary>
@@ -210,6 +220,31 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
     }
 
     /// <summary>
+    /// ミュート設定
+    /// </summary>
+    /// <param name="isMute"> ミュートにするか </param>
+    public void SetMute(bool isMute, AudioType type)
+    {
+        switch(type)
+        {
+            case AudioType.Master:
+                SetMute(isMute);
+                break;
+            case AudioType.BGM:
+                _bgmAudioSource.mute = isMute;
+                break;
+            case AudioType.SE:
+                _seAudioSource.mute = isMute;
+                break;
+            case AudioType.Movie:
+                _movieAudioSource.mute = isMute;
+                break;
+            default:
+                break;
+        }
+    }
+
+    /// <summary>
     /// ステートごとの音量設定
     /// </summary>
     private void SetEventAudio()
@@ -263,6 +298,7 @@ public enum AudioType
 /// </summary>
 public enum SEType
 {
+    None,
     Posi,
     Nega
 }

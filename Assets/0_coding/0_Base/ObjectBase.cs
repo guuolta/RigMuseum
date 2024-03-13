@@ -17,9 +17,7 @@ public class ObjectBase : MonoBehaviour
         get
         {
             if (_ct == null)
-            {
                 _ct = this.GetCancellationTokenOnDestroy();
-            }
 
             return _ct;
         }

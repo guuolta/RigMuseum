@@ -11,6 +11,9 @@ public abstract class TouchObjectBase : GameObjectBase
     [SerializeField]
     private TargetDirection _direction = TargetDirection.None;
     public TargetDirection Direction => _direction;
+    [Header("SE")]
+    [SerializeField]
+    private SEType _seType= SEType.Posi;
 
     private ObjectNamePanelPresenter _nameUI;
     /// <summary>
@@ -52,6 +55,7 @@ public abstract class TouchObjectBase : GameObjectBase
         }
 
         _isTouch = true;
+        AudioManager.Instance.PlayOneShotSE(_seType);
         await NameUI.HideAsync(Ct);
     }
 

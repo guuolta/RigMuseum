@@ -49,9 +49,7 @@ public class ToggleBase : UIPartBase
                 slider.handleRect.GetComponent<HandleBase>();
 
                 if(_handle == null)
-                {
                     _handle = slider.handleRect.AddComponent<HandleBase>();
-                }
             }
 
             return _handle;
