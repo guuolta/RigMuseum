@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
+using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -11,7 +12,11 @@ public class MediaButton : ButtonBase
     [SerializeField]
     private List<MediaButtonData> _dataList = new List<MediaButtonData>();
 
-    private int _activeIndex = 0;
+    private ReactiveProperty<int> _activeIndex = new ReactiveProperty<int>(-1);
+    /// <summary>
+    /// アクティブな要素番号
+    /// </summary>
+    public ReactiveProperty<int> ActiveIndex => _activeIndex;
     private int _listCount;
     private MediaButtonData _targetData;
     /// <summary>
@@ -59,21 +64,12 @@ public class MediaButton : ButtonBase
     }
 
     /// <summary>
-    /// アクティブな要素番号を取得
-    /// </summary>
-    /// <returns></returns>
-    public int GetIndex()
-    {
-        return _activeIndex;
-    }
-
-    /// <summary>
     /// 次のデータを設定する
     /// </summary>
     protected void SetNextData()
     {
-        _targetData = _dataList[_activeIndex];
-        _activeIndex = (_activeIndex + 1) % _listCount;
+        _activeIndex.Value = (_activeIndex.Value + 1) % _listCount;
+        _targetData = _dataList[_activeIndex.Value];
     }
 
     /// <summary>

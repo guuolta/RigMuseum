@@ -37,12 +37,6 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
         SetEventToggle(Ct);
     }
 
-
-    protected override void Destroy()
-    {
-        DisposeEvent(disposables);
-    }
-
     public override async UniTask ShowAsync(CancellationToken ct)
     {
         _isShow = false;
@@ -59,7 +53,7 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
     {
         View.ScreenImage.OnClickCallback += () =>
         {
-            if(View.SpeedPanel.IsOpen)
+            if(View.SpeedPanel.IsOpen.Value)
             {
                 View.SpeedPanel.HideAsync(ct).Forget();
                 return;
@@ -135,13 +129,13 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
             .DistinctUntilChanged()
             .Subscribe(async value =>
             {
-                if(value)
+                if(!value)
                 {
-                    await GameVideoManager.Instance.PauseAsync(ct);
+                    await GameVideoManager.Instance.PlayAsync(ct);
                 }
                 else
                 {
-                    await GameVideoManager.Instance.PlayAsync(ct);
+                    await GameVideoManager.Instance.PauseAsync(ct);
                 }
             });
     }
@@ -213,7 +207,7 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
     {
         View.SpeedButton.OnClickCallback += async () =>
         {
-            if(View.SpeedPanel.IsOpen)
+            if(View.SpeedPanel.IsOpen.Value)
             {
                 await View.SpeedPanel.HideAsync(ct);
             }
