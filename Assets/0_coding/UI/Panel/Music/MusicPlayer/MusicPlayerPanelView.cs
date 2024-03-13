@@ -83,6 +83,10 @@ public class MusicPlayerPanelView : PanelViewBase
     /// </summary>
     public TMP_Text RemainTimeText => _remainTimeText;
 
+    protected override void Init()
+    {
+
+    }
 
     public override UniTask ShowAsync(CancellationToken ct)
     {

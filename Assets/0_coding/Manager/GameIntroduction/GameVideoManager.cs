@@ -19,7 +19,7 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
     [Header("動画のUIキャンバス")]
     [SerializeField]
     private Canvas _videoCanvas;
-    [Header("動画UIプレゼンター")]
+    [Header("動画のUI")]
     [SerializeField]
     private VideoUIPresenter _videoUI;
     [Header("キャプションUI")]

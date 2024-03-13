@@ -4,6 +4,12 @@ using UniRx;
 
 public class MusicVolumePanelPresenter : PanelPresenterBase<MusicVolumePanelView>
 {
+    private BoolReactiveProperty _isMute = new BoolReactiveProperty(false);
+    /// <summary>
+    /// ミュートか
+    /// </summary>
+    public BoolReactiveProperty IsMute => _isMute;
+
     protected override void SetEvent()
     {
         SetValue();
@@ -37,6 +43,7 @@ public class MusicVolumePanelPresenter : PanelPresenterBase<MusicVolumePanelView
             .Subscribe(value =>
             {
                 AudioManager.Instance.SetMute(value, AudioType.BGM);
+                _isMute.Value = value;
             });
     }
 

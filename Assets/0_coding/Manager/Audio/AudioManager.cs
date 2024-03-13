@@ -33,6 +33,18 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
     [Header("よく使うSE")]
     [SerializeField]
     private List<SE> _seList = new List<SE>();
+
+    private ReactiveProperty<int> _bgmPlayTime = new ReactiveProperty<int>(0);
+    /// <summary>
+    /// BGMの再生時間
+    /// </summary>
+    public ReactiveProperty<int> BGMPlayTime => _bgmPlayTime;
+    private ReactiveProperty<int> _bgmLength = new ReactiveProperty<int>(0);
+    /// <summary>
+    /// BGMの再生時間
+    /// </summary>
+    public ReactiveProperty<int> BGMLength => _bgmLength;
+
     private Dictionary<SEType, AudioClip> _seDictionary = new Dictionary<SEType, AudioClip>();
 
     protected override void Init()
@@ -40,22 +52,124 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
         base.Init();
         GetSEDictionary();
         SetInitVolume();
-        PlayBGMAudioClip(_mainAudioClip);
+        PlayBGM(_mainAudioClip);
     }
 
     protected override void SetEvent()
     {
         SetEventAudio();
+        SetEventBGMPlayTime();
     }
 
     /// <summary>
-    /// BGM設定
+    /// SEの辞書を取得
+    /// </summary>
+    private void GetSEDictionary()
+    {
+        foreach (var se in _seList)
+            _seDictionary.Add(se.SEType, se.Clip);
+    }
+
+    /// <summary>
+    /// 音量の初期値設定
+    /// </summary>
+    private void SetInitVolume()
+    {
+        _volumes = SaveManager.GetSoundVolume();
+        _audioMixer.SetFloat(MASTER_VOLUME_NAME, GetAudioMixerVolume(_volumes[(int)AudioType.Master]));
+        _audioMixer.SetFloat(BGM_VOLUME_NAME, GetAudioMixerVolume(_volumes[(int)AudioType.BGM]));
+        _audioMixer.SetFloat(SE_VOLUME_NAME, GetAudioMixerVolume(_volumes[(int)AudioType.SE]));
+        _movieAudioSource.volume = GetAudioSourceVolume(_volumes[(int)AudioType.Movie]);
+    }
+
+    /// <summary>
+    /// オーディオミキサーに設定する音量
+    /// </summary>
+    /// <param name="volume"> 音量 </param>
+    /// <returns></returns>
+    private float GetAudioMixerVolume(float volume)
+    {
+        return -80 + volume * 10;
+    }
+
+    /// <summary>
+    /// オーディオソースに設定する音量
+    /// </summary>
+    /// <param name="volume"> 音量 </param>
+    /// <returns></returns>
+    private float GetAudioSourceVolume(float volume)
+    {
+        return volume * _volumes[(int)AudioType.Master] / 100;
+    }
+
+    /// <summary>
+    /// BGM再生
+    /// </summary>
+    public void PlayBGM()
+    {
+        if (_bgmAudioSource.isPlaying)
+            return;
+
+        _bgmAudioSource.Play();
+    }
+
+    /// <summary>
+    /// BGM再生
     /// </summary>
     /// <param name="clip">曲</param>
-    public void PlayBGMAudioClip(AudioClip clip)
+    public void PlayBGM(AudioClip clip)
     {
         _bgmAudioSource.clip = clip;
+        _bgmLength.Value = (int)clip.length;
         _bgmAudioSource.Play();
+    }
+
+    /// <summary>
+    /// BGM停止
+    /// </summary>
+    public void PauseBGM()
+    {
+        if(!_bgmAudioSource.isPlaying)
+            return;
+
+        _bgmAudioSource.Pause();
+    }
+
+    /// <summary>
+    /// ステートごとの音量設定
+    /// </summary>
+    private void SetEventAudio()
+    {
+        GameStateManager.MuseumStatus
+            .TakeUntilDestroy(this)
+            .DistinctUntilChanged()
+            .Subscribe(value =>
+            {
+                switch (value)
+                {
+                    case MuseumState.Play:
+                        SetMute(false);
+                        break;
+                    case MuseumState.Monitor:
+                        SetMute(true, AudioType.BGM);
+                        break;
+                }
+            });
+    }
+
+    /// <summary>
+    /// BGMの再生時間を設定
+    /// </summary>
+    private void SetEventBGMPlayTime()
+    {
+        Observable.EveryUpdate()
+            .TakeUntilDestroy(this)
+            .Select(_ => _bgmAudioSource.time)
+            .DistinctUntilChanged()
+            .Subscribe(time =>
+            {
+                _bgmPlayTime.Value = (int)time;
+            });
     }
 
     /// <summary>
@@ -109,32 +223,60 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
     }
 
     /// <summary>
-    /// SEの辞書を取得
+    /// ミュート設定
     /// </summary>
-    private void GetSEDictionary()
+    /// <param name="isMute"> ミュートにするか </param>
+    public void SetMute(bool isMute)
     {
-        foreach(var se in _seList)
-            _seDictionary.Add(se.SEType, se.Clip);
+        _bgmAudioSource.mute = isMute;
+        _seAudioSource.mute = isMute;
+        _movieAudioSource.mute = isMute;
     }
 
     /// <summary>
-    /// オーディオミキサーに設定する音量
+    /// ミュート設定
     /// </summary>
-    /// <param name="volume"> 音量 </param>
-    /// <returns></returns>
-    private float GetAudioMixerVolume(float volume)
+    /// <param name="isMute"> ミュートにするか </param>
+    public void SetMute(bool isMute, AudioType type)
     {
-        return -80 + volume * 10;
+        switch (type)
+        {
+            case AudioType.Master:
+                SetMute(isMute);
+                break;
+            case AudioType.BGM:
+                _bgmAudioSource.mute = isMute;
+                break;
+            case AudioType.SE:
+                _seAudioSource.mute = isMute;
+                break;
+            case AudioType.Movie:
+                _movieAudioSource.mute = isMute;
+                break;
+            default:
+                break;
+        }
     }
 
     /// <summary>
-    /// オーディオソースに設定する音量
+    /// ループ設定
     /// </summary>
-    /// <param name="volume"> 音量 </param>
-    /// <returns></returns>
-    private float GetAudioSourceVolume(float volume)
+    /// <param name="isLoop"> ループするか </param>
+    public void SetBGMLoop(bool isLoop)
     {
-        return volume * _volumes[(int)AudioType.Master] /100;
+        if(_bgmAudioSource.loop == isLoop)
+            return;
+
+        _bgmAudioSource.loop = isLoop;
+    }
+
+    /// <summary>
+    /// BGMの再生時間を設定
+    /// </summary>
+    /// <param name="time"></param>
+    public void SetBGMTime(float time)
+    {
+        _bgmAudioSource.time = time;
     }
 
     /// <summary>
@@ -153,18 +295,6 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
     public float GetSoundVolume(AudioType type)
     {
         return _volumes[(int)type];
-    }
-
-    /// <summary>
-    /// 音量の初期値設定
-    /// </summary>
-    private void SetInitVolume()
-    {
-        _volumes = SaveManager.GetSoundVolume();
-        _audioMixer.SetFloat(MASTER_VOLUME_NAME, GetAudioMixerVolume(_volumes[(int)AudioType.Master]));
-        _audioMixer.SetFloat(BGM_VOLUME_NAME , GetAudioMixerVolume(_volumes[(int)AudioType.BGM]));
-        _audioMixer.SetFloat(SE_VOLUME_NAME, GetAudioMixerVolume(_volumes[(int)AudioType.SE]));
-        _movieAudioSource.volume = GetAudioSourceVolume(_volumes[(int)AudioType.Movie]);
     }
 
     /// <summary>
@@ -206,64 +336,6 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
     {
         _movieAudioSource.volume = GetAudioSourceVolume(volume);
         _volumes[(int)AudioType.Movie] = volume;
-    }
-
-    /// <summary>
-    /// ミュート設定
-    /// </summary>
-    /// <param name="isMute"> ミュートにするか </param>
-    public void SetMute(bool isMute)
-    {
-        _bgmAudioSource.mute = isMute;
-        _seAudioSource.mute = isMute;
-        _movieAudioSource.mute = isMute;
-    }
-
-    /// <summary>
-    /// ミュート設定
-    /// </summary>
-    /// <param name="isMute"> ミュートにするか </param>
-    public void SetMute(bool isMute, AudioType type)
-    {
-        switch(type)
-        {
-            case AudioType.Master:
-                SetMute(isMute);
-                break;
-            case AudioType.BGM:
-                _bgmAudioSource.mute = isMute;
-                break;
-            case AudioType.SE:
-                _seAudioSource.mute = isMute;
-                break;
-            case AudioType.Movie:
-                _movieAudioSource.mute = isMute;
-                break;
-            default:
-                break;
-        }
-    }
-
-    /// <summary>
-    /// ステートごとの音量設定
-    /// </summary>
-    private void SetEventAudio()
-    {
-        GameStateManager.MuseumStatus
-            .TakeUntilDestroy(this)
-            .DistinctUntilChanged()
-            .Subscribe(value =>
-            {
-                switch (value)
-                {
-                    case MuseumState.Play:
-                        SetMute(false);
-                        break;
-                    case MuseumState.Monitor:
-                        _bgmAudioSource.mute = true;
-                        break;
-                }
-            });
     }
 
     /// <summary>

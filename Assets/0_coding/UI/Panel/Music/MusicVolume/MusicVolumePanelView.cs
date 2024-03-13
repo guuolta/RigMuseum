@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System.Threading;
+using UniRx;
 using UnityEngine;
 
 public class MusicVolumePanelView : PanelViewBase
@@ -27,7 +28,7 @@ public class MusicVolumePanelView : PanelViewBase
     {
         float height = RectTransform.sizeDelta.y;
         _targetPosY = RectTransform.anchoredPosition.y;
-        RectTransform.anchoredPosition -= new Vector2(0, height);
+        RectTransform.anchoredPosition -= new Vector2(0, height*2);
         _iniPosY = RectTransform.anchoredPosition.y;
     }
 
