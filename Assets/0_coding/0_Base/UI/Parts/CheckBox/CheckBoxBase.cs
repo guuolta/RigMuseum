@@ -2,7 +2,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CheckBoxBase : UIAnimationPartBase
+public class CheckBoxBase : AnimationPartBase
 {
     private BoolReactiveProperty _isCheck = new BoolReactiveProperty(false);
     /// <summary>

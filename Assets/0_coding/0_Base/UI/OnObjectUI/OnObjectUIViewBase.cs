@@ -6,8 +6,8 @@ public class OnObjectUIViewBase : ViewBase
 {
     [Header("閉じるボタン")]
     [SerializeField]
-    private CloseButton _closeButton;
-    public CloseButton CloseButton => _closeButton;
+    private ButtonBase _closeButton;
+    public ButtonBase CloseButton => _closeButton;
 
     protected override void Init()
     {

@@ -14,9 +14,7 @@ public class GameObjectBase : ObjectBase
         get
         {
             if (_gameObject == null)
-            {
                 _gameObject = gameObject;
-            }
 
             return _gameObject;
         }
@@ -31,9 +29,7 @@ public class GameObjectBase : ObjectBase
         get
         {
             if (_transform == null)
-            {
                 _transform = transform;
-            }
 
             return _transform;
         }

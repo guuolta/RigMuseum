@@ -1,8 +1,7 @@
-using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class VideoSlider : SliderBase
+public class MediaSlider : SliderBase
 {
     [Header("説明のテキスト")]
     [SerializeField]

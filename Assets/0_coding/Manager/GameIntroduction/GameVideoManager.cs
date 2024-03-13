@@ -21,7 +21,7 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
     private Canvas _videoCanvas;
     [Header("動画UIプレゼンター")]
     [SerializeField]
-    private VideoUIPresenter _videoUIPresenter;
+    private VideoUIPresenter _videoUI;
     [Header("キャプションUI")]
     [SerializeField]
     private GameCaptionPresenter _captionUI;
@@ -49,11 +49,6 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
     /// 動画の時間
     /// </summary>
     public ReactiveProperty<int> VideoTime => _videoPlayer.VideoTime;
-
-    private GameData _targetGameData = new GameData();
-    private Vector3 _targetPos = Vector3.zero;
-    private Vector3 _targetRot = Vector3.zero;
-    private Vector3 _clearPos = Vector3.zero;
     private Camera _camera;
     private RectTransform _canvasRectTransform;
     private CompositeDisposable _videoDisposables = new CompositeDisposable();
@@ -61,10 +56,6 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
 
     protected override void Init()
     {
-        _targetPos = GetCameraPos(_monitor.Transform.position, _monitor.Transform.right, distance);
-        _targetRot = GetCameraRot(_monitor.Transform.localEulerAngles, new Vector3(0, -90, 0));
-        _clearPos = GetCameraPos(_targetPos, _monitor.Transform.right, clearDistance);
-        
         _camera = _videoCanvas.worldCamera;
         _canvasRectTransform = _videoCanvas.GetComponent<RectTransform>();
         _rangeImage.color -= new Color(0, 0, 0, 1);
@@ -79,20 +70,144 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
     }
 
     /// <summary>
+    /// モニターにターゲット時のイベント設定
+    /// </summary>
+    private void SetEventTarget(CancellationToken ct)
+    {
+        GameStateManager.MuseumStatus
+            .TakeUntilDestroy(this)
+            .Select(value => value == MuseumState.Monitor)
+            .SkipWhile(value => !value)
+            .DistinctUntilChanged()
+            .Subscribe(async value =>
+            {
+                if (value)
+                {
+                    await TargetAsync(_monitor, ct);
+                    SetEventPointer();
+                    _videoUI.SetPlayButton(value);
+                    _rangeImage.enabled = true;
+                }
+                else
+                {
+                    DisposePointerEvent();
+                    _rangeImage.enabled = false;
+                    await ClearTargetAsync(ct);
+                }
+            });
+    }
+
+    /// <summary>
+    /// ポインターのイベント設定
+    /// </summary>
+    private void SetEventPointer()
+    {
+        Vector2 mousePos = Vector2.zero;
+
+        Observable.EveryUpdate()
+            .TakeUntilDestroy(this)
+            .Where(_ => !EventSystem.current.IsPointerOverGameObject() && _videoUI.IsShow)
+            .Subscribe(async _ =>
+            {
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(_canvasRectTransform, Input.mousePosition, _camera, out mousePos);
+
+                if (_canvasRectTransform.rect.Contains(mousePos))
+                {
+                    await _videoUI.ShowAsync(Ct);
+                }
+                else
+                {
+                    await _videoUI.HideAsync(Ct);
+                    AudioManager.Instance.SaveVolume();
+                }
+            }).AddTo(_pointerDisposables);
+    }
+
+    /// <summary>
+    /// 各ステートにおける動画の設定
+    /// </summary>
+    private void SetEventVideo(CancellationToken ct)
+    {
+        GameStateManager.MuseumStatus
+            .Skip(1)
+            .TakeUntilDestroy(this)
+            .DistinctUntilChanged()
+            .Subscribe(async value =>
+            {
+                switch (value)
+                {
+                    case MuseumState.Play:
+                        await _onMonitorUI.HideAsync(ct);
+                        _videoPlayer.AudioSource.spatialBlend = 1;
+                        await PlayAsync(ct);
+                        break;
+                    case MuseumState.Monitor:
+                        await _onMonitorUI.ShowAsync(ct);
+                        _videoPlayer.AudioSource.spatialBlend = 0;
+                        await PlayAsync(ct);
+                        break;
+                    case MuseumState.Pause:
+                        await PauseAsync(ct);
+                        break;
+                    default:
+                        SetMute(true);
+                        break;
+                }
+            });
+    }
+
+    /// <summary>
+    /// 動画の再生イベントの設定
+    /// </summary>
+    /// <param name="ct"></param>
+    private void SetEventVideoPlay(CancellationToken ct)
+    {
+        _videoIndex
+            .TakeUntilDestroy(this)
+            .DistinctUntilChanged()
+            .Subscribe(async value =>
+            {
+                GameData targetGameData = _gameDatas.GetGameData(value);
+
+                _loadingUI.ShowAsync(ct).Forget();
+                await _videoPlayer.PlayAsync(targetGameData.YoutubeURL, ct);
+                SetGameDataToUI(targetGameData);
+                _videoUI.SetPlayButton(true);
+                _loadingUI.HideAsync(ct).Forget();
+            });
+    }
+
+    /// <summary>
+    /// ゲームデータをキャプションに設定
+    /// </summary>
+    /// <param name="gameData"></param>
+    private void SetGameDataToUI(GameData gameData)
+    {
+        _captionUI.SetTitleText(gameData.Title);
+        _captionUI.SetCoadingMemberText(gameData.CoadingMenber);
+        _captionUI.SetIllustrationMemberText(gameData.IllustrationMenber);
+        _captionUI.SetModelMemberText(gameData.ModelMenber);
+        _captionUI.SetDTMMemberText(gameData.DTMMenber);
+        _captionUI.SetURL(gameData.GameURL);
+        _captionUI.SetExplain(gameData.Description);
+    }
+
+    /// <summary>
     /// 動画再生
     /// </summary>
     public async UniTask PlayAsync(CancellationToken ct)
     {
-        await UniTask.WaitUntil(() => _videoPlayer.IsSetVideo.Value, cancellationToken: ct);
-        _videoPlayer.Play();
+        await _videoPlayer.PlayAsync(ct);
     }
 
     /// <summary>
     /// 次の動画を再生
     /// </summary>
-    public void PlayNext()
+    public async UniTask PlayNextAsync(CancellationToken ct)
     {
-        if(_videoIndex.Value == _gameDatas.GetCount() - 1)
+        await PauseAsync(ct);
+
+        if (_videoIndex.Value == _gameDatas.GetCount() - 1)
         {
             _videoIndex.Value = 0;
             return;
@@ -104,14 +219,9 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
     /// <summary>
     /// 動画停止
     /// </summary>
-    public void Pause()
+    public async UniTask PauseAsync(CancellationToken ct)
     {
-        if(!_videoPlayer.IsSetVideo.Value)
-        {
-            return;
-        }
-
-        _videoPlayer.Pause();
+        await _videoPlayer.PauseAsync(ct);
     }
 
     /// <summary>
@@ -169,46 +279,9 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
     }
 
     /// <summary>
-    /// 動画の再生イベントの設定
-    /// </summary>
-    /// <param name="ct"></param>
-    private void SetEventVideoPlay(CancellationToken ct)
-    {
-        _videoIndex
-            .TakeUntilDestroy(this)
-            .DistinctUntilChanged()
-            .Subscribe(async value =>
-            {
-                _targetGameData = _gameDatas.GetGameData(value);
-
-                _loadingUI.ShowAsync(ct).Forget();
-                Pause();
-                await _videoPlayer.Play(_targetGameData.YoutubeURL, ct);
-                SetGameDataToUI(_targetGameData);
-                _loadingUI.HideAsync(ct).Forget();
-            });
-    }
-
-    /// <summary>
-    /// ゲームデータをキャプションに設定
-    /// </summary>
-    /// <param name="gameData"></param>
-    private void SetGameDataToUI(GameData gameData)
-    {
-        _captionUI.SetTitleText(gameData.Title);
-        _captionUI.SetCoadingMemberText(gameData.CoadingMenber);
-        _captionUI.SetIllustrationMemberText(gameData.IllustrationMenber);
-        _captionUI.SetModelMemberText(gameData.ModelMenber);
-        _captionUI.SetDTMMemberText(gameData.DTMMenber);
-        _captionUI.SetURL(gameData.GameURL);
-        _captionUI.SetExplain(gameData.Description);
-    }
-
-    /// <summary>
     /// 動画の自動再生設定
     /// </summary>
     /// <param name="isAuto"> 自動再生するか </param>
-    /// <param name="ct"></param>
     public void SetAutoPlayNext(bool isAuto, CancellationToken ct)
     {
         _videoDisposables = DisposeEvent(_videoDisposables);
@@ -221,96 +294,10 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
         _videoPlayer.IsFinishVideo
             .TakeUntilDestroy(this)
             .Where(value => value)
-            .Subscribe(value =>
+            .Subscribe(async value =>
             {
-                PlayNext();
+                await PlayNextAsync(ct);
             }).AddTo(_videoDisposables);
-    }
-
-    /// <summary>
-    /// モニターにターゲット時のイベント設定
-    /// </summary>
-    private void SetEventTarget(CancellationToken ct)
-    {
-        GameStateManager.MuseumStatus
-            .TakeUntilDestroy(this)
-            .Select(value => value == MuseumState.Monitor)
-            .SkipWhile(value => !value)
-            .DistinctUntilChanged()
-            .Subscribe(async value =>
-            {
-                if(value)
-                {
-                    await TargetAsync(_monitor, ct);
-                    SetEventPointer();
-                    _rangeImage.enabled = true;
-                }
-                else
-                {
-                    DisposePointerEvent();
-                    _rangeImage.enabled = false;
-                    await ClearTargetAsync(ct);
-                }
-            });
-    }
-
-    /// <summary>
-    /// ポインターのイベント設定
-    /// </summary>
-    private void SetEventPointer()
-    {
-        Vector2 mousePos = Vector2.zero;
-
-        Observable.EveryUpdate()
-            .TakeUntilDestroy(this)
-            .Where(_ => !EventSystem.current.IsPointerOverGameObject() && _videoUIPresenter.IsShow)
-            .Subscribe(async _ =>
-            {
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(_canvasRectTransform, Input.mousePosition, _camera, out mousePos);
-
-                if(_canvasRectTransform.rect.Contains(mousePos))
-                {
-                    await _videoUIPresenter.ShowAsync(Ct);
-                }
-                else
-                {
-                    await _videoUIPresenter.HideAsync(Ct);
-                    AudioManager.Instance.SaveVolume();
-                }
-            }).AddTo(_pointerDisposables);
-    }
-
-    /// <summary>
-    /// 各ステートにおける動画の設定
-    /// </summary>
-    private void SetEventVideo(CancellationToken ct)
-    {
-        GameStateManager.MuseumStatus
-            .Skip(1)
-            .TakeUntilDestroy(this)
-            .DistinctUntilChanged()
-            .Subscribe(async value =>
-            {
-                switch (value)
-                {
-                    case MuseumState.Play:
-                        await _onMonitorUI.HideAsync(ct);
-                        _videoPlayer.AudioSource.spatialBlend = 1;
-                        await PlayAsync(ct);
-                        break;
-                    case MuseumState.Monitor:
-                        await _onMonitorUI.ShowAsync(ct);
-                        _videoPlayer.AudioSource.spatialBlend = 0;
-                        await PlayAsync(ct);
-                        break;
-                    case MuseumState.Pause:
-                        Pause();
-                        break;
-                    default:
-                        SetMute(true);
-                        break;
-                }
-            });
     }
 
     /// <summary>

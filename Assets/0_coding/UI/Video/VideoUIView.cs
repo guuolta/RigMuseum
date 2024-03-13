@@ -22,32 +22,32 @@ public class VideoUIView : ViewBase
     public SeekBar SeekBar => _seekBar;
     [Header("動画再生ボタン")]
     [SerializeField]
-    private VideoOnOffButton _playButton;
+    private MediaOnOffButton _playButton;
     /// <summary>
     /// 動画再生ボタン
     /// </summary>
-    public VideoOnOffButton PlayButton => _playButton; 
+    public MediaOnOffButton PlayButton => _playButton; 
     [Header("動画10秒飛ばしボタン")]
     [SerializeField]
-    private VideoButton _skipButton;
+    private MediaButton _skipButton;
     /// <summary>
     /// 動画10秒飛ばしボタン
     /// </summary>
-    public VideoButton SkipButton => _skipButton;
+    public MediaButton SkipButton => _skipButton;
     [Header("動画10秒戻しボタン")]
     [SerializeField]
-    private VideoButton _backButton;
+    private MediaButton _backButton;
     /// <summary>
     /// 動画10秒戻しボタン
     /// </summary>
-    public VideoButton BackButton => _backButton;
+    public MediaButton BackButton => _backButton;
     [Header("再生速度ボタン")]
     [SerializeField]
-    private VideoButton _speedButton;
+    private MediaButton _speedButton;
     /// <summary>
     /// 再生速度ボタン
     /// </summary>
-    public VideoButton SpeedButton => _speedButton;
+    public MediaButton SpeedButton => _speedButton;
     [Header("再生速度パネル")]
     [SerializeField]
     private SpeedPanelPresenter _speedPanel;
@@ -57,25 +57,25 @@ public class VideoUIView : ViewBase
     public SpeedPanelPresenter SpeedPanel => _speedPanel;
     [Header("次の動画ボタン")]
     [SerializeField]
-    private VideoButton _nextButton;
+    private MediaButton _nextButton;
     /// <summary>
     /// 次の動画ボタン
     /// </summary>
-    public VideoButton NextButton => _nextButton;
+    public MediaButton NextButton => _nextButton;
     [Header("ミュートボタン")]
     [SerializeField]
-    private VideoOnOffButton _muteButton;
+    private MediaOnOffButton _muteButton;
     /// <summary>
     /// ミュートボタン
     /// </summary>
-    public VideoOnOffButton MuteButton => _muteButton;
+    public MediaOnOffButton MuteButton => _muteButton;
     [Header("音量スライダー")]
     [SerializeField]
-    private VideoSlider _volumeSlider;
+    private MediaSlider _volumeSlider;
     /// <summary>
     /// 音量スライダー
     /// </summary>
-    public VideoSlider VolumeSlider => _volumeSlider;
+    public MediaSlider VolumeSlider => _volumeSlider;
     [Header("再生時間")]
     [SerializeField]
     private TMP_Text _playTimeText;

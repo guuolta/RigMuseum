@@ -49,9 +49,7 @@ public class ToggleBase : UIPartBase
                 slider.handleRect.GetComponent<HandleBase>();
 
                 if(_handle == null)
-                {
                     _handle = slider.handleRect.AddComponent<HandleBase>();
-                }
             }
 
             return _handle;
@@ -88,34 +86,34 @@ public class ToggleBase : UIPartBase
                 if(value)
                 {
                     slider
-                        .DOValue(1, animationTime)
+                        .DOValue(1, AnimationTime)
                         .SetEase(Ease.Linear)
                         .ToUniTask(cancellationToken: Ct)
                         .Forget();
                     _onImage
-                        .DOFade(1, animationTime)
+                        .DOFade(1, AnimationTime)
                         .SetEase(Ease.Linear)
                         .ToUniTask(cancellationToken: Ct)
                         .Forget();
                     await _offImage
-                        .DOFade(0, animationTime)
+                        .DOFade(0, AnimationTime)
                         .SetEase(Ease.OutSine)
                         .ToUniTask(cancellationToken: Ct);
                 }
                 else
                 {
                     slider
-                        .DOValue(0, animationTime)
+                        .DOValue(0, AnimationTime)
                         .SetEase(Ease.Linear)
                         .ToUniTask(cancellationToken: Ct)
                         .Forget();
                     _onImage
-                        .DOFade(0, animationTime)
+                        .DOFade(0, AnimationTime)
                         .SetEase(Ease.Linear)
                         .ToUniTask(cancellationToken: Ct)
                         .Forget();
                     await _offImage
-                        .DOFade(1, animationTime)
+                        .DOFade(1, AnimationTime)
                         .SetEase(Ease.Linear)
                         .ToUniTask(cancellationToken: Ct);
                 }

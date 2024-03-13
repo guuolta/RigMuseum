@@ -2,7 +2,6 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
 /// パネルのビューのベース
@@ -22,9 +21,9 @@ public class PanelViewBase : ViewBase
         }
 
 
-        RectTransform.DOComplete();
+        Transform.DOComplete();
         await Transform
-            .DOScale(Vector2.one, animationTime)
+            .DOScale(Vector2.one, AnimationTime)
             .SetEase(Ease.InSine)
             .ToUniTask(cancellationToken: ct);
     }
@@ -36,9 +35,9 @@ public class PanelViewBase : ViewBase
             return;
         }
 
-        RectTransform.DOComplete();
+        Transform.DOComplete();
         await Transform
-            .DOScale(Vector2.zero, animationTime)
+            .DOScale(Vector2.zero, AnimationTime)
             .SetEase(Ease.OutSine)
             .ToUniTask(cancellationToken: ct);
     }

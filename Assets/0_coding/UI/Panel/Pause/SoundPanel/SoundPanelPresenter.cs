@@ -42,7 +42,7 @@ public class SoundPanelPresenter : PanelPresenterBase<SoundPanelView>
             .Subscribe(value =>
             {
                 AudioManager.Instance.SetBGMVolume(value);
-            }).AddTo(this);
+            });
 
         View.SEValueUIPart.Value
             .TakeUntilDestroy(this)
@@ -50,7 +50,7 @@ public class SoundPanelPresenter : PanelPresenterBase<SoundPanelView>
             .Subscribe(value =>
             {
                 AudioManager.Instance.SetSEVolume(value);
-            }).AddTo(this);
+            });
 
         View.MovieValueUIPart.Value
             .TakeUntilDestroy(this)
@@ -58,6 +58,6 @@ public class SoundPanelPresenter : PanelPresenterBase<SoundPanelView>
             .Subscribe(value =>
             {
                 AudioManager.Instance.SetMovieVolume(value);
-            }).AddTo(this);
+            });
     }
 }

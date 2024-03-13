@@ -24,7 +24,7 @@ public class PausePanelManager : UIBase
     private CreditPanelPresenter _creditPanelPresenter;
     [Header("閉じるボタン")]
     [SerializeField]
-    private CloseButton _closeButton;
+    private ButtonBase _closeButton;
 
     protected override void Init()
     {

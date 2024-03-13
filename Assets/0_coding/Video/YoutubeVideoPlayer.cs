@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using System;
 using System.Threading;
 using UniRx;
 using UnityEngine;
@@ -48,7 +47,7 @@ public class YoutubeVideoPlayer : ObjectBase
         }
     }
 
-    private BoolReactiveProperty _isPlayVideo = new BoolReactiveProperty(false);
+    private BoolReactiveProperty _isPlayVideo = new BoolReactiveProperty(true);
     /// <summary>
     /// 動画が再生されているか
     /// </summary>
@@ -91,17 +90,21 @@ public class YoutubeVideoPlayer : ObjectBase
     /// <samarry>
     /// 設定されている動画再生
     /// </samarry>
-    public void Play()
+    public async UniTask PlayAsync(CancellationToken ct)
     {
-        if(AudioSource.mute)
+        await UniTask.WaitUntil(() => _isSetVideo.Value, cancellationToken: ct);
+
+        if (AudioSource.mute)
         {
             AudioSource.mute = false;
         }
 
-        if(!_isPlayVideo.Value)
+        if(_isPlayVideo.Value)
         {
-            VideoPlayer.Play();
+            return;
         }
+
+        VideoPlayer.Play();
     }
 
     /// <summary>
@@ -109,7 +112,7 @@ public class YoutubeVideoPlayer : ObjectBase
     /// </summary>
     /// <param name="youtubeURL"> 再生する動画のURL </param>
     /// <returns></returns>
-    public async UniTask Play(string youtubeURL, CancellationToken ct)
+    public async UniTask PlayAsync(string youtubeURL, CancellationToken ct)
     {
         _isSetVideo.Value = false;
         _isFinishVideo.Value = false;
@@ -122,12 +125,11 @@ public class YoutubeVideoPlayer : ObjectBase
     /// <summary>
     /// 動画を止める
     /// </summary>
-    public void Pause()
+    public async UniTask PauseAsync(CancellationToken ct)
     {
-        if (_isPlayVideo.Value)
-        {
-            VideoPlayer.Pause();
-        }
+        await UniTask.WaitUntil(() => _isSetVideo.Value, cancellationToken: ct);
+
+        VideoPlayer.Pause();
     }
 
     /// <summary>

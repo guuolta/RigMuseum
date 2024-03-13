@@ -8,15 +8,15 @@ public class ProductionManagerBase<T> : SingletonObjectBase<T>
     [Header("アニメーション時間")]
     [SerializeField]
     private float _animationTime = 0.1f;
-    protected float animationTime => _animationTime;
+    protected float AnimationTime => _animationTime;
     [Header("作品との距離")]
     [SerializeField]
     private float _distance = 20f;
-    protected float distance => _distance;
+    protected float Distance => _distance;
     [Header("解除時の作品との距離")]
     [SerializeField]
     private float _clearDistance = 25f;
-    protected float clearDistance => _clearDistance;
+    protected float ClearDistance => _clearDistance;
 
     private TouchObjectBase _targetObject = null;
 
@@ -33,8 +33,8 @@ public class ProductionManagerBase<T> : SingletonObjectBase<T>
         }
 
         _targetObject = obj;
-        await PlayerManager.Instance.TargetObjectAsync(animationTime,
-            GetCameraPos(obj.Transform.position, GetDirection(obj.Transform, obj.Direction), distance),
+        await PlayerManager.Instance.TargetObjectAsync(AnimationTime,
+            GetCameraPos(obj.Transform.position, GetDirection(obj.Transform, obj.Direction), Distance),
             GetCameraRot(obj.Transform.localEulerAngles, GetAddRotation(obj.Direction)),
             ct);
     }
@@ -53,7 +53,7 @@ public class ProductionManagerBase<T> : SingletonObjectBase<T>
         }
 
         _targetObject = obj;
-        await PlayerManager.Instance.TargetObjectAsync(animationTime,
+        await PlayerManager.Instance.TargetObjectAsync(AnimationTime,
             GetCameraPos(obj.Transform.position, GetDirection(obj.Transform, obj.Direction), distance),
             GetCameraRot(obj.Transform.localEulerAngles, GetAddRotation(obj.Direction)),
             ct);
@@ -66,8 +66,8 @@ public class ProductionManagerBase<T> : SingletonObjectBase<T>
     /// <returns></returns>
     public async UniTask ClearTargetAsync(CancellationToken ct)
     {
-        await PlayerManager.Instance.ClearTargetAsync(animationTime,
-            GetCameraPos(_targetObject.Transform.position, GetDirection(_targetObject.Transform, _targetObject.Direction), clearDistance),
+        await PlayerManager.Instance.ClearTargetAsync(AnimationTime,
+            GetCameraPos(_targetObject.Transform.position, GetDirection(_targetObject.Transform, _targetObject.Direction), ClearDistance),
             ct);
         _targetObject.ClearTouch();
         _targetObject = null;
@@ -80,7 +80,7 @@ public class ProductionManagerBase<T> : SingletonObjectBase<T>
     /// <returns></returns>
     public async UniTask ClearTargetAsync(float distance, CancellationToken ct)
     {
-        await PlayerManager.Instance.ClearTargetAsync(animationTime,
+        await PlayerManager.Instance.ClearTargetAsync(AnimationTime,
             GetCameraPos(_targetObject.Transform.position, GetDirection(_targetObject.Transform, _targetObject.Direction), distance),
             ct);
         _targetObject.ClearTouch();

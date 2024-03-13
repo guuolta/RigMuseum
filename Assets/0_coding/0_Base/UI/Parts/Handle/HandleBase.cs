@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class HandleBase : UIAnimationPartBase
+public class HandleBase : AnimationPartBase
 {
     bool _isPlaySe = true;
 

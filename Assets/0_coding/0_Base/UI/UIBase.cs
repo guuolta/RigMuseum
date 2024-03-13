@@ -18,7 +18,7 @@ public class UIBase : GameObjectBase
     [Header("アニメーションの時間")]
     [Range(0f, 10f)]
     [SerializeField]
-    protected float animationTime = 0.1f;
+    protected float AnimationTime = 0.1f;
 
     private RectTransform _rectTransform;
     public RectTransform RectTransform
@@ -26,9 +26,7 @@ public class UIBase : GameObjectBase
         get
         {
             if(_rectTransform == null)
-            {
                 _rectTransform = GetComponent<RectTransform>();
-            }
 
             return _rectTransform;
         }
@@ -43,9 +41,7 @@ public class UIBase : GameObjectBase
             {
                 _canvasGroup = GetComponent<CanvasGroup>();
                 if (_canvasGroup == null)
-                {
                     _canvasGroup = gameObject.AddComponent<CanvasGroup>();
-                }
             }
 
             return _canvasGroup;
@@ -124,13 +120,13 @@ public class UIBase : GameObjectBase
             return;
         }
 
-        await image.DOFade(1, animationTime)
+        await image.DOFade(1, AnimationTime)
             .SetEase(Ease.InSine)
             .ToUniTask(cancellationToken: ct);
     }
 
     /// <summary>
-    /// UIを表示
+    /// UIをフェードで表示
     /// </summary>
     /// <param name="canvasGroup"></param>
     /// <param name="ct"></param>
@@ -143,7 +139,7 @@ public class UIBase : GameObjectBase
             return;
         }
 
-        await canvasGroup.DOFade(1, animationTime)
+        await canvasGroup.DOFade(1, AnimationTime)
             .SetEase(Ease.InSine)
             .ToUniTask(cancellationToken: ct);
     }
@@ -162,7 +158,7 @@ public class UIBase : GameObjectBase
             return;
         }
 
-        await image.DOFade(0, animationTime)
+        await image.DOFade(0, AnimationTime)
             .SetEase(Ease.OutSine)
             .ToUniTask(cancellationToken: ct);
     }
@@ -181,7 +177,7 @@ public class UIBase : GameObjectBase
             return;
         }
 
-        await canvasGroup.DOFade(0, animationTime)
+        await canvasGroup.DOFade(0, AnimationTime)
             .SetEase(Ease.OutSine)
             .ToUniTask(cancellationToken: ct);
     }
