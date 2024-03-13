@@ -45,7 +45,7 @@ public class MediaOnOffButton : MediaButton
             .Skip(1)
             .TakeUntilDestroy(this)
             .DistinctUntilChanged()
-            .Subscribe(async value =>
+            .Subscribe(async _ =>
             {
                 HideAsync(TargetData.ButtonImage, ct).Forget();
                 TargetData.ExplainText.HideAsync(ct).Forget();

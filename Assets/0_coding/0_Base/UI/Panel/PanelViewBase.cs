@@ -23,7 +23,7 @@ public class PanelViewBase : ViewBase
 
         Transform.DOComplete();
         await Transform
-            .DOScale(Vector2.one, animationTime)
+            .DOScale(Vector2.one, AnimationTime)
             .SetEase(Ease.InSine)
             .ToUniTask(cancellationToken: ct);
     }
@@ -37,7 +37,7 @@ public class PanelViewBase : ViewBase
 
         Transform.DOComplete();
         await Transform
-            .DOScale(Vector2.zero, animationTime)
+            .DOScale(Vector2.zero, AnimationTime)
             .SetEase(Ease.OutSine)
             .ToUniTask(cancellationToken: ct);
     }

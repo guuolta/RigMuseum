@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using System;
 using System.Threading;
 using UniRx;
 using UnityEngine;
@@ -129,11 +128,6 @@ public class YoutubeVideoPlayer : ObjectBase
     public async UniTask PauseAsync(CancellationToken ct)
     {
         await UniTask.WaitUntil(() => _isSetVideo.Value, cancellationToken: ct);
-
-        if (!_isPlayVideo.Value)
-        {
-            return;
-        }
 
         VideoPlayer.Pause();
     }

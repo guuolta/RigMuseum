@@ -17,7 +17,7 @@ public class SliderPanelView : PanelViewBase
         RectTransform.DOComplete();
 
         await RectTransform
-            .DOAnchorPosX(_slideBeforePos, animationTime)
+            .DOAnchorPosX(_slideBeforePos, AnimationTime)
             .SetEase(Ease.InSine)
             .ToUniTask(cancellationToken: ct);
     }
@@ -27,7 +27,7 @@ public class SliderPanelView : PanelViewBase
         RectTransform.DOComplete();
 
         await RectTransform
-            .DOAnchorPosX(_slideAfterPos, animationTime)
+            .DOAnchorPosX(_slideAfterPos, AnimationTime)
             .SetEase(Ease.OutSine)
             .ToUniTask(cancellationToken: ct);
     }

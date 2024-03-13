@@ -21,7 +21,7 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
     private Canvas _videoCanvas;
     [Header("動画UIプレゼンター")]
     [SerializeField]
-    private VideoUIPresenter _videoUIPresenter;
+    private VideoUIPresenter _videoUI;
     [Header("キャプションUI")]
     [SerializeField]
     private GameCaptionPresenter _captionUI;
@@ -49,11 +49,6 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
     /// 動画の時間
     /// </summary>
     public ReactiveProperty<int> VideoTime => _videoPlayer.VideoTime;
-
-    private GameData _targetGameData = new GameData();
-    private Vector3 _targetPos = Vector3.zero;
-    private Vector3 _targetRot = Vector3.zero;
-    private Vector3 _clearPos = Vector3.zero;
     private Camera _camera;
     private RectTransform _canvasRectTransform;
     private CompositeDisposable _videoDisposables = new CompositeDisposable();
@@ -61,10 +56,6 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
 
     protected override void Init()
     {
-        _targetPos = GetCameraPos(_monitor.Transform.position, _monitor.Transform.right, distance);
-        _targetRot = GetCameraRot(_monitor.Transform.localEulerAngles, new Vector3(0, -90, 0));
-        _clearPos = GetCameraPos(_targetPos, _monitor.Transform.right, clearDistance);
-        
         _camera = _videoCanvas.worldCamera;
         _canvasRectTransform = _videoCanvas.GetComponent<RectTransform>();
         _rangeImage.color -= new Color(0, 0, 0, 1);
@@ -94,6 +85,7 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
                 {
                     await TargetAsync(_monitor, ct);
                     SetEventPointer();
+                    _videoUI.SetPlayButton(value);
                     _rangeImage.enabled = true;
                 }
                 else
@@ -114,18 +106,18 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
 
         Observable.EveryUpdate()
             .TakeUntilDestroy(this)
-            .Where(_ => !EventSystem.current.IsPointerOverGameObject() && _videoUIPresenter.IsShow)
+            .Where(_ => !EventSystem.current.IsPointerOverGameObject() && _videoUI.IsShow)
             .Subscribe(async _ =>
             {
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(_canvasRectTransform, Input.mousePosition, _camera, out mousePos);
 
                 if (_canvasRectTransform.rect.Contains(mousePos))
                 {
-                    await _videoUIPresenter.ShowAsync(Ct);
+                    await _videoUI.ShowAsync(Ct);
                 }
                 else
                 {
-                    await _videoUIPresenter.HideAsync(Ct);
+                    await _videoUI.HideAsync(Ct);
                     AudioManager.Instance.SaveVolume();
                 }
             }).AddTo(_pointerDisposables);
@@ -175,11 +167,12 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
             .DistinctUntilChanged()
             .Subscribe(async value =>
             {
-                _targetGameData = _gameDatas.GetGameData(value);
+                GameData targetGameData = _gameDatas.GetGameData(value);
 
                 _loadingUI.ShowAsync(ct).Forget();
-                await _videoPlayer.PlayAsync(_targetGameData.YoutubeURL, ct);
-                SetGameDataToUI(_targetGameData);
+                await _videoPlayer.PlayAsync(targetGameData.YoutubeURL, ct);
+                SetGameDataToUI(targetGameData);
+                _videoUI.SetPlayButton(true);
                 _loadingUI.HideAsync(ct).Forget();
             });
     }

@@ -47,7 +47,7 @@ public class CircleLoadingView : ViewBase
     private void SetLoadingAnimation(CancellationToken ct)
     {
         Image[] _circules = _circuleParent.GetComponentsInChildren<Image>();
-        float circuleAnimTime = animationTime / _circules.Length;
+        float circuleAnimTime = AnimationTime / _circules.Length;
 
         for (int i = 0; i < _circules.Length; i++)
         {

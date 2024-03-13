@@ -8,12 +8,12 @@ public class AnimationPartBase : UIPartBase
     public override void OnPointerDown(PointerEventData eventData)
     {
         Transform
-            .DOScale(0.8f, animationTime)
+            .DOScale(0.8f, AnimationTime)
             .SetEase(Ease.InSine)
             .ToUniTask(cancellationToken: Ct)
             .Forget();
         CanvasGroup
-            .DOFade(0.8f, animationTime)
+            .DOFade(0.8f, AnimationTime)
             .SetEase(Ease.InSine)
             .ToUniTask(cancellationToken: Ct)
             .Forget();
@@ -21,11 +21,11 @@ public class AnimationPartBase : UIPartBase
 
     public override void OnPointerUp(PointerEventData eventData)
     {
-        Transform.DOScale(1f, animationTime)
+        Transform.DOScale(1f, AnimationTime)
             .SetEase(Ease.OutSine)
             .ToUniTask(cancellationToken: Ct)
             .Forget();
-        CanvasGroup.DOFade(1f, animationTime)
+        CanvasGroup.DOFade(1f, AnimationTime)
             .SetEase(Ease.OutSine)
             .ToUniTask(cancellationToken: Ct)
             .Forget();
@@ -39,7 +39,7 @@ public class AnimationPartBase : UIPartBase
         }
 
         Transform
-            .DOScale(1.2f, animationTime)
+            .DOScale(1.2f, AnimationTime)
             .SetEase(Ease.InSine)
             .ToUniTask(cancellationToken: Ct)
             .Forget();
@@ -50,7 +50,7 @@ public class AnimationPartBase : UIPartBase
         await UniTask.WaitUntil(() => !Input.GetMouseButton(0), cancellationToken: Ct);
 
         Transform
-            .DOScale(1f, animationTime)
+            .DOScale(1f, AnimationTime)
             .SetEase(Ease.OutSine)
             .ToUniTask(cancellationToken: Ct)
             .Forget();

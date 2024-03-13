@@ -36,7 +36,7 @@ public class MusicVolumePanelView : PanelViewBase
         RectTransform.DOComplete();
 
         await RectTransform
-            .DOAnchorPosY(_targetPosY, animationTime)
+            .DOAnchorPosY(_targetPosY, AnimationTime)
             .ToUniTask(cancellationToken: ct);
     }
 
@@ -45,7 +45,7 @@ public class MusicVolumePanelView : PanelViewBase
         RectTransform.DOComplete();
 
         await RectTransform
-            .DOAnchorPosY(_iniPosY, animationTime)
+            .DOAnchorPosY(_iniPosY, AnimationTime)
             .ToUniTask(cancellationToken: ct);
     }
 }

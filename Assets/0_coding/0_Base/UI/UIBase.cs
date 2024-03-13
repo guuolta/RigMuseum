@@ -18,7 +18,7 @@ public class UIBase : GameObjectBase
     [Header("アニメーションの時間")]
     [Range(0f, 10f)]
     [SerializeField]
-    protected float animationTime = 0.1f;
+    protected float AnimationTime = 0.1f;
 
     private RectTransform _rectTransform;
     public RectTransform RectTransform
@@ -120,7 +120,7 @@ public class UIBase : GameObjectBase
             return;
         }
 
-        await image.DOFade(1, animationTime)
+        await image.DOFade(1, AnimationTime)
             .SetEase(Ease.InSine)
             .ToUniTask(cancellationToken: ct);
     }
@@ -139,7 +139,7 @@ public class UIBase : GameObjectBase
             return;
         }
 
-        await canvasGroup.DOFade(1, animationTime)
+        await canvasGroup.DOFade(1, AnimationTime)
             .SetEase(Ease.InSine)
             .ToUniTask(cancellationToken: ct);
     }
@@ -158,7 +158,7 @@ public class UIBase : GameObjectBase
             return;
         }
 
-        await image.DOFade(0, animationTime)
+        await image.DOFade(0, AnimationTime)
             .SetEase(Ease.OutSine)
             .ToUniTask(cancellationToken: ct);
     }
@@ -177,7 +177,7 @@ public class UIBase : GameObjectBase
             return;
         }
 
-        await canvasGroup.DOFade(0, animationTime)
+        await canvasGroup.DOFade(0, AnimationTime)
             .SetEase(Ease.OutSine)
             .ToUniTask(cancellationToken: ct);
     }

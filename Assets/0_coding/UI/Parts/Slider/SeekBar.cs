@@ -49,7 +49,7 @@ public class SeekBar : SliderBase
 
         _handleRect.localScale = Vector2.one;
         await RectTransform
-            .DOSizeDelta(_targetSize, animationTime)
+            .DOSizeDelta(_targetSize, AnimationTime)
             .SetEase(Ease.Linear)
             .ToUniTask(cancellationToken : ct);
     }
@@ -60,7 +60,7 @@ public class SeekBar : SliderBase
 
         _handleRect.localScale = Vector2.zero;
         await RectTransform
-            .DOSizeDelta(_iniSize, animationTime)
+            .DOSizeDelta(_iniSize, AnimationTime)
             .SetEase(Ease.Linear)
             .ToUniTask(cancellationToken: ct);
     }

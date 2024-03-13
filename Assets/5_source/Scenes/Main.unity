@@ -1097,7 +1097,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0
-  animationTime: 0.1
+  AnimationTime: 0.1
   _closeButton: {fileID: 1382662649}
 --- !u!114 &131176439
 MonoBehaviour:
@@ -1247,7 +1247,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0
-  animationTime: 0.1
+  AnimationTime: 0.1
 --- !u!114 &139021928
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2573,7 +2573,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0
-  animationTime: 0.1
+  AnimationTime: 0.1
 --- !u!114 &227325659
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3523,7 +3523,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0.8
-  animationTime: 0.1
+  AnimationTime: 0.1
   _masterValueUIPart: {fileID: 1309292842}
   _bgmValueUIParts: {fileID: 986713531}
   _seValueUIParts: {fileID: 262753845}
@@ -3736,7 +3736,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0
-  animationTime: 0.1
+  AnimationTime: 0.1
   _closeButton: {fileID: 2116248689}
 --- !u!114 &302186891
 MonoBehaviour:
@@ -4257,7 +4257,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0
-  animationTime: 0.1
+  AnimationTime: 0.1
 --- !u!1 &377473006
 GameObject:
   m_ObjectHideFlags: 0
@@ -4399,7 +4399,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0
-  animationTime: 0.1
+  AnimationTime: 0.1
 --- !u!114 &381588258
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5203,7 +5203,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0.8
-  animationTime: 0.1
+  AnimationTime: 0.1
   _maskImage: {fileID: 359258673}
   _playButton: {fileID: 5441493853529122955}
   _nextButton: {fileID: 1134012381}
@@ -5268,7 +5268,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0
-  animationTime: 0.1
+  AnimationTime: 0.1
 --- !u!114 &488142733
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5687,7 +5687,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0.8
-  animationTime: 0.1
+  AnimationTime: 0.1
   _soundSettingButton: {fileID: 998732201}
   _mouseSettingButton: {fileID: 1151886072}
   _creditButton: {fileID: 994311028}
@@ -5723,7 +5723,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0.8
-  animationTime: 0.1
+  AnimationTime: 0.1
   _seType: 0
   _dataList:
   - _buttonImage: {fileID: 0}
@@ -6011,7 +6011,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0.8
-  animationTime: 0.1
+  AnimationTime: 0.1
   _titleText: {fileID: 1799741246}
   _descriptionText: {fileID: 1059532866}
   _canvas: {fileID: 2057594193}
@@ -6296,7 +6296,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0.8
-  animationTime: 0.1
+  AnimationTime: 0.1
   _seType: 0
   _dataList:
   - _buttonImage: {fileID: 1098985342}
@@ -6382,7 +6382,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0.8
-  animationTime: 0.1
+  AnimationTime: 0.1
   _seType: 0
   _dataList:
   - _buttonImage: {fileID: 100630572}
@@ -6597,7 +6597,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0.8
-  animationTime: 0.1
+  AnimationTime: 0.1
   _seType: 0
   _alpha: 0.8
 --- !u!1 &734177198
@@ -6736,7 +6736,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0.8
-  animationTime: 0.1
+  AnimationTime: 0.1
   _pauseMenuPanelPresenter: {fileID: 530174622}
   _soundSettingPanelPresenter: {fileID: 274076287}
   _mouseSettingPanelPresenter: {fileID: 1140587064}
@@ -9904,7 +9904,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0.8
-  animationTime: 0.1
+  AnimationTime: 0.1
   _seType: 1
 --- !u!1 &998732196
 GameObject:
@@ -10069,7 +10069,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0.8
-  animationTime: 0.1
+  AnimationTime: 0.1
   _seType: 1
 --- !u!224 &1017905991 stripped
 RectTransform:
@@ -11799,7 +11799,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0.8
-  animationTime: 0.1
+  AnimationTime: 0.1
   _seType: 0
   _dataList:
   - _buttonImage: {fileID: 0}
@@ -12021,7 +12021,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0.8
-  animationTime: 0.1
+  AnimationTime: 0.1
   _moveSpeedUI: {fileID: 748991930}
   _sensitivityUI: {fileID: 559682695}
   _isVirticulCheckBox: {fileID: 1813604843}
@@ -12303,7 +12303,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0.8
-  animationTime: 0.1
+  AnimationTime: 0.1
   _seType: 1
 --- !u!1 &1152439679
 GameObject:
@@ -13902,7 +13902,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0
-  animationTime: 0.1
+  AnimationTime: 0.1
 --- !u!114 &1305481456
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14697,7 +14697,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0.8
-  animationTime: 0.1
+  AnimationTime: 0.1
   _seType: 0
   _dataList:
   - _buttonImage: {fileID: 2046512877}
@@ -15401,7 +15401,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0
-  animationTime: 0.1
+  AnimationTime: 0.1
 --- !u!114 &1508231230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15622,7 +15622,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0.8
-  animationTime: 0.1
+  AnimationTime: 0.1
   _seType: 0
   _dataList:
   - _buttonImage: {fileID: 970806130}
@@ -16030,7 +16030,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 1
-  animationTime: 0.1
+  AnimationTime: 0.1
   _seType: 0
   _waitTime: 1
   _check: {fileID: 21300000, guid: 94871b65a4a0eb144a3b08ea445de5ff, type: 3}
@@ -16433,7 +16433,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0.8
-  animationTime: 0.1
+  AnimationTime: 0.1
 --- !u!114 &1736909304
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17116,7 +17116,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0
-  animationTime: 0.1
+  AnimationTime: 0.1
 --- !u!114 &1815535688
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17913,7 +17913,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0.8
-  animationTime: 0.1
+  AnimationTime: 0.1
   _muteButton: {fileID: 686606826}
   _volumeUIPart: {fileID: 1067557303}
 --- !u!114 &1925273290
@@ -18009,7 +18009,7 @@ MonoBehaviour:
   _monitor: {fileID: 2136071602}
   _videoPlayer: {fileID: 170807120}
   _videoCanvas: {fileID: 1117844527}
-  _videoUIPresenter: {fileID: 233381260}
+  _videoUI: {fileID: 233381260}
   _captionUI: {fileID: 608440704}
   _rangeImage: {fileID: 154176650}
   _loadingUI: {fileID: 9097508946643457805}
@@ -20532,7 +20532,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0.8
-  animationTime: 0.1
+  AnimationTime: 0.1
   _seType: 0
   _dataList:
   - _buttonImage: {fileID: 2079791798}
@@ -20829,6 +20829,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ConstrainProportionsScale
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 739371319207114749, guid: ddf34e40d5b091f458fe6b7371d65645,
+        type: 3}
+      propertyPath: AnimationTime
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 913955704044460913, guid: ddf34e40d5b091f458fe6b7371d65645,
         type: 3}

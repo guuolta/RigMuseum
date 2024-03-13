@@ -1,8 +1,6 @@
 using Cysharp.Threading.Tasks;
-using System;
 using System.Threading;
 using UniRx;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class VideoUIPresenter : PresenterBase<VideoUIView>
@@ -162,6 +160,15 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
     private void Pause()
     {
         View.PlayButton.SetOn(true);
+    }
+
+    /// <summary>
+    /// 再生ボタンに設定
+    /// </summary>
+    /// <param name="isPlay"> 再生中か </param>
+    public void SetPlayButton(bool isPlay)
+    {
+        View.PlayButton.SetOn(!isPlay);
     }
 
     /// <summary>
