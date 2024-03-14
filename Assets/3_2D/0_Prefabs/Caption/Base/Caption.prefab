@@ -613,12 +613,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 3
-  m_fontSizeBase: 36
+  m_fontSize: 2
+  m_fontSizeBase: 2
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 0
-  m_fontSizeMax: 72
+  m_fontSizeMax: 2
   m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
@@ -778,6 +778,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NameUIName: 
   _direction: 2
+  _seType: 1
   _distance: 10
   _captionUI: {fileID: 1212638720296891952}
 --- !u!65 &1873946485234217067
@@ -1038,7 +1039,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0
-  animationTime: 0.1
+  AnimationTime: 0.1
   _titleText: {fileID: 164997495102897413}
   _descriptionText: {fileID: 7040843369052245586}
   _authorText: {fileID: 2084129072529800248}

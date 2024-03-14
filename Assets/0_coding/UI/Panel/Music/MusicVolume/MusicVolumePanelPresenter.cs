@@ -57,7 +57,7 @@ public class MusicVolumePanelPresenter : PanelPresenterBase<MusicVolumePanelView
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
-                AudioManager.Instance.SetBGMVolume(value);
+                BGMManager.Instance.SetVolume(value);
             });
     }
     

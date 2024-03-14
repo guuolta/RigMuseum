@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41853b17791188b4dba5682b9588cdea, type: 3}
+  m_Name: MusicDatas
+  m_EditorClassIdentifier: 
+  _dataList:
+  - _name: "Figure Made Rubber Band \u30D7\u30EC\u30A4\u4E2D"
+    _music: {fileID: 8300000, guid: 593c5261c5a22824ca4870563d90d80c, type: 3}
+    _members:
+    - ai
+    _description: "\u6587\u623F\u5177\u306E\u30A4\u30E1\u30FC\u30B8\u3067\u4F5C\u308A\u307E\u3057\u305F"
+  - _name: "\u5316\u5B66\u30E2\u30F3\u30B9\u30BF\u30FC\u6226\u95D8 BGM"
+    _music: {fileID: 8300000, guid: 84419793f6dc04e469985fdf25fcc68d, type: 3}
+    _members:
+    - ai
+    _description: "\u6226\u95D8\u306E\u30B7\u30FC\u30F3\u3067\u3001\u7DCA\u5F35\u611F\u3082\u3042\u308A\u3064\u3064\u308F\u304F\u308F\u304F\u3059\u308B\u3088\u3046\u306A\u30A4\u30E1\u30FC\u30B8\u3067\u4F5C\u308A\u307E\u3057\u305F"
+  - _name: "\u8089\u3046\u3069\u3093 \u30D7\u30EC\u30A4\u4E2D"
+    _music: {fileID: 8300000, guid: 9b42b9a3078de004395a97e7491e1460, type: 3}
+    _members:
+    - ai
+    _description: "\u30D7\u30E9\u30F3\u30CA\u30FC\u306B\u51FA\u3057\u3066\u3082\u3089\u3063\u305F\u6570\u66F2\u306E\u96F0\u56F2\u6C17\u3092\u7D44\u307F\u5408\u308F\u305B\u3066\u3001\u30EA\u30BA\u30DF\u30AB\u30EB\u3067\u3069\u3053\u304B\u3086\u308B\u3055\u3092\u611F\u3058\u308B\u66F2\u306B\u4ED5\u4E0A\u3052\u307E\u3057\u305F\u3002\u6253\u697D\u5668\u306E\u97F3\u3092\u5DE5\u592B\u3057\u307E\u3057\u305F"
+  - _name: "\u8089\u3046\u3069\u3093 \u5F85\u6A5F\u4E2D"
+    _music: {fileID: 8300000, guid: 45245068d71784a439488647ca46879e, type: 3}
+    _members:
+    - ai
+    _description: "\u660E\u308B\u3044\u66F2\u8ABF\u306B\u306A\u308B\u3088\u3046\u306B\u3053\u3060\u308F\u308A\u307E\u3057\u305F"

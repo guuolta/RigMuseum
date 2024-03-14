@@ -41,6 +41,7 @@ public class MusicData
     /// </summary>
     public string[] Members => _members;
     [Header("音楽の説明")]
+    [TextArea(1, 10)]
     [SerializeField]
     private string _description;
     /// <summary>
