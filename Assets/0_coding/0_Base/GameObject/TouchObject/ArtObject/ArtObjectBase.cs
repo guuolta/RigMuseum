@@ -6,18 +6,18 @@ public class ArtObjectBase : TouchObjectBase
     [SerializeField]
     private float _distance = -1f;
 
-    public override async void StartEvent()
+    public override async void StartTouchEvent()
     {
-        base.StartEvent();
-        CaptionManager.Instance.SetState();
+        base.StartTouchEvent();
+        ArtManager.Instance.SetState();
 
         if(_distance < 0)
         {
-            await CaptionManager.Instance.TargetAsync(this, Ct);
+            await ArtManager.Instance.TargetAsync(this, Ct);
         }
         else
         {
-            await CaptionManager.Instance.TargetAsync(this, _distance, Ct);
+            await ArtManager.Instance.TargetAsync(this, _distance, Ct);
         }
     }
 }

@@ -5,7 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ToggleBase : UIPartBase
+public class ToggleBase : UIBase
 {
     [Header("トグルON時の画像")]
     [SerializeField]

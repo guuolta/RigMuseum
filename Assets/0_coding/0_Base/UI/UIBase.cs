@@ -2,11 +2,17 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 /// <summary>
 /// UI系のベース
 /// </summary>
-public class UIBase : GameObjectBase
+public class UIBase : GameObjectBase,
+    IPointerClickHandler,
+    IPointerDownHandler,
+    IPointerUpHandler,
+    IPointerEnterHandler,
+    IPointerExitHandler
 {
     [Header("押せないときの透明度")]
     [Range(0f, 1f)]
@@ -46,6 +52,56 @@ public class UIBase : GameObjectBase
 
             return _canvasGroup;
         }
+    }
+
+    /// <summary>
+    /// UIが押されたときのイベント
+    /// </summary>
+    public System.Action OnClickCallback;
+
+    /// <summary>
+    /// UIが押されたとき処理を実行
+    /// </summary>
+    /// <param name="eventData"></param>
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        OnClickCallback?.Invoke();
+    }
+
+    /// <summary>
+    /// UIが押し込まれたときの処理
+    /// </summary>
+    /// <param name="eventData"></param>
+    public virtual void OnPointerDown(PointerEventData eventData)
+    {
+
+    }
+
+    /// <summary>
+    /// UIから押し離されたときの処理
+    /// </summary>
+    /// <param name="eventData"></param>
+    public virtual void OnPointerUp(PointerEventData eventData)
+    {
+
+    }
+
+    /// <summary>
+    /// UIにカーソルが入った時の処理
+    /// </summary>
+    /// <param name="eventData"></param>
+    public virtual void OnPointerEnter(PointerEventData eventData)
+    {
+
+    }
+
+    /// <summary>
+    /// UIからカーソルが離れた時の処理
+    /// </summary>
+    /// <param name="eventData"></param>
+    public virtual void OnPointerExit(PointerEventData eventData)
+    {
+
     }
 
     /// <summary>

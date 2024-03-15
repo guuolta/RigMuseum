@@ -193,7 +193,7 @@ public class PlayerOperater : ObjectBase
                     var obj = hit.collider.gameObject.GetComponent<TouchObjectBase>();
                     if (obj != null)
                     {
-                        obj.StartEvent();
+                        obj.StartTouchEvent();
                     }
                 }
             });

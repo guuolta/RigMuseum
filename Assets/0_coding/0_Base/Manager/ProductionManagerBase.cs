@@ -13,10 +13,10 @@ public class ProductionManagerBase<T> : SingletonObjectBase<T>
     [SerializeField]
     private float _distance = 20f;
     protected float Distance => _distance;
-    [Header("解除時の作品との距離")]
+    [Header("解除時に追加で離れる距離")]
     [SerializeField]
-    private float _clearDistance = 25f;
-    protected float ClearDistance => _clearDistance;
+    private float _clearAddDistance = 5f;
+    protected float ClearAddDistance => _clearAddDistance;
 
     private TouchObjectBase _targetObject = null;
 
@@ -54,8 +54,11 @@ public class ProductionManagerBase<T> : SingletonObjectBase<T>
 
         _targetObject = obj;
         await PlayerManager.Instance.TargetObjectAsync(AnimationTime,
-            GetCameraPos(obj.Transform.position, GetDirection(obj.Transform, obj.Direction), distance),
-            GetCameraRot(obj.Transform.localEulerAngles, GetAddRotation(obj.Direction)),
+            GetCameraPos(obj.Transform.position,
+                GetDirection(obj.Transform, obj.Direction),
+                    distance),
+                GetCameraRot(obj.Transform.localEulerAngles,
+                    GetAddRotation(obj.Direction)),
             ct);
     }
 
@@ -67,7 +70,10 @@ public class ProductionManagerBase<T> : SingletonObjectBase<T>
     public async UniTask ClearTargetAsync(CancellationToken ct)
     {
         await PlayerManager.Instance.ClearTargetAsync(AnimationTime,
-            GetCameraPos(_targetObject.Transform.position, GetDirection(_targetObject.Transform, _targetObject.Direction), ClearDistance),
+            GetCameraPos(_targetObject.Transform.position,
+                GetDirection(_targetObject.Transform,
+                    _targetObject.Direction),
+                _clearAddDistance + _distance),
             ct);
         _targetObject.ClearTouch();
         _targetObject = null;
@@ -76,12 +82,16 @@ public class ProductionManagerBase<T> : SingletonObjectBase<T>
     /// <summary>
     /// ターゲット状態を解除
     /// </summary>
+    /// <param name="distance"> 追加で離れる距離 </param>
     /// <param name="ct"></param>
     /// <returns></returns>
     public async UniTask ClearTargetAsync(float distance, CancellationToken ct)
     {
         await PlayerManager.Instance.ClearTargetAsync(AnimationTime,
-            GetCameraPos(_targetObject.Transform.position, GetDirection(_targetObject.Transform, _targetObject.Direction), distance),
+            GetCameraPos(_targetObject.Transform.position,
+                GetDirection(_targetObject.Transform,
+                        _targetObject.Direction),
+                distance + _distance),
             ct);
         _targetObject.ClearTouch();
         _targetObject = null;

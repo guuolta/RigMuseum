@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class SpeedPanelCell : UIPartBase
+public class SpeedPanelCell : UIBase
 {
     private BoolReactiveProperty _isCheck = new BoolReactiveProperty(false);
     /// <summary>

@@ -17,9 +17,6 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
     [Header("オーディオミキサー")]
     [SerializeField]
     private AudioMixer _audioMixer;
-    [Header("BGMのオーディオソース")]
-    [SerializeField]
-    private AudioSource _bgmAudioSource;
     [Header("SEのオーディオソース")]
     [SerializeField]
     private AudioSource _seAudioSource;
@@ -27,23 +24,9 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
     [SerializeField]
     private AudioSource _movieAudioSource;
     private List<AudioSource> _seAudioSourceList = new List<AudioSource>();
-    [Header("通常BGM")]
-    [SerializeField]
-    private AudioClip _mainAudioClip;
     [Header("よく使うSE")]
     [SerializeField]
     private List<SE> _seList = new List<SE>();
-
-    private ReactiveProperty<int> _bgmPlayTime = new ReactiveProperty<int>(0);
-    /// <summary>
-    /// BGMの再生時間
-    /// </summary>
-    public ReactiveProperty<int> BGMPlayTime => _bgmPlayTime;
-    private ReactiveProperty<int> _bgmLength = new ReactiveProperty<int>(0);
-    /// <summary>
-    /// BGMの再生時間
-    /// </summary>
-    public ReactiveProperty<int> BGMLength => _bgmLength;
 
     private Dictionary<SEType, AudioClip> _seDictionary = new Dictionary<SEType, AudioClip>();
 
@@ -52,13 +35,11 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
         base.Init();
         GetSEDictionary();
         SetInitVolume();
-        PlayBGM(_mainAudioClip);
     }
 
     protected override void SetEvent()
     {
         SetEventAudio();
-        SetEventBGMPlayTime();
     }
 
     /// <summary>
@@ -103,39 +84,6 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
     }
 
     /// <summary>
-    /// BGM再生
-    /// </summary>
-    public void PlayBGM()
-    {
-        if (_bgmAudioSource.isPlaying)
-            return;
-
-        _bgmAudioSource.Play();
-    }
-
-    /// <summary>
-    /// BGM再生
-    /// </summary>
-    /// <param name="clip">曲</param>
-    public void PlayBGM(AudioClip clip)
-    {
-        _bgmAudioSource.clip = clip;
-        _bgmLength.Value = (int)clip.length;
-        _bgmAudioSource.Play();
-    }
-
-    /// <summary>
-    /// BGM停止
-    /// </summary>
-    public void PauseBGM()
-    {
-        if(!_bgmAudioSource.isPlaying)
-            return;
-
-        _bgmAudioSource.Pause();
-    }
-
-    /// <summary>
     /// ステートごとの音量設定
     /// </summary>
     private void SetEventAudio()
@@ -154,21 +102,6 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
                         SetMute(true, AudioType.BGM);
                         break;
                 }
-            });
-    }
-
-    /// <summary>
-    /// BGMの再生時間を設定
-    /// </summary>
-    private void SetEventBGMPlayTime()
-    {
-        Observable.EveryUpdate()
-            .TakeUntilDestroy(this)
-            .Select(_ => _bgmAudioSource.time)
-            .DistinctUntilChanged()
-            .Subscribe(time =>
-            {
-                _bgmPlayTime.Value = (int)time;
             });
     }
 
@@ -228,7 +161,7 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
     /// <param name="isMute"> ミュートにするか </param>
     public void SetMute(bool isMute)
     {
-        _bgmAudioSource.mute = isMute;
+        BGMManager.Instance.SetMute(isMute);
         _seAudioSource.mute = isMute;
         _movieAudioSource.mute = isMute;
     }
@@ -245,7 +178,7 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
                 SetMute(isMute);
                 break;
             case AudioType.BGM:
-                _bgmAudioSource.mute = isMute;
+                BGMManager.Instance.SetMute(isMute);
                 break;
             case AudioType.SE:
                 _seAudioSource.mute = isMute;
@@ -256,27 +189,6 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
             default:
                 break;
         }
-    }
-
-    /// <summary>
-    /// ループ設定
-    /// </summary>
-    /// <param name="isLoop"> ループするか </param>
-    public void SetBGMLoop(bool isLoop)
-    {
-        if(_bgmAudioSource.loop == isLoop)
-            return;
-
-        _bgmAudioSource.loop = isLoop;
-    }
-
-    /// <summary>
-    /// BGMの再生時間を設定
-    /// </summary>
-    /// <param name="time"></param>
-    public void SetBGMTime(float time)
-    {
-        _bgmAudioSource.time = time;
     }
 
     /// <summary>
@@ -298,44 +210,33 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
     }
 
     /// <summary>
-    /// マスターボリュームを設定
+    /// 音量設定
     /// </summary>
-    /// <param name="volume">音量</param>
-    public void SetMasterVolume(float volume)
+    /// <param name="type"> オーディオの種類 </param>
+    /// <param name="volume"> 音量 </param>
+    public void SetVolume(AudioType type, float volume)
     {
-        _audioMixer.SetFloat(MASTER_VOLUME_NAME, GetAudioMixerVolume(volume));
-        _volumes[(int)AudioType.Master] = volume;
-        SetMovieVolume(_volumes[(int)AudioType.Movie]);
-    }
+        switch(type)
+        {
+            case AudioType.Master:
+                _audioMixer.SetFloat(MASTER_VOLUME_NAME, GetAudioMixerVolume(volume));
+                _volumes[(int)type] = volume;
+                SetVolume(AudioType.Movie, _volumes[(int)AudioType.Movie]);
+                return;
+            case AudioType.BGM:
+                _audioMixer.SetFloat(BGM_VOLUME_NAME, GetAudioMixerVolume(volume));
+                break;
+            case AudioType.SE:
+                _audioMixer.SetFloat(SE_VOLUME_NAME, GetAudioMixerVolume(volume));
+                break;
+            case AudioType.Movie:
+                _movieAudioSource.volume = GetAudioSourceVolume(volume);
+                break;
+            default:
+                return;
+        }
 
-    /// <summary>
-    /// BGMボリュームを設定
-    /// </summary>
-    /// <param name="volume">音量</param>
-    public void SetBGMVolume(float volume)
-    {
-        _audioMixer.SetFloat(BGM_VOLUME_NAME, GetAudioMixerVolume(volume));
-        _volumes[(int)AudioType.BGM] = volume;
-    }
-
-    /// <summary>
-    /// SEボリュームを設定
-    /// </summary>
-    /// <param name="volume">音量</param>
-    public void SetSEVolume(float volume)
-    {
-        _audioMixer.SetFloat(SE_VOLUME_NAME, GetAudioMixerVolume(volume));
-        _volumes[(int)AudioType.SE] = volume;
-    }
-
-    /// <summary>
-    /// 動画ボリュームを設定
-    /// </summary>
-    /// <param name="volume">音量</param>
-    public void SetMovieVolume(float volume)
-    {
-        _movieAudioSource.volume = GetAudioSourceVolume(volume);
-        _volumes[(int)AudioType.Movie] = volume;
+        _volumes[(int)type] = volume;
     }
 
     /// <summary>
@@ -355,7 +256,7 @@ public class SE
 }
 
 /// <summary>
-/// 音量の種類
+/// オーディオの種類
 /// </summary>
 public enum AudioType
 {

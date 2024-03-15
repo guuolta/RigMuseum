@@ -261,7 +261,7 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
-                AudioManager.Instance.SetMovieVolume(value);
+                AudioManager.Instance.SetVolume(AudioType.Movie, value);
             });
             
     }
@@ -284,7 +284,7 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
-                View.PlayTimeText.text = GetVideoTime(value);
+                View.PlayTimeText.text = "-" + GetVideoTime(value);
             });
     }
 

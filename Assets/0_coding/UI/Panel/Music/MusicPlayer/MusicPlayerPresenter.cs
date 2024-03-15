@@ -6,8 +6,8 @@ using static UnityEngine.Rendering.DebugUI;
 
 public class MusicPlayerPresenter : PanelPresenterBase<MusicPlayerPanelView>
 {
-    private ReactiveProperty<int> _playTime => AudioManager.Instance.BGMPlayTime;
-    private ReactiveProperty<int> _length => AudioManager.Instance.BGMLength;
+    private ReactiveProperty<int> _playTime => BGMManager.Instance.PlayTime;
+    private ReactiveProperty<int> _length => BGMManager.Instance.Length;
     private CompositeDisposable disposables = new CompositeDisposable();
 
     protected override void SetEvent()
@@ -57,11 +57,11 @@ public class MusicPlayerPresenter : PanelPresenterBase<MusicPlayerPanelView>
             {
                 if(!value)
                 {
-                    AudioManager.Instance.PlayBGM();
+                    BGMManager.Instance.Play();
                 }
                 else
                 {
-                    AudioManager.Instance.PauseBGM();
+                    BGMManager.Instance.Pause();
                 }
             });
     }
@@ -73,7 +73,7 @@ public class MusicPlayerPresenter : PanelPresenterBase<MusicPlayerPanelView>
     {
         View.NextButton.OnClickCallback += () =>
         {
-            Debug.Log("next");
+            BGMManager.Instance.PlayNext();
         };
     }
 
@@ -84,7 +84,7 @@ public class MusicPlayerPresenter : PanelPresenterBase<MusicPlayerPanelView>
     {
         View.BackButton.OnClickCallback += () =>
         {
-            Debug.Log("back");
+            BGMManager.Instance.PlayBack();
         };
     }
 
@@ -102,14 +102,14 @@ public class MusicPlayerPresenter : PanelPresenterBase<MusicPlayerPanelView>
                 switch(value)
                 {
                     case LoopType.Off:
-                        AudioManager.Instance.SetBGMLoop(false);
+                        BGMManager.Instance.SetLoop(false);
                         break;
                     case LoopType.Auto:
-                        AudioManager.Instance.SetBGMLoop(false);
+                        BGMManager.Instance.SetLoop(false);
                         Debug.Log("オート");
                         break;
                     case LoopType.On:
-                        AudioManager.Instance.SetBGMLoop(true);
+                        BGMManager.Instance.SetLoop(true);
                         break;
                 }
             });
@@ -216,7 +216,7 @@ public class MusicPlayerPresenter : PanelPresenterBase<MusicPlayerPanelView>
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
-                AudioManager.Instance.SetBGMTime(value);
+                BGMManager.Instance.SetTime(value);
             }).AddTo(disposables);
     }
 
