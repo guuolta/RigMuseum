@@ -1,22 +1,27 @@
+using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UniRx;
 using UnityEngine;
 
 public class BGMManager : ProductionManagerBase<BGMManager>
 {
-    [Header("BGMのオーディオソース")]
-    [SerializeField]
-    private AudioSource _bgmAudioSource;
-    [Header("蓄音機のオーディオソース")]
-    [SerializeField]
-    private AudioSource _recordAudioSource;
     [Header("曲データ")]
     [SerializeField]
     private MusicDatas _musicDatas;
+    [Header("蓄音機")]
+    [SerializeField]
+    private Phonograph _phonograph;
+    [Header("BGMのオーディオソース")]
+    [SerializeField]
+    private AudioSource _mainBGMAudioSource;
     [Header("通常BGM")]
     [SerializeField]
     private AudioClip _mainAudioClip;
+    [Header("蓄音機上のUI")]
+    [SerializeField]
+    private OnPhonographUIPresenter _onPhonographUI;
 
     private ReactiveProperty<int> _index = new ReactiveProperty<int>(0);
     private ReactiveProperty<MusicData> _musicData = new ReactiveProperty<MusicData>();
@@ -36,19 +41,68 @@ public class BGMManager : ProductionManagerBase<BGMManager>
     public ReactiveProperty<int> Length => _length;
 
     private int _dataLength;
+    private AudioSource _recordAudioSource;
+    private List<int> _playedList = new List<int>();
 
     protected override void Init()
     {
         base.Init();
         _dataLength = _musicDatas.GetCount();
+        _recordAudioSource = _phonograph.GetComponent<AudioSource>();
+        if(_phonograph == null)
+        {
+            Debug.LogError("蓄音機にオーディオソースが設定されていません");
+            return;
+        }
+
         PlayMainBGM();
     }
 
     protected override void SetEvent()
     {
         base.SetEvent();
+        SetEventState(Ct);
         SetEventPlay();
         SetEventPlayTime();
+    }
+
+    /// <summary>
+    /// ステートによるイベント設定
+    /// </summary>
+    private void SetEventState(CancellationToken ct)
+    {
+        GameStateManager.MuseumStatus
+            .TakeUntilDestroy(this)
+            .Select(value => value == MuseumState.Music)
+            .SkipWhile(value => !value)
+            .DistinctUntilChanged()
+            .Subscribe(async value =>
+            {
+                if (value)
+                {
+                    PauseMainBGM();
+                    _recordAudioSource.spatialBlend = 0;
+                    _onPhonographUI.ShowAsync(ct).Forget();
+                    await TargetAsync(_phonograph, ct);
+
+                }
+                else
+                {
+                    if (_recordAudioSource.isPlaying)
+                    {
+                        _recordAudioSource.spatialBlend = 0;
+                    }
+                    else
+                    {
+                        PlayMainBGM();
+                        Play();
+                        _recordAudioSource.spatialBlend = 1;
+                    }
+
+                    _onPhonographUI.HideAsync(ct).Forget();
+                    await ClearTargetAsync(ct);
+                }
+            });
     }
 
     /// <summary>
@@ -73,30 +127,11 @@ public class BGMManager : ProductionManagerBase<BGMManager>
     {
         Observable.EveryUpdate()
             .TakeUntilDestroy(this)
-            .Select(_ => _bgmAudioSource.time)
+            .Select(_ => _recordAudioSource.time)
             .DistinctUntilChanged()
             .Subscribe(time =>
             {
                 _playTime.Value = (int)time;
-            });
-    }
-
-    private void SetEventState()
-    {
-        GameStateManager.MuseumStatus
-            .TakeUntilDestroy(this)
-            .Select(value => value == MuseumState.Music)
-            .DistinctUntilChanged()
-            .Subscribe(value =>
-            {
-                if(value)
-                {
-                    //TargetAsync(_recordAudioSource, Ct).Forget();
-                }
-                else
-                {
-                    Pause();
-                }
             });
     }
 
@@ -105,10 +140,10 @@ public class BGMManager : ProductionManagerBase<BGMManager>
     /// </summary>
     public void Play()
     {
-        if (_bgmAudioSource.isPlaying)
+        if (_recordAudioSource.isPlaying)
             return;
 
-        _bgmAudioSource.Play();
+        _recordAudioSource.Play();
     }
 
     /// <summary>
@@ -126,17 +161,33 @@ public class BGMManager : ProductionManagerBase<BGMManager>
     /// <param name="clip"> 曲 </param>
     public void Play(AudioClip clip)
     {
-        _bgmAudioSource.clip = clip;
+        _recordAudioSource.clip = clip;
         _length.Value = (int)clip.length;
-        _bgmAudioSource.Play();
+        _recordAudioSource.Play();
     }
 
     /// <summary>
-    /// メインのBGM再生
+    /// メインBGM再生
     /// </summary>
     public void PlayMainBGM()
     {
-        Play(_mainAudioClip);
+        if(_mainBGMAudioSource.clip == null)
+            _mainBGMAudioSource.clip = _mainAudioClip;
+        if(_mainBGMAudioSource.isPlaying)
+            return;
+
+        _mainBGMAudioSource.Play();
+    }
+
+    /// <summary>
+    /// メインBGM停止
+    /// </summary>
+    public void PauseMainBGM()
+    {
+        if(!_mainBGMAudioSource.isPlaying)
+            return;
+
+        _mainBGMAudioSource.Pause();
     }
 
     /// <summary>
@@ -144,7 +195,13 @@ public class BGMManager : ProductionManagerBase<BGMManager>
     /// </summary>
     public void PlayNext()
     {
-        Play(_index.Value + 1);
+        if(_index.Value == _dataLength - 1)
+        {
+            _index.Value = 0;
+            return;
+        }
+
+        _index.Value++;
     }
 
     /// <summary>
@@ -152,7 +209,27 @@ public class BGMManager : ProductionManagerBase<BGMManager>
     /// </summary>
     public void PlayBack()
     {
-        Play(_index.Value - 1);
+        if(_index.Value == 0)
+        {
+            _index.Value = _dataLength - 1;
+            return;
+        }
+
+        _index.Value--;
+    }
+
+    public void PlayShuffle()
+    {
+        int index = Random.Range(0, _dataLength);
+
+        foreach(int played in _playedList)
+        {
+            if (index == played)
+            {
+                PlayShuffle();
+                return;
+            }
+        }
     }
 
     /// <summary>
@@ -160,10 +237,10 @@ public class BGMManager : ProductionManagerBase<BGMManager>
     /// </summary>
     public void Pause()
     {
-        if (!_bgmAudioSource.isPlaying)
+        if (!_recordAudioSource.isPlaying)
             return;
 
-        _bgmAudioSource.Pause();
+        _recordAudioSource.Pause();
     }
 
     /// <summary>
@@ -181,10 +258,10 @@ public class BGMManager : ProductionManagerBase<BGMManager>
     /// <param name="isMute"></param>
     public void SetMute(bool isMute)
     {
-        if(_bgmAudioSource.mute == isMute)
+        if(_recordAudioSource.mute == isMute)
             return;
 
-        _bgmAudioSource.mute = isMute;
+        _recordAudioSource.mute = isMute;
     }
 
     /// <summary>
@@ -193,10 +270,10 @@ public class BGMManager : ProductionManagerBase<BGMManager>
     /// <param name="isLoop"> ループするか </param>
     public void SetLoop(bool isLoop)
     {
-        if (_bgmAudioSource.loop == isLoop)
+        if (_recordAudioSource.loop == isLoop)
             return;
 
-        _bgmAudioSource.loop = isLoop;
+        _recordAudioSource.loop = isLoop;
     }
 
     /// <summary>
@@ -205,6 +282,6 @@ public class BGMManager : ProductionManagerBase<BGMManager>
     /// <param name="time"></param>
     public void SetTime(float time)
     {
-        _bgmAudioSource.time = time;
+        _recordAudioSource.time = time;
     }
 }

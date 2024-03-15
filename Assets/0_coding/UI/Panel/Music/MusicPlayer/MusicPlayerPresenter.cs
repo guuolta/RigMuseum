@@ -73,7 +73,7 @@ public class MusicPlayerPresenter : PanelPresenterBase<MusicPlayerPanelView>
     {
         View.NextButton.OnClickCallback += () =>
         {
-            Debug.Log("next");
+            BGMManager.Instance.PlayNext();
         };
     }
 
@@ -84,7 +84,7 @@ public class MusicPlayerPresenter : PanelPresenterBase<MusicPlayerPanelView>
     {
         View.BackButton.OnClickCallback += () =>
         {
-            Debug.Log("back");
+            BGMManager.Instance.PlayBack();
         };
     }
 

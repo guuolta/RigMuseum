@@ -10,6 +10,9 @@ public class MusicPlayButton : MediaOnOffButton
     [Header("レコード画像")]
     [SerializeField]
     private Image _recordImage;
+    [Header("レコードのアニメーションの時間")]
+    [SerializeField]
+    private float _recordAnimationTime = 2f;
     [Header("背景画像")]
     [SerializeField]
     private Image _backImage;
@@ -29,7 +32,7 @@ public class MusicPlayButton : MediaOnOffButton
 
     private void SetRecord()
     {
-        _recordImage.transform.DORotate(new Vector3(0, 0, 360), AnimationTime, RotateMode.FastBeyond360)
+        _recordImage.transform.DORotate(new Vector3(0, 0, 360), _recordAnimationTime, RotateMode.FastBeyond360)
             .SetLoops(-1, LoopType.Restart)
             .SetEase(Ease.Linear);
     }

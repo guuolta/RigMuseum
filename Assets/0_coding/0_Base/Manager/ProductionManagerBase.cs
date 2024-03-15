@@ -19,13 +19,6 @@ public class ProductionManagerBase<T> : SingletonObjectBase<T>
     protected float ClearAddDistance => _clearAddDistance;
 
     private TouchObjectBase _targetObject = null;
-    private float _clearDistance;
-
-    protected override void Init()
-    {
-        base.Init();
-        _clearDistance = _distance + _clearAddDistance;
-    }
 
     /// <summary>
     /// オブジェクトにターゲットする
