@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 
 public abstract class TouchObjectBase : GameObjectBase
 {
+    [Header("名前UIのオブジェクト名(_nameUIが設定されている場合は不要)")]
     [SerializeField]
     private string NameUIName;
     [Header("方向")]
@@ -15,6 +16,8 @@ public abstract class TouchObjectBase : GameObjectBase
     [SerializeField]
     private SEType _seType= SEType.Posi;
 
+    [Header("名前UI(名前UIのオブジェクト名が設定されている場合は不要)")]
+    [SerializeField]
     private ObjectNamePanelPresenter _nameUI;
     /// <summary>
     /// 名前UI
@@ -47,12 +50,10 @@ public abstract class TouchObjectBase : GameObjectBase
     /// <summary>
     /// オブジェクトをクリックした時のイベント
     /// </summary>
-    public virtual async void StartEvent()
+    public virtual async void StartTouchEvent()
     {
-        if(_isTouch)
-        {
+        if (_isTouch)
             return;
-        }
 
         _isTouch = true;
         AudioManager.Instance.PlayOneShotSE(_seType);

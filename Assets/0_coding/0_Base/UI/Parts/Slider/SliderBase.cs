@@ -5,7 +5,7 @@ using UnityEngine.UI;
 /// <summary>
 /// スライダーのベース
 /// </summary>
-public class SliderBase : UIPartBase
+public class SliderBase : UIBase
 {
     private Slider _slider;
     /// <summary>

@@ -1,8 +1,8 @@
 public class Monitor : TouchObjectBase
 {
-    public override void StartEvent()
+    public override void StartTouchEvent()
     {
-        base.StartEvent();
+        base.StartTouchEvent();
         GameStateManager.SetMuseumState(MuseumState.Monitor);
     }
 }

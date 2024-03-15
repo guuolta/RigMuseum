@@ -5,7 +5,11 @@ public class OnObjectUIPresenterBase<TView> : PresenterBase<TView>
     {
         SetEventCloseButton();
     }
-    private void SetEventCloseButton()
+
+    /// <summary>
+    /// 閉じるボタンのイベント設定
+    /// </summary>
+    protected virtual void SetEventCloseButton()
     {
         View.CloseButton.OnClickCallback += () =>
         {

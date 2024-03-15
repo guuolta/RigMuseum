@@ -51,8 +51,6 @@ public class IllustrationDatasEditor : ArtDatasEditorBase
     private const string MATERIAL_FOLDER_PATH = "Assets/3_2D/1_Materials";
     private const string ILLUSTRATION_NAME_UI_FOLDER_PATH = "Assets/5_source/Prefabs/UI/Panel/ObjectName/IllustrationNamePanels";
     private const string ILLUSTRATION_CAPTION_NAME_UI_FOLDER_PATH = "Assets/5_source/Prefabs/UI/Panel/ObjectName/IllustrationCaptionNamePanels";
-    
-    private int _listCount = 0;
 
     public override void OnInspectorGUI()
     {

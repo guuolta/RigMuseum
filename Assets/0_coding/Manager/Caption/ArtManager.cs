@@ -1,4 +1,4 @@
-public class CaptionManager : ProductionManagerBase<CaptionManager>
+public class ArtManager : ProductionManagerBase<ArtManager>
 {
     public void SetState()
     {

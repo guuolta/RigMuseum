@@ -3,17 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class MusicCellView : ViewBase
 {
     [Header("背景画像")]
     [SerializeField]
-    private UIBase _backImage;
+    private Image _backImage;
     /// <summary>
     /// 背景画像
     /// </summary>
-    public UIBase BackImage => _backImage;
+    public Image BackImage => _backImage;
     [Header("プレイボタン")]
     [SerializeField]
     private MusicPlayButton musicPlayButton;
@@ -32,8 +33,13 @@ public class MusicCellView : ViewBase
         throw new System.NotImplementedException();
     }
 
-    private void SetEventBackImage()
+    public override void OnPointerEnter(PointerEventData eventData)
     {
-        //_backImage.
+        ShowAsync(_backImage, Ct).Forget();
+    }
+
+    public override void OnPointerExit(PointerEventData eventData)
+    {
+        HideAsync(_backImage, Ct).Forget();
     }
 }

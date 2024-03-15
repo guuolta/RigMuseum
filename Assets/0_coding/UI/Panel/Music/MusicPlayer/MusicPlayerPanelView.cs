@@ -7,11 +7,11 @@ public class MusicPlayerPanelView : PanelViewBase
 {
     [Header("マスク画像")]
     [SerializeField]
-    private UIPartBase _maskImage;
+    private UIBase _maskImage;
     /// <summary>
     /// マスク画像
     /// </summary>
-    public UIPartBase MaskImage => _maskImage;
+    public UIBase MaskImage => _maskImage;
     [Header("再生ボタン")]
     [SerializeField]
     private MediaOnOffButton _playButton;

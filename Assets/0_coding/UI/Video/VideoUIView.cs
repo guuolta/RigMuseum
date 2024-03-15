@@ -8,11 +8,11 @@ public class VideoUIView : ViewBase
 {
     [Header("スクリーン画像")]
     [SerializeField]
-    private UIPartBase _screenImage;
+    private UIBase _screenImage;
     /// <summary>
     /// スクリーン画像
     /// </summary>
-    public UIPartBase ScreenImage => _screenImage;
+    public UIBase ScreenImage => _screenImage;
     [Header("シークバー")]
     [SerializeField]
     private SeekBar _seekBar;

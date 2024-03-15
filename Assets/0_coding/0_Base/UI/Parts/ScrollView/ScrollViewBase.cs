@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.UI;
 
-public class ScrollViewBase : UIPartBase
+public class ScrollViewBase : UIBase
 {
     private ScrollRect _scrollRect;
     public ScrollRect ScrollRect

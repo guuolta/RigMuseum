@@ -3,7 +3,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class AnimationPartBase : UIPartBase
+public class AnimationPartBase : UIBase
 {
     public override void OnPointerDown(PointerEventData eventData)
     {

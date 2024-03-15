@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
 
-public class BGMManager : SingletonObjectBase<BGMManager>
+public class BGMManager : ProductionManagerBase<BGMManager>
 {
     [Header("BGMのオーディオソース")]
     [SerializeField]
@@ -85,12 +85,17 @@ public class BGMManager : SingletonObjectBase<BGMManager>
     {
         GameStateManager.MuseumStatus
             .TakeUntilDestroy(this)
+            .Select(value => value == MuseumState.Music)
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
-                switch(value)
+                if(value)
                 {
-
+                    //TargetAsync(_recordAudioSource, Ct).Forget();
+                }
+                else
+                {
+                    Pause();
                 }
             });
     }
