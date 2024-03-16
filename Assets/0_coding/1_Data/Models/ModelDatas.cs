@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [CreateAssetMenu(fileName = "ModelDatas", menuName = "ScriptableObjects/CreateModelDatas")]
 public class ModelDatas : ScriptableObjectBase<ModelData>
@@ -9,9 +12,18 @@ public class ModelDatas : ScriptableObjectBase<ModelData>
     //[SerializeField]
     //private List<>
 }
+#if UNITY_EDITOR
+
+
+[CustomEditor(typeof(ModelDatas))]
+public class ModelDatasEditor : ArtDatasEditorBase
+{
+    
+}
+#endif
 
 [System.Serializable]
-public class ModelData
+public class ModelData:IArtData
 {
     private int _id;
     /// <summary>
@@ -53,11 +65,21 @@ public class ModelData
     /// ケースの種類
     /// </summary>
     public CaseType CaseType => _caseType;
-    [Header("ケースの位置")]
+    [Header("ターゲット時の距離")]
     [SerializeField]
-    private Direction _caseDirection = Direction.None;
+    private float _offset;
     /// <summary>
-    /// ケースの位置
+    /// ターゲット時の距離
     /// </summary>
-    public Direction CaseDirection => _caseDirection;
+    public float Offset => _offset;
+
+    public void SetIndex(int index)
+    {
+        if (index < 0)
+        {
+            return;
+        }
+
+        _id = index;
+    }
 }

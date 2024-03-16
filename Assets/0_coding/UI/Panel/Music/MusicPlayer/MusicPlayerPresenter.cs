@@ -230,8 +230,8 @@ public class MusicPlayerPresenter : PanelPresenterBase<MusicPlayerPanelView>
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
-                View.PlayTimeText.text = GetVideoTime(value);
-                View.RemainTimeText.text = GetVideoTime(_length.Value - value);
+                View.PlayTimeText.text = BGMManager.Instance.GetVideoTime(value);
+                View.RemainTimeText.text = BGMManager.Instance.GetVideoTime(_length.Value - value);
             });
     }
 
@@ -258,23 +258,5 @@ public class MusicPlayerPresenter : PanelPresenterBase<MusicPlayerPanelView>
     public void SetPlayButton(bool isPlay)
     {
         View.PlayButton.SetOn(!isPlay);
-    }
-
-    /// <summary>
-    /// 再生時間のテキストを取得
-    /// </summary>
-    /// <param name="time"> 再生時間 </param>
-    /// <returns></returns>
-    private string GetVideoTime(int time)
-    {
-        if (time < 0)
-        {
-            time = 0;
-        }
-
-        int minutes = time / 60;
-        int seconds = time % 60;
-
-        return $"{minutes:00}:{seconds:00}";
     }
 }
