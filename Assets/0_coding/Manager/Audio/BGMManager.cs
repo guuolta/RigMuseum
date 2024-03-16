@@ -277,6 +277,24 @@ public class BGMManager : ProductionManagerBase<BGMManager>
     }
 
     /// <summary>
+    /// 再生時間のテキストを取得
+    /// </summary>
+    /// <param name="time"> 再生時間 </param>
+    /// <returns></returns>
+    public string GetVideoTime(int time)
+    {
+        if (time < 0)
+        {
+            time = 0;
+        }
+
+        int minutes = time / 60;
+        int seconds = time % 60;
+
+        return $"{minutes:00}:{seconds:00}";
+    }
+
+    /// <summary>
     /// 再生時間を設定
     /// </summary>
     /// <param name="time"></param>

@@ -198,6 +198,7 @@ public class UIBase : GameObjectBase,
         await canvasGroup.DOFade(1, AnimationTime)
             .SetEase(Ease.InSine)
             .ToUniTask(cancellationToken: ct);
+        ChangeInteractive(true);
     }
 
     /// <summary>
@@ -236,5 +237,7 @@ public class UIBase : GameObjectBase,
         await canvasGroup.DOFade(0, AnimationTime)
             .SetEase(Ease.OutSine)
             .ToUniTask(cancellationToken: ct);
+
+        ChangeInteractive(false);
     }
 }

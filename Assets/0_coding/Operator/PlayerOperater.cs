@@ -258,25 +258,25 @@ public class PlayerOperater : ObjectBase
             .ToUniTask(cancellationToken: ct);
     }
 
-    ////UI検査用
-    //private void Update()
-    //{
-    //    if (Input.GetMouseButtonDown(0))
-    //    {
-    //        Debug.Log("ok");
-    //        // マウスポインターの位置にあるUI要素を取得
-    //        PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
-    //        pointerEventData.position = Input.mousePosition;
+    //UI検査用
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            Debug.Log("ok");
+            // マウスポインターの位置にあるUI要素を取得
+            PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+            pointerEventData.position = Input.mousePosition;
 
-    //        // RaycastでUI要素をチェックし、結果をリストに格納
-    //        List<RaycastResult> results = new List<RaycastResult>();
-    //        EventSystem.current.RaycastAll(pointerEventData, results);
+            // RaycastでUI要素をチェックし、結果をリストに格納
+            List<RaycastResult> results = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointerEventData, results);
 
-    //        // RaycastでヒットしたUI要素の名前を取得
-    //        if (results.Count > 0)
-    //        {
-    //            Debug.Log("UI Name: " + results[0].gameObject.name);
-    //        }
-    //    }
-    //}
+            // RaycastでヒットしたUI要素の名前を取得
+            if (results.Count > 0)
+            {
+                Debug.Log("UI Name: " + results[0].gameObject.name);
+            }
+        }
+    }
 }

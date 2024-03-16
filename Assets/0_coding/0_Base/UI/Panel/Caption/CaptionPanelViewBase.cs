@@ -20,14 +20,14 @@ public class CaptionPanelViewBase : ViewBase
     /// </summary>
     public TMP_Text DescriptionText => _descriptionText;
 
-    public override UniTask ShowAsync(CancellationToken ct)
+    public override async UniTask ShowAsync(CancellationToken ct)
     {
-        throw new System.NotImplementedException();
+        await ShowAsync(CanvasGroup, ct);
     }
 
-    public override UniTask HideAsync(CancellationToken ct)
+    public override async UniTask HideAsync(CancellationToken ct)
     {
-        throw new System.NotImplementedException();
+        await HideAsync(CanvasGroup, ct);
     }
 
     /// <summary>
