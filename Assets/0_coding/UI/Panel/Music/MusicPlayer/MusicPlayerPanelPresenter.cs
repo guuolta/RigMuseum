@@ -2,47 +2,26 @@ using System.Threading;
 using UnityEngine;
 using UniRx;
 using System;
-using static UnityEngine.Rendering.DebugUI;
+using Cysharp.Threading.Tasks;
 
-public class MusicPlayerPresenter : PanelPresenterBase<MusicPlayerPanelView>
+public class MusicPlayerPanelPresenter : PanelPresenterBase<MusicPlayerPanelView>
 {
-    private ReactiveProperty<int> _playTime => BGMManager.Instance.PlayTime;
-    private ReactiveProperty<int> _length => BGMManager.Instance.Length;
+    private ReactiveProperty<int> _playTime => PhonographMusicPlayerManager.Instance.PlayTime;
+    private ReactiveProperty<int> _length => PhonographMusicPlayerManager.Instance.Length;
     private CompositeDisposable disposables = new CompositeDisposable();
 
     protected override void SetEvent()
     {
         base.SetEvent();
-        SetEventMask(Ct);
         SetEventPlayButton();
         SetEventNextButton();
         SetEventBackButton();
         SetEventLoopButton();
         SetEventShuffleButton();
         SetEventVolumeButton(Ct);
+        SetPlayListButton(Ct);
         SyncSeekBarAndTime();
         SetEventTimeText();
-    }
-
-    /// <summary>
-    /// マスク画像のイベント設定
-    /// </summary>
-    /// <param name="ct"></param>
-    private void SetEventMask(CancellationToken ct)
-    {
-        View.MaskImage.OnClickCallback += async () =>
-        {
-            if(View.VolumePanel.IsOpen.Value)
-                await View.VolumePanel.HideAsync(ct);
-        };
-
-        View.VolumePanel.IsOpen
-            .TakeUntilDestroy(this)
-            .DistinctUntilChanged()
-            .Subscribe(value =>
-            {
-                View.MaskImage.ChangeInteractive(value);
-            });
     }
 
     /// <summary>
@@ -50,6 +29,14 @@ public class MusicPlayerPresenter : PanelPresenterBase<MusicPlayerPanelView>
     /// </summary>
     private void SetEventPlayButton()
     {
+        PhonographMusicPlayerManager.Instance.IsPlay
+            .TakeUntilDestroy(this)
+            .DistinctUntilChanged()
+            .Subscribe(value =>
+            {
+                SetPlayButton(value);
+            });
+
         View.PlayButton.IsOn
             .TakeUntilDestroy(this)
             .DistinctUntilChanged()
@@ -57,11 +44,11 @@ public class MusicPlayerPresenter : PanelPresenterBase<MusicPlayerPanelView>
             {
                 if(!value)
                 {
-                    BGMManager.Instance.Play();
+                    PhonographMusicPlayerManager.Instance.Play();
                 }
                 else
                 {
-                    BGMManager.Instance.Pause();
+                    PhonographMusicPlayerManager.Instance.Pause();
                 }
             });
     }
@@ -73,7 +60,7 @@ public class MusicPlayerPresenter : PanelPresenterBase<MusicPlayerPanelView>
     {
         View.NextButton.OnClickCallback += () =>
         {
-            BGMManager.Instance.PlayNext();
+            PhonographMusicPlayerManager.Instance.PlayNext();
         };
     }
 
@@ -84,7 +71,7 @@ public class MusicPlayerPresenter : PanelPresenterBase<MusicPlayerPanelView>
     {
         View.BackButton.OnClickCallback += () =>
         {
-            BGMManager.Instance.PlayBack();
+            PhonographMusicPlayerManager.Instance.PlayBack();
         };
     }
 
@@ -102,14 +89,16 @@ public class MusicPlayerPresenter : PanelPresenterBase<MusicPlayerPanelView>
                 switch(value)
                 {
                     case LoopType.Off:
-                        BGMManager.Instance.SetLoop(false);
+                        PhonographMusicPlayerManager.Instance.SetLoop(false);
+                        PhonographMusicPlayerManager.Instance.SetPlayback(false);
                         break;
-                    case LoopType.Auto:
-                        BGMManager.Instance.SetLoop(false);
-                        Debug.Log("オート");
+                    case LoopType.PlayBack:
+                        PhonographMusicPlayerManager.Instance.SetLoop(false);
+                        PhonographMusicPlayerManager.Instance.SetPlayback(true);
                         break;
                     case LoopType.On:
-                        BGMManager.Instance.SetLoop(true);
+                        PhonographMusicPlayerManager.Instance.SetLoop(true);
+                        PhonographMusicPlayerManager.Instance.SetPlayback(false);
                         break;
                 }
             });
@@ -121,7 +110,7 @@ public class MusicPlayerPresenter : PanelPresenterBase<MusicPlayerPanelView>
     private enum LoopType
     {
         Off,
-        Auto,
+        PlayBack,
         On
     }
 
@@ -169,8 +158,39 @@ public class MusicPlayerPresenter : PanelPresenterBase<MusicPlayerPanelView>
     {
         View.VolumeButton.OnClickCallback += async () =>
         {
-            await View.VolumePanel.ShowAsync(ct);
+            await PhonographMusicPlayerManager.Instance.ShowOverlayPanelAsync(View.VolumePanel, ct);
         };
+
+        View.VolumePanel.IsMute
+            .TakeUntilDestroy(this)
+            .DistinctUntilChanged()
+            .Subscribe(value =>
+            {
+                View.VolumeButton.SetOn(value);
+            });
+    }
+
+    /// <summary>
+    /// プレイリストボタンのイベント設定
+    /// </summary>
+    /// <param name="ct"></param>
+    private void SetPlayListButton(CancellationToken ct)
+    {
+        View.PlaylistButton.IsOn
+            .Skip(1)
+            .TakeUntilDestroy(this)
+            .DistinctUntilChanged()
+            .Subscribe(async value =>
+            {
+                if(value)
+                {
+                    await View.ShowPlayListAsync(ct);
+                }
+                else
+                {
+                    await View.HidePlayListAsync(ct);
+                }
+            });
     }
 
     /// <summary>
@@ -216,7 +236,7 @@ public class MusicPlayerPresenter : PanelPresenterBase<MusicPlayerPanelView>
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
-                BGMManager.Instance.SetTime(value);
+                PhonographMusicPlayerManager.Instance.SetTime(value);
             }).AddTo(disposables);
     }
 
@@ -230,8 +250,8 @@ public class MusicPlayerPresenter : PanelPresenterBase<MusicPlayerPanelView>
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
-                View.PlayTimeText.text = BGMManager.Instance.GetVideoTime(value);
-                View.RemainTimeText.text = BGMManager.Instance.GetVideoTime(_length.Value - value);
+                View.PlayTimeText.text = PhonographMusicPlayerManager.Instance.GetMusicTime(value);
+                View.RemainTimeText.text = PhonographMusicPlayerManager.Instance.GetMusicTime(_length.Value - value);
             });
     }
 

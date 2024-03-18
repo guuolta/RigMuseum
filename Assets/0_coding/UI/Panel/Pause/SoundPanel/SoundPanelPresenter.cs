@@ -23,7 +23,7 @@ public class SoundPanelPresenter : PanelPresenterBase<SoundPanelView>
         View.MasterValueUIPart.SetValue(volumes[(int)AudioType.Master]);
         View.BGMValueUIPart.SetValue(volumes[(int)AudioType.BGM]);
         View.SEValueUIPart.SetValue(volumes[(int)AudioType.SE]);
-        View.MovieValueUIPart.SetValue(volumes[(int)AudioType.Movie]);
+        View.MovieValueUIPart.SetValue(volumes[(int)AudioType.Video]);
     }
 
     private void SetEventValueUIPart()
@@ -57,7 +57,7 @@ public class SoundPanelPresenter : PanelPresenterBase<SoundPanelView>
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
-                AudioManager.Instance.SetVolume(AudioType.Movie, value);
+                AudioManager.Instance.SetVolume(AudioType.Video, value);
             });
     }
 }

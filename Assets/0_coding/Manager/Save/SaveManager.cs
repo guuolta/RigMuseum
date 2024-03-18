@@ -65,7 +65,7 @@ public static class SaveManager
         _soundVolumes[(int)AudioType.Master] = PlayerPrefs.GetFloat(MASTER_VOLUME_KEY, 8f);
         _soundVolumes[(int)AudioType.BGM] = PlayerPrefs.GetFloat(BGM_VOLUME_KEY, 8f);
         _soundVolumes[(int)AudioType.SE] = PlayerPrefs.GetFloat(SE_VOLUME_KEY, 8f);
-        _soundVolumes[(int)AudioType.Movie] = PlayerPrefs.GetFloat(MOVIE_VOLUME_KEY, 8f);
+        _soundVolumes[(int)AudioType.Video] = PlayerPrefs.GetFloat(MOVIE_VOLUME_KEY, 8f);
 
         return _soundVolumes;
     }
@@ -111,7 +111,7 @@ public static class SaveManager
         PlayerPrefs.SetFloat(MASTER_VOLUME_KEY, volumes[(int)AudioType.Master]);
         PlayerPrefs.SetFloat(BGM_VOLUME_KEY, volumes[(int)AudioType.BGM]);
         PlayerPrefs.SetFloat(SE_VOLUME_KEY, volumes[(int)AudioType.SE]);
-        PlayerPrefs.SetFloat(MOVIE_VOLUME_KEY, volumes[(int)AudioType.Movie]);
+        PlayerPrefs.SetFloat(MOVIE_VOLUME_KEY, volumes[(int)AudioType.Video]);
     }
 
     /// <summary>

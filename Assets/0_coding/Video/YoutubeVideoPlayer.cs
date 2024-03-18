@@ -93,12 +93,6 @@ public class YoutubeVideoPlayer : ObjectBase
     public async UniTask PlayAsync(CancellationToken ct)
     {
         await UniTask.WaitUntil(() => _isSetVideo.Value, cancellationToken: ct);
-
-        if (AudioSource.mute)
-        {
-            AudioSource.mute = false;
-        }
-
         if(_isPlayVideo.Value)
         {
             return;

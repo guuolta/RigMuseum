@@ -11,7 +11,7 @@ public class OnObjectUIViewBase : ViewBase
 
     protected override void Init()
     {
-        Hide(CanvasGroup);
+        ChangeInteractive(false);
     }
 
     public override async UniTask ShowAsync(CancellationToken ct)

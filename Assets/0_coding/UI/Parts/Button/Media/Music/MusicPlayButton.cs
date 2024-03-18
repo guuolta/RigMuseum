@@ -20,8 +20,8 @@ public class MusicPlayButton : MediaOnOffButton
     protected override void Init()
     {
         base.Init();
+        ChangeInteractive(false);
         Hide(_backImage);
-        Hide(CanvasGroup);
     }
 
     protected override void SetEvent()

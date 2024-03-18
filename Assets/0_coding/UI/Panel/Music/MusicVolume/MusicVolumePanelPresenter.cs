@@ -42,7 +42,7 @@ public class MusicVolumePanelPresenter : PanelPresenterBase<MusicVolumePanelView
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
-                AudioManager.Instance.SetMute(value, AudioType.BGM);
+                PhonographMusicPlayerManager.Instance.SetMute(value);
                 _isMute.Value = value;
             });
     }
@@ -57,8 +57,7 @@ public class MusicVolumePanelPresenter : PanelPresenterBase<MusicVolumePanelView
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
-                BGMManager.Instance.SetVolume(value);
+                PhonographMusicPlayerManager.Instance.SetVolume(value);
             });
     }
-    
 }

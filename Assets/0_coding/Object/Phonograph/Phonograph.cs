@@ -6,7 +6,7 @@ public class Phonograph : TouchObjectBase
 {
     public override void StartTouchEvent()
     {
-        GameStateManager.SetMuseumState(MuseumState.Music);
+        GameStateManager.SetMuseumState(MuseumState.Record);
         base.StartTouchEvent();
     }
 }

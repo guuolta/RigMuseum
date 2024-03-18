@@ -53,8 +53,8 @@ public enum MuseumState
     Play,
     Pause,
     Target,
-    Music,
-    Monitor
+    Record,
+    Video
 }
 
 //[System.Serializable]
