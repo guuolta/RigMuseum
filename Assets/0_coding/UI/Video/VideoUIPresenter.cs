@@ -247,7 +247,7 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
     /// </summary>
     private void SetInitVolumeSliderValue()
     {
-        View.VolumeSlider.SetValue(AudioManager.Instance.GetSoundVolume(AudioType.Movie));
+        View.VolumeSlider.SetValue(AudioManager.Instance.GetSoundVolume(AudioType.Video));
     }
 
     /// <summary>
@@ -261,7 +261,7 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
-                AudioManager.Instance.SetVolume(AudioType.Movie, value);
+                AudioManager.Instance.SetVolume(AudioType.Video, value);
             });
             
     }
@@ -284,7 +284,7 @@ public class VideoUIPresenter : PresenterBase<VideoUIView>
             .DistinctUntilChanged()
             .Subscribe(value =>
             {
-                View.PlayTimeText.text = "-" + GetVideoTime(value);
+                View.PlayTimeText.text = GetVideoTime(value);
             });
     }
 

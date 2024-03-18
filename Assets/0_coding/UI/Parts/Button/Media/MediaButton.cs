@@ -31,7 +31,7 @@ public class MediaButton : ButtonBase
         _listCount = _dataList.Count;
         if (_listCount == 0)
         {
-            Debug.LogError("There aren't data");
+            Debug.LogError(name + "There aren't data");
             return;
         }
 

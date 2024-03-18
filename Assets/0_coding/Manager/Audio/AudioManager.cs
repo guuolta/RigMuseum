@@ -17,17 +17,24 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
     [Header("オーディオミキサー")]
     [SerializeField]
     private AudioMixer _audioMixer;
+    [Header("BGMのオーディオソース")]
+    [SerializeField]
+    private AudioSource _bgmAudioSource;
     [Header("SEのオーディオソース")]
     [SerializeField]
     private AudioSource _seAudioSource;
-    [Header("動画のオーディオソース")]
+    [Header("通常BGM")]
     [SerializeField]
-    private AudioSource _movieAudioSource;
-    private List<AudioSource> _seAudioSourceList = new List<AudioSource>();
+    private AudioClip _mainAudioClip;
     [Header("よく使うSE")]
     [SerializeField]
     private List<SE> _seList = new List<SE>();
 
+    private bool _isMuteVideo = false;
+    private bool _isMuteRecord = false;
+    private AudioSource _videoAudioSource => GameVideoManager.Instance.VideoAudioSource;
+    private AudioSource _recordAudioSource => PhonographMusicPlayerManager.Instance.RecordAudioSource;
+    private List<AudioSource> _seAudioSourceList = new List<AudioSource>();
     private Dictionary<SEType, AudioClip> _seDictionary = new Dictionary<SEType, AudioClip>();
 
     protected override void Init()
@@ -35,6 +42,7 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
         base.Init();
         GetSEDictionary();
         SetInitVolume();
+        PlayMainBGM();
     }
 
     protected override void SetEvent()
@@ -60,7 +68,7 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
         _audioMixer.SetFloat(MASTER_VOLUME_NAME, GetAudioMixerVolume(_volumes[(int)AudioType.Master]));
         _audioMixer.SetFloat(BGM_VOLUME_NAME, GetAudioMixerVolume(_volumes[(int)AudioType.BGM]));
         _audioMixer.SetFloat(SE_VOLUME_NAME, GetAudioMixerVolume(_volumes[(int)AudioType.SE]));
-        _movieAudioSource.volume = GetAudioSourceVolume(_volumes[(int)AudioType.Movie]);
+        _videoAudioSource.volume = GetAudioSourceVolume(_volumes[(int)AudioType.Video]);
     }
 
     /// <summary>
@@ -98,11 +106,48 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
                     case MuseumState.Play:
                         SetMute(false);
                         break;
-                    case MuseumState.Monitor:
+                    case MuseumState.Pause:
+                        SetMute(true, AudioType.Video);
+                        SetMute(true, AudioType.Record);
+                        break;
+                    case MuseumState.Target:
+                        SetMute(true, AudioType.Video);
+                        SetMute(true, AudioType.Record);
+                        break;  
+                    case MuseumState.Video:
                         SetMute(true, AudioType.BGM);
+                        SetMute(true, AudioType.Record);
+                        break;
+                    case MuseumState.Record:
+                        SetMute(true, AudioType.BGM);
+                        SetMute(true, AudioType.Video);
                         break;
                 }
             });
+    }
+
+    /// <summary>
+    /// メインBGM再生
+    /// </summary>
+    public void PlayMainBGM()
+    {
+        if (_bgmAudioSource.clip == null)
+            _bgmAudioSource.clip = _mainAudioClip;
+        if (_bgmAudioSource.isPlaying)
+            return;
+
+        _bgmAudioSource.Play();
+    }
+
+    /// <summary>
+    /// メインBGM停止
+    /// </summary>
+    public void PauseMainBGM()
+    {
+        if (!_bgmAudioSource.isPlaying)
+            return;
+
+        _bgmAudioSource.Pause();
     }
 
     /// <summary>
@@ -161,9 +206,12 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
     /// <param name="isMute"> ミュートにするか </param>
     public void SetMute(bool isMute)
     {
-        BGMManager.Instance.SetMute(isMute);
+        _bgmAudioSource.mute = isMute;
         _seAudioSource.mute = isMute;
-        _movieAudioSource.mute = isMute;
+        if(!_isMuteVideo)
+            _videoAudioSource.mute = isMute;
+        if(!_isMuteRecord)
+            _recordAudioSource.mute = isMute;
     }
 
     /// <summary>
@@ -178,13 +226,41 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
                 SetMute(isMute);
                 break;
             case AudioType.BGM:
-                BGMManager.Instance.SetMute(isMute);
+                _bgmAudioSource.mute = isMute;
                 break;
             case AudioType.SE:
                 _seAudioSource.mute = isMute;
                 break;
-            case AudioType.Movie:
-                _movieAudioSource.mute = isMute;
+            case AudioType.Video:
+                if (GameStateManager.MuseumStatus.Value == MuseumState.Video)
+                {
+                    _isMuteVideo = isMute;
+                    _videoAudioSource.mute = isMute;
+                    break;
+                }
+
+                if(_isMuteVideo)
+                {
+                    break;
+                }
+
+                _videoAudioSource.mute = isMute;
+                break;
+            case AudioType.Record:
+                _recordAudioSource.mute = isMute;
+                if (GameStateManager.MuseumStatus.Value == MuseumState.Record)
+                {
+                    _isMuteRecord = isMute;
+                    _recordAudioSource.mute = isMute;
+                    break;
+                }
+
+                if(_isMuteRecord)
+                {
+                    break;
+                }
+
+                _recordAudioSource.mute = isMute;
                 break;
             default:
                 break;
@@ -221,16 +297,17 @@ public class AudioManager : DontDestroySingletonObject<AudioManager>
             case AudioType.Master:
                 _audioMixer.SetFloat(MASTER_VOLUME_NAME, GetAudioMixerVolume(volume));
                 _volumes[(int)type] = volume;
-                SetVolume(AudioType.Movie, _volumes[(int)AudioType.Movie]);
+                SetVolume(AudioType.Video, _volumes[(int)AudioType.Video]);
                 return;
             case AudioType.BGM:
+            case AudioType.Record:
                 _audioMixer.SetFloat(BGM_VOLUME_NAME, GetAudioMixerVolume(volume));
                 break;
             case AudioType.SE:
                 _audioMixer.SetFloat(SE_VOLUME_NAME, GetAudioMixerVolume(volume));
                 break;
-            case AudioType.Movie:
-                _movieAudioSource.volume = GetAudioSourceVolume(volume);
+            case AudioType.Video:
+                _videoAudioSource.volume = GetAudioSourceVolume(volume);
                 break;
             default:
                 return;
@@ -263,7 +340,8 @@ public enum AudioType
     Master = 0,
     BGM = 1,
     SE = 2,
-    Movie = 3
+    Video = 3,
+    Record = 4
 }
 
 /// <summary>

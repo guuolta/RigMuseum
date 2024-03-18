@@ -11,7 +11,7 @@ TagManager:
   - 
   - Water
   - UI
-  - TouchObject
+  - 
   - 
   - 
   - 
@@ -40,4 +40,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Mask
+    uniqueID: 2589114757
+    locked: 0
+  - name: OverUI
+    uniqueID: 4085826865
     locked: 0

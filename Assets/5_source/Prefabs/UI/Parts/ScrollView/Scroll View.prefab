@@ -215,7 +215,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0.8
-  animationTime: 0.1
+  AnimationTime: 0.1
 --- !u!1 &2622357832253222784
 GameObject:
   m_ObjectHideFlags: 0
@@ -338,7 +338,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _disInteractiveColor: 0.8
-  animationTime: 0.1
+  AnimationTime: 0.1
 --- !u!1 &3317439357908722230
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System.Threading;
 using UniRx;
+using UnityEngine;
 
 public class MediaOnOffButton : MediaButton
 {
@@ -14,6 +15,24 @@ public class MediaOnOffButton : MediaButton
     {
         base.SetEvent();
         SetEventIsOn(Ct);
+    }
+
+    /// <summary>
+    /// ボタンがOn、Offの時のイベント
+    /// </summary>
+    private void SetEventIsOn(CancellationToken ct)
+    {
+        IsOn
+            .Skip(1)
+            .TakeUntilDestroy(this)
+            .DistinctUntilChanged()
+            .Subscribe(async _ =>
+            {
+                HideAsync(TargetData.ButtonImage, ct).Forget();
+                TargetData.ExplainText.HideAsync(ct).Forget();
+                SetNextData();
+                await ShowAsync(TargetData.ButtonImage, ct);
+            });
     }
 
     /// <summary>
@@ -34,23 +53,5 @@ public class MediaOnOffButton : MediaButton
         {
             _isOn.Value = !_isOn.Value;
         };
-    }
-
-    /// <summary>
-    /// ボタンがOn、Offの時のイベント
-    /// </summary>
-    private void SetEventIsOn(CancellationToken ct)
-    {
-        IsOn
-            .Skip(1)
-            .TakeUntilDestroy(this)
-            .DistinctUntilChanged()
-            .Subscribe(async _ =>
-            {
-                HideAsync(TargetData.ButtonImage, ct).Forget();
-                TargetData.ExplainText.HideAsync(ct).Forget();
-                SetNextData();
-                await ShowAsync(TargetData.ButtonImage, ct);
-            });
     }
 }

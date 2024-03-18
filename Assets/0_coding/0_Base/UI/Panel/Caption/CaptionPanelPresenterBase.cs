@@ -15,10 +15,10 @@ public class CaptionPanelPresenterBase<TView> : PresenterBase<TView>
     /// <summary>
     /// ゲームの説明を設定する
     /// </summary>
-    /// <param name="explain"> 説明 </param>
-    public void SetExplain(string explain)
+    /// <param name="description"> 説明 </param>
+    public void SetDescription(string description)
     {
-        SetText(explain, View.DescriptionText);
+        SetText(description, View.DescriptionText);
     }
 
     /// <summary>

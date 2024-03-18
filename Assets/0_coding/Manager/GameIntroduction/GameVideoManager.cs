@@ -35,7 +35,7 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
     [SerializeField]
     private OnMonitorPresenter _onMonitorUI;
 
-
+    public AudioSource VideoAudioSource => _videoPlayer.AudioSource; 
     private ReactiveProperty<int> _videoIndex = new ReactiveProperty<int>(0);
     /// <summary>
     /// 動画が再生されているか
@@ -76,7 +76,7 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
     {
         GameStateManager.MuseumStatus
             .TakeUntilDestroy(this)
-            .Select(value => value == MuseumState.Monitor)
+            .Select(value => value == MuseumState.Video)
             .SkipWhile(value => !value)
             .DistinctUntilChanged()
             .Subscribe(async value =>
@@ -138,12 +138,12 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
                 {
                     case MuseumState.Play:
                         await _onMonitorUI.HideAsync(ct);
-                        _videoPlayer.AudioSource.spatialBlend = 1;
+                        VideoAudioSource.spatialBlend = 1;
                         await PlayAsync(ct);
                         break;
-                    case MuseumState.Monitor:
+                    case MuseumState.Video:
                         await _onMonitorUI.ShowAsync(ct);
-                        _videoPlayer.AudioSource.spatialBlend = 0;
+                        VideoAudioSource.spatialBlend = 0;
                         await PlayAsync(ct);
                         break;
                     case MuseumState.Pause:
@@ -189,7 +189,7 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
         _captionUI.SetModelMemberText(gameData.ModelMenber);
         _captionUI.SetDTMMemberText(gameData.DTMMenber);
         _captionUI.SetURL(gameData.GameURL);
-        _captionUI.SetExplain(gameData.Description);
+        _captionUI.SetDescription(gameData.Description);
     }
 
     /// <summary>
@@ -266,7 +266,7 @@ public class GameVideoManager : ProductionManagerBase<GameVideoManager>
     /// <param name="mute"> ミュートにするか </param>
     public void SetMute(bool mute)
     {
-        _videoPlayer.AudioSource.mute = mute;
+        AudioManager.Instance.SetMute(mute, AudioType.Video);
     }
 
     /// <summary>

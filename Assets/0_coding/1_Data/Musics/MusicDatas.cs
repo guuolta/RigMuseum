@@ -48,4 +48,9 @@ public class MusicData
     /// 音楽の説明
     /// </summary>
     public string Description => _description;
+
+    public void SetID(int id)
+    {
+        _id = id;
+    }
 }

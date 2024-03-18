@@ -1,17 +1,11 @@
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System.Threading;
 using TMPro;
 using UnityEngine;
 
 public class MusicPlayerPanelView : PanelViewBase
 {
-    [Header("マスク画像")]
-    [SerializeField]
-    private UIBase _maskImage;
-    /// <summary>
-    /// マスク画像
-    /// </summary>
-    public UIBase MaskImage => _maskImage;
     [Header("再生ボタン")]
     [SerializeField]
     private MediaOnOffButton _playButton;
@@ -47,6 +41,13 @@ public class MusicPlayerPanelView : PanelViewBase
     /// シャッフルボタン
     /// </summary>
     public MediaButton ShuffleButton => _shuffleButton;
+    [Header("プレイリストボタン")]
+    [SerializeField]
+    private MediaOnOffButton _playlistButton;
+    /// <summary>
+    /// プレイリストボタン
+    /// </summary>
+    public MediaOnOffButton PlaylistButton => _playlistButton;
     [Header("音量ボタン")]
     [SerializeField]
     private VolumeIconButton _volumeButton;
@@ -82,19 +83,50 @@ public class MusicPlayerPanelView : PanelViewBase
     /// 曲の時間
     /// </summary>
     public TMP_Text RemainTimeText => _remainTimeText;
+    [Header("プレイリストの動く距離")]
+    [SerializeField]
+    private float _distance;
+
+    private float _start;
+    private float _destination;
 
     protected override void Init()
     {
-
+        _start = RectTransform.anchoredPosition.y;
+        _destination = _start + _distance;
     }
 
-    public override UniTask ShowAsync(CancellationToken ct)
+    /// <summary>
+    /// プレイリスト表示
+    /// </summary>
+    /// <param name="ct"></param>
+    /// <returns></returns>
+    public async UniTask ShowPlayListAsync(CancellationToken ct)
     {
-        throw new System.NotImplementedException();
+        RectTransform.DOComplete();
+        if(RectTransform.anchoredPosition.y == _destination)
+            return;
+
+        await RectTransform
+            .DOAnchorPosY(_destination, AnimationTime)
+            .SetEase(Ease.InSine)
+            .ToUniTask(cancellationToken: ct);
     }
 
-    public override UniTask HideAsync(CancellationToken ct)
+    /// <summary>
+    /// プレイリスト消す
+    /// </summary>
+    /// <param name="ct"></param>
+    /// <returns></returns>
+    public async UniTask HidePlayListAsync(CancellationToken ct)
     {
-        throw new System.NotImplementedException();
+        RectTransform.DOComplete();
+        if(RectTransform.anchoredPosition.y == _start)
+            return;
+
+        await RectTransform
+            .DOAnchorPosY(_start, AnimationTime)
+            .SetEase(Ease.OutSine)
+            .ToUniTask(cancellationToken: ct);
     }
 }

@@ -111,7 +111,7 @@ public class ArtDatasEditorBase : Editor
 
         var captionUI = caption.CaptionUI;
         captionUI.SetTitleText(title);
-        captionUI.SetExplain(description);
+        captionUI.SetDescription(description);
         captionUI.SetAuthorText(members);
 
         PrefabUtility.SaveAsPrefabAsset(caption.GameObject, path + "/"
